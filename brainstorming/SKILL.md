@@ -1,6 +1,6 @@
 ---
 name: brainstorming
-description: Explore and clarify a feature in the current session before LazySpec creates its first requirements.md, or when the user explicitly requests brainstorming for an existing Spec. Use to inspect relevant project context, compare 2-3 approaches, obtain explicit approval, and prepare an approved session-only context for writing-requirement.
+description: Explore and clarify a feature in the current session before LazySpec creates its first requirements.md, or when the user explicitly requests brainstorming for an existing Spec. Use to inspect relevant project context, compare three approaches, obtain explicit approval, and prepare an approved session-only context for writing-requirement.
 ---
 
 # Brainstorming
@@ -17,16 +17,29 @@ Turn a feature idea into an explicitly approved direction that LazySpec can use 
 2. Clarify the idea.
    - Establish the objective, scope, constraints, and success criteria.
    - Ask only one question at a time when information is missing or ambiguous.
-   - Prefer an applicable question-and-answer tool when one is available. Otherwise, ask the question directly in the conversation.
+   - For every user-facing question, provide exactly three concrete, mutually exclusive predefined options and a fourth free-form option using this structure:
+
+     ```text
+     [Question]
+
+     1. [Recommended option] (Recommended) — [concise reason]
+     2. [Second option] — [relevant trade-off]
+     3. [Third option] — [relevant trade-off]
+     4. Other — provide your own answer
+     ```
+
+   - Put the recommended option first and explain the recommendation concisely.
+   - Prefer an applicable question-and-answer tool when one is available. If the tool automatically adds a free-form `Other` choice, provide exactly the first three predefined options and use the automatic choice as option 4. If the tool cannot preserve this structure, ask the question directly in the conversation.
+   - Accept either an option number or the user's free-form answer.
    - Continue until the required context is complete and no unresolved question would materially change the result.
 
 3. Compare approaches.
-   - Present 2-3 viable approaches with their relevant trade-offs.
+   - Present exactly three viable approaches with their relevant trade-offs.
    - Recommend one approach and explain the reason concisely.
    - Avoid speculative features and unrelated improvements.
 
 4. Obtain approval.
-   - Ask the user to explicitly select or approve an approach.
+   - Ask the user to explicitly select or approve an approach using the same three predefined options plus option 4 for a free-form answer.
    - If the user requests changes, revise the approaches or continue clarifying one question at a time.
    - Do not proceed to `writing-requirement` until the selected approach and the complete context are explicitly approved.
 
