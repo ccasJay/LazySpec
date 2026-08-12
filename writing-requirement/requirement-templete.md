@@ -14,8 +14,8 @@
 #### Acceptance Criteria
 This section should have EARS requirements
 
-1. WHEN [event] THEN [system] SHALL [response]
-2. IF [precondition] THEN [system] SHALL [response]
+1. <a id="req-1-1"></a> WHEN [event] THEN [system] SHALL [response]
+2. <a id="req-1-2"></a> IF [precondition] THEN [system] SHALL [response]
   
 ### Requirement 2
 
@@ -23,7 +23,6 @@ This section should have EARS requirements
 
 #### Acceptance Criteria
 
-1. WHEN [event] THEN [system] SHALL [response]
-2. WHEN [event] AND [condition] THEN [system] SHALL [response]
+1. <a id="req-2-1"></a> WHEN [event] THEN [system] SHALL [response]
+2. <a id="req-2-2"></a> WHEN [event] AND [condition] THEN [system] SHALL [response]
 ```
-

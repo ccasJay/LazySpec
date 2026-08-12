@@ -11,6 +11,8 @@ For an existing `requirements.md`, use the existing document and explicit user f
 
 Before drafting or revising requirements, read `requirement-prompt.md` and `requirement-templete.md`.
 
+Prefix every numbered acceptance criterion with exactly one HTML anchor on the same line, using `req-<requirement-number>-<criterion-number>` as the unique ID. The numbers MUST match the criterion's requirement and ordinal, every acceptance criterion MUST have an anchor, and each anchor ID MUST occur exactly once in `requirements.md`.
+
 **Constraints:**
 
 - The model MUST create a 'specs/{feature_name}/requirements.md' file under the project folder if it doesn't already exist
@@ -45,4 +47,3 @@ If the requirements clarification process seems to be going in circles or not ma
 - The model MAY provide examples or options to help the user make decisions
 - The model SHOULD summarize what has been established so far and identify specific gaps
 - The model MAY suggest conducting research to inform requirements decisions
-
