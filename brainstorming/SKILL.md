@@ -39,9 +39,21 @@ Turn a feature idea into an explicitly approved direction that LazySpec can use 
    - Avoid speculative features and unrelated improvements.
 
 4. Obtain approval.
-   - Ask the user to explicitly select or approve an approach using the same three predefined options plus option 4 for a free-form answer.
-   - If the user requests changes, revise the approaches or continue clarifying one question at a time.
-   - Do not proceed to `writing-requirement` until the selected approach and the complete context are explicitly approved.
+   - First ask the user to select one of the three compared approaches. Selecting an approach records only `selectedApproach`; it is not approval of the complete Brainstorming Context.
+   - After the selection, present the final `objective`, `scope`, `constraints`, `successCriteria`, and `selectedApproach`, then ask a separate approval question with these three predefined options plus the free-form option:
+
+     ```text
+     Approve this Brainstorming Context for Requirements?
+
+     1. Approve (Recommended) — approve this complete context and allow routing to Requirements
+     2. Request changes — keep Brainstorming active and revise the context from feedback
+     3. Compare approaches again — discard the selection and return to approach comparison
+     4. Other — provide your own answer
+     ```
+
+   - Prefer the applicable user-question tool under the question rules above. Only option 1 or an unambiguous affirmative answer to this separate approval question counts as approval. Approach selection, silence, timeout, explanation, or an ambiguous answer does not.
+   - If the user requests changes, revise the approaches or continue clarifying one question at a time, then present the complete context and ask the separate approval question again.
+   - Do not set `approved: true` or proceed to `writing-requirement` until the selected approach and the complete context receive this separate explicit approval.
 
 5. Prepare the session handoff.
    - Retain only the final approved result in the current conversation context with all of these fields:

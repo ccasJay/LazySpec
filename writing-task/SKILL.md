@@ -5,16 +5,41 @@ description: Create or revise a LazySpec tasks.md only after requirements.md and
 
 # Writing Tasks
 
-Before starting, read the approved `specs/{feature_name}/requirements.md` and `specs/{feature_name}/design.md`, then read `task-prompt.md` and `task-templete.md`. If either upstream artifact has not received explicit user approval, stop and request the missing approval first.
+Before starting, read the approved `specs/{feature_name}/requirements.md` and `specs/{feature_name}/design.md`, then read `task-prompt.md` and `task-templete.md`. Resolve the Prompt and Template relative to the directory containing this `SKILL.md`, never relative to the process working directory or repository root. Resolve the upstream Specs and the new `tasks.md` against `ACTIVE_PROJECT_ROOT`, defined by `using-lazyspec` as the user's project working directory at session start. Never use this Skill's directory, its repository, or a Plugin cache as the project root. If invoked directly and the session working directory is unavailable or ambiguous, ask for the project root before reading or writing Specs. These rules apply unchanged in a Plugin cache and an Agent Skills installation. If either upstream artifact has not received explicit user approval in the current conversation, stop and request the missing approval first; never infer approval from file existence.
 
 Format every requirement number in each task's Requirements list as its own relative Markdown link: `[<requirement-number>.<criterion-number>](./requirements.md#req-<requirement-number>-<criterion-number>)`. Link multiple requirement numbers separately; never leave a requirement number as plain text or combine multiple numbers in one link.
 
 Before requesting Tasks approval, validate every requirement link against `requirements.md`. Each link MUST use the exact relative-path format above, MUST NOT use an absolute path or a `#L<n>` line anchor, and its target HTML anchor MUST exist exactly once. Fix plain-text references, malformed links, missing anchors, and duplicate anchors before asking for approval.
 
+## Approval
+
+After every Tasks update or revision, request approval using this protocol:
+
+1. If `AskUserQuestion` is available, call it with exactly this supported input shape and no extra fields:
+
+   ```json
+   {
+     "questions": [{
+       "question": "Do the tasks look good?",
+       "header": "Review",
+       "options": [
+         {"label": "Approve", "description": "Approve Tasks and finish the planning workflow."},
+         {"label": "Request changes", "description": "Keep the current phase and revise Tasks from my feedback."}
+       ],
+       "multiSelect": false
+     }]
+   }
+   ```
+
+2. Otherwise, if the environment provides an equivalent user-question tool, use it with the same single-choice meaning and only fields that tool supports.
+3. Otherwise, ask the same approval question directly in the conversation and stop while awaiting the answer.
+
+Only explicit approval in the current conversation records Tasks approval. File existence, timeout, silence, explanations, ambiguous replies, and requested changes do not imply approval. For any non-approval response, remain in Tasks; apply requested changes when provided and request approval again. Approval ends planning and MUST NOT start implementation.
+
 ## Plan Shape and Size
 
-- Format the plan as a numbered checkbox list with at most two hierarchy levels. Use top-level epics only when they clarify grouping; number sub-tasks with decimal notation.
-- Keep the `//TODO` marker and its task text exactly as shown in the template. Completing a task changes only its checkbox state; never remove or replace the text after `//TODO`.
+- Format every task line as `- [ ] //TODO <number>. <task text>` in a numbered checkbox list with at most two hierarchy levels. Use top-level epics only when they clarify grouping; number sub-tasks with decimal notation.
+- Keep the `//TODO` marker and its task text exactly as shown in the template. Completing a task changes only the checkbox token from `[ ]` to `[x]`; never remove, replace, or rewrite `//TODO` or any text after it.
 - Prefer a flat, minimal sequence of discrete coding steps that build incrementally and validate core behavior early.
 - Give each task a concrete writing, modification, or automated-testing objective. Add only the descriptive sub-bullets needed to identify affected components or files, essential behavior, and verification; normally use no more than 3, excluding the Requirements link line.
 - Link only the acceptance criteria directly implemented by the task, normally no more than 5. Split an oversized task when that creates meaningful independent work rather than using a long reference list.
@@ -23,8 +48,6 @@ Before requesting Tasks approval, validate every requirement link against `requi
 - Include only work a coding agent can complete by writing, modifying, or testing code. Exclude user testing, deployment, metrics gathering, running manual end-to-end flows, training, documentation, business-process changes, and communication work; automated end-to-end tests are allowed.
 - Use test-driven ordering where appropriate and leave every step integrated, with no hanging or orphaned code.
 - If a requirement or design gap prevents an actionable task, offer to return to the relevant upstream phase instead of padding the task with assumptions.
-- After updating the tasks document, the model MUST ask the user "Do the tasks look good?" using the AskUserQuestion tool (Claude Code).
-- The AskUserQuestion tool MUST be used; set metadata.source to the exact string 'spec-tasks-review'
 - The model MUST make modifications to the tasks document if the user requests changes or does not explicitly approve.
 - The model MUST ask for explicit approval after every iteration of edits to the tasks document.
 - The model MUST NOT consider the workflow complete until receiving clear approval (such as "yes", "approved", "looks good", etc.).

@@ -1,0 +1,16 @@
+{
+  "name": "lazyspec",
+  "displayName": "LazySpec",
+  "description": "Spec-driven development workflow from brainstorming through implementation tasks.",
+  "author": {
+    "name": "ccasJay"
+  },
+  "repository": "https://github.com/ccasJay/LazySpec",
+  "skills": [
+    "./using-lazyspec",
+    "./brainstorming",
+    "./writing-requirement",
+    "./writing-design",
+    "./writing-task"
+  ]
+}

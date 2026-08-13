@@ -9,9 +9,34 @@ For a new feature, require a complete, explicitly approved `BrainstormingContext
 
 For an existing `requirements.md`, use the existing document and explicit user feedback. Do not automatically rerun Brainstorming.
 
-Before drafting or revising requirements, read `requirement-prompt.md` and `requirement-templete.md`.
+Before drafting or revising requirements, read `requirement-prompt.md` and `requirement-templete.md`. Resolve both files relative to the directory containing this `SKILL.md`, never relative to the process working directory or repository root. Resolve `specs/{feature_name}/requirements.md` against `ACTIVE_PROJECT_ROOT`, defined by `using-lazyspec` as the user's project working directory at session start. Never use this Skill's directory, its repository, or a Plugin cache as the project root. If invoked directly and the session working directory is unavailable or ambiguous, ask for the project root before writing. These rules apply unchanged in a Plugin cache and an Agent Skills installation.
 
 Prefix every numbered acceptance criterion with exactly one HTML anchor on the same line, using `req-<requirement-number>-<criterion-number>` as the unique ID. The numbers MUST match the criterion's requirement and ordinal, every acceptance criterion MUST have an anchor, and each anchor ID MUST occur exactly once in `requirements.md`.
+
+## Approval
+
+After every Requirements update or revision, request approval using this protocol:
+
+1. If `AskUserQuestion` is available, call it with exactly this supported input shape and no extra fields:
+
+   ```json
+   {
+     "questions": [{
+       "question": "Do the requirements look good? If so, we can move on to the design.",
+       "header": "Review",
+       "options": [
+         {"label": "Approve", "description": "Approve Requirements and allow routing to Design."},
+         {"label": "Request changes", "description": "Keep the current phase and revise Requirements from my feedback."}
+       ],
+       "multiSelect": false
+     }]
+   }
+   ```
+
+2. Otherwise, if the environment provides an equivalent user-question tool, use it with the same single-choice meaning and only fields that tool supports.
+3. Otherwise, ask the same approval question directly in the conversation and stop while awaiting the answer.
+
+Only explicit approval in the current conversation records Requirements approval. File existence, timeout, silence, explanations, ambiguous replies, and requested changes do not imply approval. For any non-approval response, remain in Requirements; apply requested changes when provided and request approval again.
 
 ## Content Boundaries and Size
 
@@ -32,8 +57,6 @@ Prefix every numbered acceptance criterion with exactly one HTML anchor on the s
   - A user story in the format "As a [role], I want [feature], so that [benefit]"
   - A numbered list of acceptance criteria in EARS format (Easy Approach to Requirements Syntax)
 - The model SHOULD include an edge case, user-experience constraint, technical constraint, or success criterion only when it creates a distinct observable and verifiable outcome
-- After updating the requirement document, the model MUST ask the user "Do the requirements look good? If so, we can move on to the design." using the AskUserQuestion tool (Claude Code).
-- The AskUserQuestion tool MUST be used; set metadata.source to the exact string 'spec-requirements-review'
 - The model MUST make modifications to the requirements document if the user requests changes or does not explicitly approve
 - The model MUST ask for explicit approval after every iteration of edits to the requirements document
 - The model MUST NOT proceed to the design document until receiving clear approval (such as "yes", "approved", "looks good", etc.)

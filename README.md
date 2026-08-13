@@ -12,7 +12,9 @@ Brainstorming → Requirements → Design → Tasks → 按需执行单个任务
 - Requirements、Design、Tasks 分别生成 `requirements.md`、`design.md`、`tasks.md`。
 - 每个阶段都需要用户明确批准，未获批准不会进入下一阶段。
 
-## 接入
+## 安装与接入
+
+### Agent Skills
 
 ```bash
 npx skills add ccasJay/LazySpec --skill '*' -g
@@ -21,9 +23,48 @@ npx skills add ccasJay/LazySpec --skill '*' -g
 按提示选择目标代理。安装完成后，确认五个 Skill 均可发现；日常使用从
 `using-lazyspec` 进入。
 
-> [!NOTE]
-> 不同代理的 Skill 扫描规则和问答工具不同。现有审批指令使用
-> `AskUserQuestion`；若目标代理使用其他工具名称，需要先适配。
+### Claude Code Plugin
+
+兼容性基线为 Claude Code `2.1.229`。克隆本仓库后，在仓库根目录校验
+`.claude-plugin/plugin.json`，再以仓库绝对路径加载本地 Plugin：
+
+```bash
+claude --version
+claude plugin validate .
+claude --plugin-dir /absolute/path/to/LazySpec
+```
+
+进入 Claude Code 后可用 `/help` 查看已加载命令；日常推荐使用统一入口：
+
+```text
+/lazyspec:using-lazyspec
+```
+
+五个可显式调用的 Skill 为：
+
+```text
+/lazyspec:using-lazyspec
+/lazyspec:brainstorming
+/lazyspec:writing-requirement
+/lazyspec:writing-design
+/lazyspec:writing-task
+```
+
+Plugin 或 Skill 未出现时，按以下顺序排查：
+
+1. 确认 `claude --version` 不低于兼容性基线，并重新运行
+   `claude plugin validate .`。
+2. 确认 Manifest 位于仓库根目录的 `.claude-plugin/plugin.json`，其中五个
+   `skills` 相对路径均指向包含 `SKILL.md` 的现有目录。
+3. 在会话中运行 `/reload-plugins`，然后用 `/help` 再次检查；仍未加载时，
+   退出并用正确的绝对路径重新执行 `claude --plugin-dir ...`。
+4. 若同一个 Skill 出现两次，运行 `npx skills list -a claude-code --json` 和
+   `claude plugin list` 检查是否同时启用了 Agent Skills 与 Plugin。同一会话只
+   选择一种入口：使用 Plugin 时不要再向该项目安装同名 Agent Skills；使用
+   Agent Skills 时不要传入 `--plugin-dir`，并停用已持久安装的同名 Plugin。
+
+不同代理的问答工具名称可以不同。LazySpec 会优先使用环境提供的审批问答
+工具；没有适用工具时，会在会话中直接请求明确批准。
 
 ## 快速开始
 
