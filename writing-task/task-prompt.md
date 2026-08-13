@@ -1,7 +1,6 @@
 ### 3. Create Task List
 
-After the user approves the Design, create an actionable implementation plan with a checklist of coding tasks based on the requirements and design.
-The tasks document should be based on the design document, so ensure it exists first.
+After the user approves Design, create the shortest actionable checklist that implements it. Each task should identify a coding objective, only the essential affected components or files, and automated verification. Refer to Requirements and Design instead of repeating their content.
 
 **Constraints:**
 
@@ -12,6 +11,5 @@ The tasks document should be based on the design document, so ensure it exists f
 - The model MUST use the following specific instructions when creating the implementation plan:
 
 ```
-Convert the feature design into a series of prompts for a code-generation LLM that will implement each step in a test-driven manner. Prioritize best practices, incremental progress, and early testing, ensuring no big jumps in complexity at any stage. Make sure that each prompt builds on the previous prompts, and ends with wiring things together. There should be no hanging or orphaned code that isn't integrated into a previous step. Focus ONLY on tasks that involve writing, modifying, or testing code.
+Convert the design into incremental coding tasks with early automated verification. Each task must leave the code integrated and usable, with no orphaned work. Focus only on writing, modifying, or testing code.
 ```
-

@@ -11,43 +11,18 @@ Format every requirement number in each task's Requirements list as its own rela
 
 Before requesting Tasks approval, validate every requirement link against `requirements.md`. Each link MUST use the exact relative-path format above, MUST NOT use an absolute path or a `#L<n>` line anchor, and its target HTML anchor MUST exist exactly once. Fix plain-text references, malformed links, missing anchors, and duplicate anchors before asking for approval.
 
-- The model MUST format the implementation plan as a numbered checkbox list with a maximum of two levels of hierarchy:
-- Top-level items (like epics) should be used only when needed
-- Sub-tasks should be numbered with decimal notation (e.g., 1.1, 1.2, 2.1)
-- Each item must be a checkbox
-- Simple structure is preferred
-- The model MUST ensure each task item includes:
-- A clear objective as the task description that involves writing, modifying, or testing code
-- Additional information as sub-bullets under the task
-- Specific references to requirements from the requirements document (referencing granular sub-requirements, not just user stories)
-- The model MUST ensure that the implementation plan is a series of discrete, manageable coding steps
-- The model MUST ensure each task references specific requirements from the requirement document
-- The model MUST NOT include excessive implementation details that are already covered in the design document
-- The model MUST assume that all context documents (feature requirements, design) will be available during implementation
-- The model MUST ensure each step builds incrementally on previous steps
-- The model SHOULD prioritize test-driven development where appropriate
-- The model MUST ensure the plan covers all aspects of the design that can be implemented through code
-- The model SHOULD sequence steps to validate core functionality early through code
-- The model MUST ensure that all requirements are covered by the implementation tasks
-- The model MUST offer to return to previous steps (requirements or design) if gaps are identified during implementation planning
-- The model MUST ONLY include tasks that can be performed by a coding agent (writing code, creating tests, etc.)
-- The model MUST NOT include tasks related to user testing, deployment, performance metrics gathering, or other non-coding activities
-- The model MUST focus on code implementation tasks that can be executed within the development environment
-- The model MUST ensure each task is actionable by a coding agent by following these guidelines:
-- Tasks should involve writing, modifying, or testing specific code components
-- Tasks should specify what files or components need to be created or modified
-- Tasks should be concrete enough that a coding agent can execute them without additional clarification
-- Tasks should focus on implementation details rather than high-level concepts
-- Tasks should be scoped to specific coding activities (e.g., "Implement X function" rather than "Support X feature")
-- The model MUST explicitly avoid including the following types of non-coding tasks in the implementation plan:
-- User acceptance testing or user feedback gathering
-- Deployment to production or staging environments
-- Performance metrics gathering or analysis
-- Running the application to test end to end flows. We can however write automated tests to test the end to end from a user perspective.
-- User training or documentation creation
-- Business process changes or organizational changes
-- Marketing or communication activities
-- Any task that cannot be completed through writing, modifying, or testing code
+## Plan Shape and Size
+
+- Format the plan as a numbered checkbox list with at most two hierarchy levels. Use top-level epics only when they clarify grouping; number sub-tasks with decimal notation.
+- Keep the `//TODO` marker and its task text exactly as shown in the template. Completing a task changes only its checkbox state; never remove or replace the text after `//TODO`.
+- Prefer a flat, minimal sequence of discrete coding steps that build incrementally and validate core behavior early.
+- Give each task a concrete writing, modification, or automated-testing objective. Add only the descriptive sub-bullets needed to identify affected components or files, essential behavior, and verification; normally use no more than 3, excluding the Requirements link line.
+- Link only the acceptance criteria directly implemented by the task, normally no more than 5. Split an oversized task when that creates meaningful independent work rather than using a long reference list.
+- Ensure every acceptance criterion is linked by at least one task across the complete plan. Perform this coverage check internally; do not add a traceability matrix or duplicate coverage summary.
+- Assume Requirements and Design remain available during implementation. Do not repeat their behavior, rationale, interfaces, or step-by-step details in Tasks.
+- Include only work a coding agent can complete by writing, modifying, or testing code. Exclude user testing, deployment, metrics gathering, running manual end-to-end flows, training, documentation, business-process changes, and communication work; automated end-to-end tests are allowed.
+- Use test-driven ordering where appropriate and leave every step integrated, with no hanging or orphaned code.
+- If a requirement or design gap prevents an actionable task, offer to return to the relevant upstream phase instead of padding the task with assumptions.
 - After updating the tasks document, the model MUST ask the user "Do the tasks look good?" using the AskUserQuestion tool (Claude Code).
 - The AskUserQuestion tool MUST be used; set metadata.source to the exact string 'spec-tasks-review'
 - The model MUST make modifications to the tasks document if the user requests changes or does not explicitly approve.

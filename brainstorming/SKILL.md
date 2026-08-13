@@ -44,7 +44,7 @@ Turn a feature idea into an explicitly approved direction that LazySpec can use 
    - Do not proceed to `writing-requirement` until the selected approach and the complete context are explicitly approved.
 
 5. Prepare the session handoff.
-   - Retain the approved result in the current conversation context with all of these fields:
+   - Retain only the final approved result in the current conversation context with all of these fields:
 
      ```text
      objective
@@ -55,6 +55,8 @@ Turn a feature idea into an explicitly approved direction that LazySpec can use 
      approved: true
      ```
 
+   - Keep each field concise. Exclude rejected approaches, exploratory reasoning, raw notes, and information already captured by another field.
+   - Pass the selected approach as a constraint on Requirements; do not turn its implementation details into user-facing requirements.
    - Set `approved` to `true` only after explicit user approval.
    - When this skill ran before the first `requirements.md`, allow `using-lazyspec` to route the approved context to `writing-requirement`.
    - When the user manually invoked this skill during an existing Requirements, Design, Tasks, or task-execution stage, stop after updating the session context. Modify a Spec artifact only after a separate explicit user request.
