@@ -5,6 +5,9 @@ description: Create or revise a LazySpec tasks.md only after requirements.md and
 
 # Writing Tasks
 
+## Rule
+- The output content should all be in chinese, except the key word from the project
+
 Before starting, read the approved `specs/{feature_name}/requirements.md` and `specs/{feature_name}/design.md`, then read `task-prompt.md` and `task-templete.md`. Resolve the Prompt and Template relative to the directory containing this `SKILL.md`, never relative to the process working directory or repository root. Resolve the upstream Specs and the new `tasks.md` against `ACTIVE_PROJECT_ROOT`, defined by `using-lazyspec` as the user's project working directory at session start. Never use this Skill's directory, its repository, or a Plugin cache as the project root. If invoked directly and the session working directory is unavailable or ambiguous, ask for the project root before reading or writing Specs. These rules apply unchanged in a Plugin cache and an Agent Skills installation. If either upstream artifact has not received explicit user approval in the current conversation, stop and request the missing approval first; never infer approval from file existence.
 
 Format every requirement number in each task's Requirements list as its own relative Markdown link: `[<requirement-number>.<criterion-number>](./requirements.md#req-<requirement-number>-<criterion-number>)`. Link multiple requirement numbers separately; never leave a requirement number as plain text or combine multiple numbers in one link.

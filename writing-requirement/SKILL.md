@@ -5,6 +5,9 @@ description: Create or revise a LazySpec requirements.md after approved brainsto
 
 # Writing Requirements
 
+## Rule
+- The output content should all be in chinese, except the key word from the project
+
 For a new feature, require a complete, explicitly approved `BrainstormingContext` from the current session before creating `requirements.md`. It must contain the confirmed objective, scope, constraints, success criteria, and selected approach. If it is missing, incomplete, unapproved, or lost, return to `brainstorming`; do not infer or restore it from disk.
 
 For an existing `requirements.md`, use the existing document and explicit user feedback. Do not automatically rerun Brainstorming.

@@ -30,27 +30,29 @@ Generate the requirements.md document for the specified feature.
 **Output Format:**
 # <Feature Name> Requirements
 
-## 1. User Stories
+## Introduction
 
-[User stories in "As a ..., I want ..., so that ..." format]
+[One short paragraph describing the objective and scope]
 
-## 2. Acceptance Criteria (EARS)
+## Requirements
 
-### [Stable Anchor ID] - [Behavior description]
+### Requirement 1: [Observable outcome]
 
-**Given:** [Context]
-**When:** [Event]
-**Then:** [Outcome]
+**User Story:** As a [role], I want [feature], so that [benefit]
 
-**Stable Anchor:** [Unique identifier]
+#### Acceptance Criteria
 
-## 3. Non-functional Requirements
+1. <a id="req-1-1"></a> WHEN [event] THEN [system] SHALL [response]
+2. <a id="req-1-2"></a> IF [precondition] THEN [system] SHALL [response]
 
-[Performance, reliability, security requirements]
+### Requirement 2: [Distinct observable outcome]
 
-## 4. Assumptions & Constraints
+**User Story:** As a [role], I want [feature], so that [benefit]
 
-[Assumptions and constraints lists]
+#### Acceptance Criteria
+
+1. <a id="req-2-1"></a> WHEN [event] THEN [system] SHALL [response]
+2. <a id="req-2-2"></a> WHEN [event] AND [condition] THEN [system] SHALL [response]
 
 After generating the document, present it to the user and ask: "Do the requirements look good? If so, we can move on to the design."
 ```

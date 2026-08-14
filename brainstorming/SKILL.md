@@ -7,6 +7,9 @@ description: Explore and clarify a feature in the current session before LazySpe
 
 Turn a feature idea into an explicitly approved direction that LazySpec can use as the input to `writing-requirement`. Keep every result in the current conversation context only.
 
+## Rule
+- The output content should all be in chinese, except the key word from the project
+
 ## Workflow
 
 1. Inspect the project context.

@@ -5,6 +5,9 @@ description: Create or revise a LazySpec design.md only after requirements.md ha
 
 # Writing Design
 
+## Rule
+- The output content should all be in chinese, except the key word from the project
+
 Before starting, read the approved `specs/{feature_name}/requirements.md`, then read `design-prompt.md` and `design-templete.md`. Resolve the Prompt and Template relative to the directory containing this `SKILL.md`, never relative to the process working directory or repository root. Resolve the upstream Spec and the new `design.md` against `ACTIVE_PROJECT_ROOT`, defined by `using-lazyspec` as the user's project working directory at session start. Never use this Skill's directory, its repository, or a Plugin cache as the project root. If invoked directly and the session working directory is unavailable or ambiguous, ask for the project root before reading or writing Specs. These rules apply unchanged in a Plugin cache and an Agent Skills installation. If Requirements has not received explicit user approval in the current conversation, stop and request completion of that approval first; never infer approval from the file's existence.
 
 ## Approval

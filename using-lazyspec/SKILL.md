@@ -3,48 +3,19 @@ name: using-lazyspec
 description: Route LazySpec requests to Brainstorming, requirements, design, tasks, or existing task execution. Use as the single entry point for creating, revising, or executing a Spec while enforcing the required phase order and explicit approval gates.
 ---
 
-# Spec
-
-## Goal
-
-You are an agent that specializes in working with Specs in my project. Specs are a way to develop complex features by creating requirements, an implementation-ready design, and an implementation plan.
-Specs have an iterative workflow where you help transform an idea into requirements, then design, then the task list. The workflow defined below describes each phase of the
-spec workflow in detail.
+# LazySpec
 
 ## Rule
 - The output content should all be in chinese, except the key word from the project
 
 ## Minimum-Sufficient Documentation
-
 - Default to the shortest document that remains reviewable, verifiable, and executable.
 - Put information in exactly one phase: Requirements define observable behavior, Design records implementation decisions, and Tasks identify coding actions and automated verification.
 - Refer to upstream requirement IDs instead of restating upstream content. Do not repeat the same rationale, constraint, or procedure in multiple sections.
 - Expand a section only when omitting it would create a material implementation ambiguity or the user explicitly requests more detail. An explicit request expands only the relevant section; it does not enable a separate verbose mode.
 - Treat phase length targets as soft limits. Before exceeding one, remove repetition, merge closely related items, or recommend splitting an oversized Spec. Never truncate distinct approved behavior merely to meet a target.
 
-## Workflow to execute
-
-Here is the workflow you need to follow:
-
-<workflow-definition>
-
-# Feature Spec Creation Workflow
-
-## Overview
-
-You are helping guide the user through the process of transforming a rough idea for a feature into concise requirements, an implementation-ready design, and an actionable todo list. The process is iterative and uses research only when an unresolved fact materially affects the design.
-
-A core principal of this workflow is that we rely on the user establishing ground-truths as we progress through. We always want to ensure the user is happy with changes to any document before moving on.
-  
-Before you get started, think of a short feature name based on the user's rough idea. This will be used for the feature directory. Use kebab-case format for the feature_name (e.g. "user-authentication")
-  
-Rules:
-
-- Do not tell the user about this workflow. We do not need to tell them which step we are on or that you are following a workflow
-- Just let the user know when you complete documents and need to get user input, as described in the detailed step instructions
-
-## LazySpec Routing
-
+## Routing Protocol
 Use this Skill as the single entry point. Route by logical Skill name and read only that Skill's required resources; do not copy a phase's detailed body here.
 
 Before inspecting or writing any Spec artifact, bind `ACTIVE_PROJECT_ROOT` to the user's project working directory at the start of the current agent session. Resolve every `specs/{feature_name}/...` path against that directory. Never derive `ACTIVE_PROJECT_ROOT` from this Skill's directory, a registered Skill location, the Plugin repository, or a Plugin cache. If the session working directory is unavailable or ambiguous, ask the user for the project root before writing; never default to the Plugin installation directory.
@@ -62,42 +33,34 @@ Resolve every routed Skill with this platform-neutral protocol:
 | `writing-design` | `lazyspec:writing-design` | `../writing-design/SKILL.md` |
 | `writing-task` | `lazyspec:writing-task` | `../writing-task/SKILL.md` |
 
-1. Inspect the requested feature's `specs/{feature_name}/requirements.md`, `design.md`, and `tasks.md` under `ACTIVE_PROJECT_ROOT`, the user's request, and explicit approvals available in the current conversation. Do not infer approval from file existence.
+Inspect the requested feature's `specs/{feature_name}/requirements.md`, `design.md`, and `tasks.md` under `ACTIVE_PROJECT_ROOT`, the user's request, and explicit approvals available in the current conversation. Do not infer approval from file existence.
 
-2. For the first creation of `requirements.md`, when that file does not exist:
-   - Route to the logical Skill `brainstorming`.
+1. For the first creation of `requirements.md`, when that file does not exist:
+   - Route to `brainstorming`.
    - Do not route to `writing-requirement` until Brainstorming has an explicitly approved session context containing objective, scope, constraints, success criteria, and selected approach.
-   - After the approved context is available, route to the logical Skill `writing-requirement`.
+   - After the approved context is available, route to `writing-requirement`.
 
-3. For a revision of an existing `requirements.md`:
-   - Route directly to the logical Skill `writing-requirement` by default.
-   - Route to the logical Skill `brainstorming` first only when the user explicitly invokes or requests Brainstorming.
-   - A manually invoked Brainstorming session updates only current conversation context. Do not modify a Spec artifact unless the user separately requests that modification.
+2. For a revision of an existing `requirements.md`:
+   - Route directly to `writing-requirement` by default.
+   - Route to `brainstorming` first only when the user explicitly requests it.
+   - Brainstorming updates only conversation context; do not modify a Spec artifact unless separately requested.
 
-4. For Design, route to the logical Skill `writing-design` only after Requirements has explicit user approval. For Tasks, route to the logical Skill `writing-task` only after Design has explicit user approval. Preserve each downstream Skill's approval gate.
+3. For Design, route to `writing-design` only after Requirements has explicit user approval. For Tasks, route to `writing-task` only after Design has explicit user approval. Preserve each downstream Skill's approval gate.
 
-5. For questions about existing Spec tasks or requests to execute an existing task, apply the original task instructions below. Answer task questions without starting work, and execute only one requested task at a time.
+4. For questions about existing Spec tasks or requests to execute an existing task, apply the task instructions below. Answer task questions without starting work, and execute only one requested task at a time.
 
-This routing is the explicit Brainstorming addition and takes precedence over the original initial-creation arrow in the preserved workflow diagram below.
-
-</workflow-definition>
-
-# Workflow Diagram
-
-Here is a Mermaid flow diagram that describes how the workflow should behave. Take in mind that the entry points account for users doing the following actions:
-
-- Creating a new spec (for a new feature that we don't have a spec for already)
-- Updating an existing spec
-- Executing tasks from a created spec
+## Workflow Diagram
 
 ```mermaid
 stateDiagram-v2
-  [*] --> Requirements : Initial Creation
+  [*] --> Brainstorming : Initial Creation (No requirements.md)
 
+  Brainstorming : Brainstorming (Session Only)
   Requirements : Write Requirements
   Design : Write Design
   Tasks : Write Tasks
 
+  Brainstorming --> Requirements : Explicit Approval (Approved Context)
   Requirements --> ReviewReq : Complete Requirements
   ReviewReq --> Requirements : Feedback/Changes Requested
   ReviewReq --> Design : Explicit Approval
@@ -113,56 +76,38 @@ stateDiagram-v2
   Execute : Execute Task
   
   state "Entry Points" as EP {
-      [*] --> Requirements : Update
-      [*] --> Design : Update
-      [*] --> Tasks : Update
+      [*] --> Requirements : Update existing requirements
+      [*] --> Design : Update existing design
+      [*] --> Tasks : Update existing tasks
       [*] --> Execute : Execute task
   }
   
   Execute --> [*] : Complete
 ```
 
-# Task Instructions
+## Task Instructions
 
-Follow these instructions for user requests related to spec tasks. The user may ask to execute tasks or just ask general questions about the tasks.
-
-## Executing Instructions
-
+### Executing Instructions
 - Before executing any task, ALWAYS read the feature's complete `requirements.md`, `design.md`, and `tasks.md` in the current execution context. Executing a task without all three artifacts is forbidden.
-- Look at the task details in the task list
-- If the requested task has sub-tasks, always start with the sub tasks
-- Only focus on ONE user-selected task at a time, including its listed sub-tasks. Do not implement functionality for sibling or subsequent tasks. If the user requests multiple tasks, ask them to select one and do not start implementation.
-- Verify your implementation against any requirements specified in the task or its details.
+- Look at the task details in the task list; start with sub-tasks if present.
+- Only focus on ONE user-selected task at a time, including its listed sub-tasks. Do not implement functionality for sibling or subsequent tasks. If multiple tasks are requested, ask the user to select one and do not start implementation.
+- Verify implementation against any requirements specified in the task or its details.
 - When marking a completed task in `tasks.md`, change only its checkbox token from `[ ]` to `[x]`. Preserve `//TODO` and every character after it exactly; do not remove, replace, or rewrite the task text.
-- Once you complete the requested task, stop and let the user review. DO NOT just proceed to the next task in the list
-- If the user doesn't specify which task they want to work on, look at the task list for that spec and make a recommendation
-on the next task to execute.
+- Once you complete the requested task, stop and let the user review. DO NOT proceed to the next task automatically without user instruction.
+- If the user doesn't specify which task to work on, recommend the next task from the list.
 
-Remember, it is VERY IMPORTANT that you only execute one task at a time. Once you finish a task, stop. Don't automatically continue to the next task without the user asking you to do so.
+### Task Questions
+Answer task-information requests without modifying code, Spec files, or checkbox state. For example, if the user asks what the next task is, provide the information without starting any task.
 
-## Task Questions
-
-The user may ask questions about tasks without wanting to execute them. Answer task-information requests without modifying code, Spec files, or checkbox state.
-
-For example, the user may want to know what the next task is for a particular feature. In this case, just provide the information and don't start any tasks.
-
-# Approval Protocol
-
+## Approval Protocol
 After every Requirements, Design, or Tasks update or revision, request approval in this order:
 
 1. If `AskUserQuestion` is available, call it with only its supported `questions` input. Use one question object with `question`, `header`, `options`, and `multiSelect`; use `Review` as the header, the two single-choice options `Approve` and `Request changes`, and `multiSelect: false`. Do not add unsupported top-level or question fields.
 2. Otherwise, if the environment provides an equivalent user-question tool, use it with the same single-choice meaning and only fields supported by that tool.
-3. Otherwise, ask the phase's approval question directly in the conversation and stop the current phase while awaiting the answer.
+3. Otherwise, ask the phase's approval question directly in the conversation and stop while awaiting the answer.
 
 - You MUST have the user review each of the 3 spec documents (requirements, design and tasks) before proceeding to the next.
 - Only an explicit approval in the current conversation (a clear "yes", "approved", selecting `Approve`, or equivalent affirmative response) records approval. File existence, timeout, silence, explanations, ambiguous replies, and requested changes do not imply approval.
-- You MUST NOT proceed to the next phase until you receive explicit approval from the user (a clear "yes", "approved", or equivalent affirmative response).
+- You MUST NOT proceed to the next phase until you receive explicit approval from the user.
 - If the user provides feedback, you MUST make the requested modifications and then explicitly ask for approval again.
-- You MUST continue this feedback-revision cycle until the user explicitly approves the document.
-- You MUST follow the workflow steps in sequential order.
-- You MUST NOT skip ahead to later steps without completing earlier ones and receiving explicit user approval.
-- You MUST treat each constraint in the workflow as a strict requirement.
-- You MUST NOT assume user preferences or requirements - always ask explicitly.
-- You MUST maintain a clear record of which step you are currently on.
-- You MUST NOT combine multiple steps into a single interaction.
-- You MUST ONLY execute one task at a time. Once it is complete, do not move to the next task automatically.
+- Follow workflow steps sequentially without skipping or combining phases.
