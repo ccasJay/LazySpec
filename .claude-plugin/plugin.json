@@ -11,6 +11,7 @@
     "./brainstorming",
     "./writing-requirement",
     "./writing-design",
-    "./writing-task"
+    "./writing-task",
+    "./distill-spec-memory"
   ]
 }

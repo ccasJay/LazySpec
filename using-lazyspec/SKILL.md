@@ -1,6 +1,6 @@
 ---
 name: using-lazyspec
-description: Route LazySpec requests to Brainstorming, requirements, design, tasks, or existing task execution. Use as the single entry point for creating, revising, or executing a Spec while enforcing the required phase order and explicit approval gates.
+description: Route LazySpec requests to Brainstorming, requirements, design, tasks, existing task execution, or explicit completed-feature Memory distillation. Use as the single entry point for Spec work and for user-requested completed Feature Spec distillation into `project-memory/` while enforcing phase and approval gates.
 ---
 
 # LazySpec
@@ -22,7 +22,7 @@ Before inspecting or writing any Spec artifact, bind `ACTIVE_PROJECT_ROOT` to th
 
 Resolve every routed Skill with this platform-neutral protocol:
 
-1. Prefer the current environment's registered Skill invocation mechanism. Use the logical names `brainstorming`, `writing-requirement`, `writing-design`, and `writing-task`; a Claude Code Plugin may expose them as `lazyspec:<logical-name>`, while an Agent Skills installation may expose the unnamespaced logical name.
+1. Prefer the current environment's registered Skill invocation mechanism. Use the logical names `brainstorming`, `writing-requirement`, `writing-design`, `writing-task`, and `distill-spec-memory`; a Claude Code Plugin may expose them as `lazyspec:<logical-name>`, while an Agent Skills installation may expose the unnamespaced logical name.
 2. If no registered Skill invocation mechanism is available, or the logical Skill is not registered, read its sibling `SKILL.md` using the fallback mapping below. Resolve the path relative to this `using-lazyspec/SKILL.md`, never relative to the process working directory or repository root.
 3. After resolving the target, follow that Skill's instructions and resolve its supporting files by the target Skill's own resource rules.
 
@@ -32,6 +32,13 @@ Resolve every routed Skill with this platform-neutral protocol:
 | `writing-requirement` | `lazyspec:writing-requirement` | `../writing-requirement/SKILL.md` |
 | `writing-design` | `lazyspec:writing-design` | `../writing-design/SKILL.md` |
 | `writing-task` | `lazyspec:writing-task` | `../writing-task/SKILL.md` |
+| `distill-spec-memory` | `lazyspec:distill-spec-memory` | `../distill-spec-memory/SKILL.md` |
+
+### Memory Distillation Routing
+
+- Route to `distill-spec-memory` only when the user explicitly asks to preserve, archive, or distill a completed Feature Spec into project Memory.
+- Do not infer a distillation request from completing a task or from ordinary Brainstorming, Requirements, Design, Tasks, task questions, or task execution.
+- After routing, follow `distill-spec-memory` without changing the normal LazySpec phase order or approval gates.
 
 Inspect the requested feature's `specs/{feature_name}/requirements.md`, `design.md`, and `tasks.md` under `ACTIVE_PROJECT_ROOT`, the user's request, and explicit approvals available in the current conversation. Do not infer approval from file existence.
 

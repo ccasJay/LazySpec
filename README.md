@@ -20,7 +20,7 @@ Brainstorming → Requirements → Design → Tasks → 按需执行单个任务
 npx skills add ccasJay/LazySpec --skill '*' -g
 ```
 
-按提示选择目标代理。安装完成后，确认五个 Skill 均可发现；日常使用从
+按提示选择目标代理。安装完成后，确认六个 Skill 均可发现；日常使用从
 `using-lazyspec` 进入。
 
 ### Claude Code Plugin
@@ -40,7 +40,7 @@ claude --plugin-dir /absolute/path/to/LazySpec
 /lazyspec:using-lazyspec
 ```
 
-五个可显式调用的 Skill 为：
+六个可显式调用的 Skill 为：
 
 ```text
 /lazyspec:using-lazyspec
@@ -48,13 +48,14 @@ claude --plugin-dir /absolute/path/to/LazySpec
 /lazyspec:writing-requirement
 /lazyspec:writing-design
 /lazyspec:writing-task
+/lazyspec:distill-spec-memory
 ```
 
 Plugin 或 Skill 未出现时，按以下顺序排查：
 
 1. 确认 `claude --version` 不低于兼容性基线，并重新运行
    `claude plugin validate .`。
-2. 确认 Manifest 位于仓库根目录的 `.claude-plugin/plugin.json`，其中五个
+2. 确认 Manifest 位于仓库根目录的 `.claude-plugin/plugin.json`，其中六个
    `skills` 相对路径均指向包含 `SKILL.md` 的现有目录。
 3. 在会话中运行 `/reload-plugins`，然后用 `/help` 再次检查；仍未加载时，
    退出并用正确的绝对路径重新执行 `claude --plugin-dir ...`。
@@ -115,6 +116,7 @@ LazySpec 默认生成“最小充分文档”：Requirements 只记录可验证�
 | [`writing-requirement`](./writing-requirement/SKILL.md) | 创建或修改 Requirements |
 | [`writing-design`](./writing-design/SKILL.md) | 基于已批准需求创建设计 |
 | [`writing-task`](./writing-task/SKILL.md) | 将已批准设计转为编码任务 |
+| [`distill-spec-memory`](./distill-spec-memory/SKILL.md) | 将已完成并验证的 Feature Spec 提炼为项目 Memory |
 
 ## 约束
 

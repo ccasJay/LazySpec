@@ -1,6 +1,6 @@
 # 项目记忆体系实施计划
 
-- [ ] //TODO 1. 构建并注册完整的 `distill-spec-memory` Skill 与 Memory 格式契约
+- [x] //TODO 1. 构建并注册完整的 `distill-spec-memory` Skill 与 Memory 格式契约
 
   - 使用 `skill-creator` 初始化 `distill-spec-memory/`，完成 `SKILL.md`、`agents/openai.yaml` 和 `references/memory-format.md`，实现固定 Capsule frontmatter、正文、`index.md` 表格、项目根相对路径及禁止 Topic、sessions、JSON 和 Spec 复制的边界
   - 更新 `.claude-plugin/plugin.json` 与 `using-lazyspec/SKILL.md` 的注册名称、路由和 sibling fallback，确保普通 Spec 请求不会误触发沉淀

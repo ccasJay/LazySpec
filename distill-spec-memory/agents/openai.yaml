@@ -1,0 +1,4 @@
+interface:
+  display_name: "Distill Spec Memory"
+  short_description: "Distill completed feature specs into project memory"
+  default_prompt: "Use $distill-spec-memory to distill a completed feature spec into project memory."
