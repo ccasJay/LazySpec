@@ -7,7 +7,7 @@
   - 新增自动化合约测试并运行 Skill 校验，验证目录、frontmatter、UI 元数据、格式 reference、manifest 和双平台发现契约
   - _Requirements: [1.1](./requirements.md#req-1-1), [1.2](./requirements.md#req-1-2), [1.3](./requirements.md#req-1-3), [5.1](./requirements.md#req-5-1), [5.2](./requirements.md#req-5-2), [5.3](./requirements.md#req-5-3), [5.4](./requirements.md#req-5-4), [5.5](./requirements.md#req-5-5)_
 
-- [ ] //TODO 2. 实现 Feature 完成门槛与 Spec／实现证据核对
+- [x] //TODO 2. 实现 Feature 完成门槛与 Spec／实现证据核对
 
   - 在 `distill-spec-memory/SKILL.md` 中实现 `gate → reconcile → deduplicate`：完整读取三份 Spec，验证全部 Tasks、相关自动化检查和用户完成确认，任何门槛失败均不得产生正式或 draft 文件
   - 以会话内 Evidence Matrix 将候选结论关联到 Spec anchors、实现、测试和用户裁决；定向检查已有 index 与相关 Capsule，遇到冲突或证据不足时停止并报告
