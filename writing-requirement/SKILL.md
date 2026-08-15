@@ -5,8 +5,11 @@ description: Create or revise a LazySpec requirements.md after approved brainsto
 
 # Writing Requirements
 
-## Rule
-- The output content should all be in chinese, except the key word from the project
+## Language
+
+- Keep the instructional prose in this Skill and its supporting resources in English.
+- Write all user-visible prose in generated `requirements.md` content in Chinese, including the title, headings, introduction, user stories, and acceptance criteria.
+- Preserve project-specific names, code identifiers, filenames, Markdown syntax, and HTML anchor IDs when necessary.
 
 For a new feature, require a complete, explicitly approved `BrainstormingContext` from the current session before creating `requirements.md`. It must contain the confirmed objective, scope, constraints, success criteria, and selected approach. If it is missing, incomplete, unapproved, or lost, return to `brainstorming`; do not infer or restore it from disk.
 
@@ -53,11 +56,11 @@ Only explicit approval in the current conversation records Requirements approval
 
 - The model MUST create a 'specs/{feature_name}/requirements.md' file under the project folder if it doesn't already exist
 - The model MUST generate an initial version of the requirements document based on the user's rough idea WITHOUT asking sequential questions first
-- Don't use the 'WHEN', 'SHELL' directly , adapt the language user input
+- The model MUST express EARS semantics naturally in Chinese and MUST NOT copy the literal English EARS keywords `WHEN`, `THEN`, or `SHALL` into the generated document.
 - The model MUST format the initial requirements.md document with:
 - A clear introduction section that summarizes the feature
 - A hierarchical numbered list of requirements where each contains:
-  - A user story in the format "As a [role], I want [feature], so that [benefit]"
+  - A user story written in Chinese using the role-goal-benefit structure
   - A numbered list of acceptance criteria in EARS format (Easy Approach to Requirements Syntax)
 - The model SHOULD include an edge case, user-experience constraint, technical constraint, or success criterion only when it creates a distinct observable and verifiable outcome
 - The model MUST make modifications to the requirements document if the user requests changes or does not explicitly approve

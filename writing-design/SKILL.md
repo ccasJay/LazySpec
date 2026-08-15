@@ -5,8 +5,12 @@ description: Create or revise a LazySpec design.md only after requirements.md ha
 
 # Writing Design
 
-## Rule
-- The output content should all be in chinese, except the key word from the project
+## Language
+
+- Keep the instructional prose in this Skill and its supporting resources in English.
+- Write all user-visible prose in generated `design.md` content in Chinese, including the overview, design decisions, research findings, testing strategy, and explanatory text under each section.
+- Keep `Overview`, `Key Design Decisions`, `Testing Strategy`, and any selected conditional section names in English as structural keywords.
+- Preserve project-specific names, technical terms, code identifiers, filenames, URLs, Markdown syntax, and Mermaid syntax when necessary.
 
 Before starting, read the approved `specs/{feature_name}/requirements.md`, then read `design-prompt.md` and `design-templete.md`. Resolve the Prompt and Template relative to the directory containing this `SKILL.md`, never relative to the process working directory or repository root. Resolve the upstream Spec and the new `design.md` against `ACTIVE_PROJECT_ROOT`, defined by `using-lazyspec` as the user's project working directory at session start. Never use this Skill's directory, its repository, or a Plugin cache as the project root. If invoked directly and the session working directory is unavailable or ambiguous, ask for the project root before reading or writing Specs. These rules apply unchanged in a Plugin cache and an Agent Skills installation. If Requirements has not received explicit user approval in the current conversation, stop and request completion of that approval first; never infer approval from the file's existence.
 
@@ -39,8 +43,8 @@ Only explicit approval in the current conversation records Design approval. File
 
 - The model MUST create a 'specs/{feature_name}/design.md' file if it doesn't already exist
 - The model MUST create the minimum sufficient implementation-ready design at 'specs/{feature_name}/design.md'
-- The document MUST include Overview, Key Design Decisions, and Testing Strategy
-- Architecture, Components and Interfaces, Data Models, Error Handling, research findings, and diagrams are conditional sections; include only those that materially affect implementation and omit inapplicable sections entirely
+- The document MUST include the English structural sections `Overview`, `Key Design Decisions`, and `Testing Strategy`; all prose within them MUST be Chinese
+- `Architecture`, `Components and Interfaces`, `Data Models`, `Error Handling`, `Research Findings`, and diagrams are conditional sections; keep any selected section name in English, include it only when it materially affects implementation, and omit inapplicable sections entirely
 - The model MUST identify unresolved external or project-specific facts that materially affect the design and research only those facts; skip research when the approved Requirements and repository already settle the design
 - The model SHOULD NOT create separate research files; cite relevant sources in the conversation and incorporate only decision-relevant findings into the design
 - The model MUST address all approved requirements by referencing their IDs or logical groups without restating their acceptance criteria

@@ -1,3 +1,5 @@
+The section names below are structural keywords and MUST remain in English. All generated prose under these sections MUST be written in Chinese. Preserve project-specific names, technical terms, code identifiers, filenames, URLs, Markdown syntax, and Mermaid syntax when necessary.
+
 The design document MUST include these core sections:
 
 - Overview

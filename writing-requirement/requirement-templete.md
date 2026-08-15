@@ -3,31 +3,31 @@
 ## Requirements Template
 
 ```markdown
-# Requirements Document
+# [功能名称] 需求
 
-## Introduction
+## 引言
 
-[One short paragraph describing the objective and scope]
+[用一段简短中文说明目标和范围]
 
-## Requirements
+## 需求
 
-### Requirement 1: [Observable outcome]
+### 需求 1：[可观察结果]
 
-**User Story:** As a [role], I want [feature], so that [benefit]
+**用户故事：** 作为[角色]，我希望[功能]，以便[收益]
 
-#### Acceptance Criteria
+#### 验收标准
 
-1. <a id="req-1-1"></a> WHEN [event] THEN [system] SHALL [response]
-2. <a id="req-1-2"></a> IF [precondition] THEN [system] SHALL [response]
+1. <a id="req-1-1"></a> 当[事件]发生时，系统必须[响应]
+2. <a id="req-1-2"></a> 如果[前置条件]成立，系统必须[响应]
 
-### Requirement 2: [Distinct observable outcome]
+### 需求 2：[不同的可观察结果]
 
-**User Story:** As a [role], I want [feature], so that [benefit]
+**用户故事：** 作为[角色]，我希望[功能]，以便[收益]
 
-#### Acceptance Criteria
+#### 验收标准
 
-1. <a id="req-2-1"></a> WHEN [event] THEN [system] SHALL [response]
-2. <a id="req-2-2"></a> WHEN [event] AND [condition] THEN [system] SHALL [response]
+1. <a id="req-2-1"></a> 当[事件]发生时，系统必须[响应]
+2. <a id="req-2-2"></a> 当[事件]发生且[条件]满足时，系统必须[响应]
 ```
 
 ## Usage Guidelines
@@ -36,3 +36,5 @@
 - Use HTML anchors for traceability: <a id="req-1-1"></a>
 - Focus on observable and verifiable behavior
 - Keep total acceptance criteria under 30
+- Write all generated document prose in Chinese; preserve project-specific terms and identifiers when necessary
+- Express EARS semantics naturally in Chinese without copying `WHEN`, `THEN`, or `SHALL`
