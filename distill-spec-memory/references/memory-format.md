@@ -2,6 +2,16 @@
 
 Use this contract whenever preparing, writing, or validating Feature Memory. Resolve every stored path against `ACTIVE_PROJECT_ROOT` and write paths with `/` separators.
 
+## Contents
+
+- [Project Layout](#project-layout)
+- [Feature Capsule](#feature-capsule)
+- [Field Rules](#field-rules)
+- [Status Invariants and Transitions](#status-invariants-and-transitions)
+- [Content and Source Rules](#content-and-source-rules)
+- [Index](#index)
+- [Validation Checklist](#validation-checklist)
+
 ## Project Layout
 
 ```text
@@ -68,6 +78,18 @@ status_reason: ""
 - `tags`: use a short YAML flow sequence of stable retrieval terms; never encode prose.
 - `supersedes` and `superseded_by`: use project-root-relative Capsule paths; leave `status_reason` empty only for `active`, otherwise state why the Memory is not current.
 
+## Status Invariants and Transitions
+
+- `active` is current and default-retrievable; `status_reason` is empty.
+- `needs-review` means suspected implementation drift; `status_reason` is required and ordinary retrieval must exclude it.
+- `superseded` means a newer Capsule is authoritative; `status_reason` and a resolvable non-empty `superseded_by` are required. The newer Capsule must list this path in `supersedes`.
+- `obsolete` means invalid without a replacement; `status_reason` is required and `superseded_by` remains empty.
+- The Capsule frontmatter status and its index row status must be identical. Any mismatch is invalid.
+
+Allowed transitions are `active → needs-review`, `needs-review → active` after review, `active` or `needs-review → superseded`, and `active` or `needs-review → obsolete`. `superseded` and `obsolete` are terminal for that conclusion; a later conclusion requires a new Capsule. A status change must update the Capsule and index in one logical write set.
+
+After approval, the body after the frontmatter closing marker is immutable. Only a separately approved typo or stale-link correction may change body text, and it must preserve claim meaning. Status, reason, and replacement metadata may evolve without changing the body.
+
 ## Content and Source Rules
 
 - End every durable claim in Capability, Durable Decisions, Contracts and Invariants, and Lessons with one or more source IDs.
@@ -94,7 +116,10 @@ Keep one row per Capsule path. Escape `|` characters inside cell values. Keep Su
 
 - Confirm the Capsule path, `feature`, and `source_spec` agree.
 - Confirm the frontmatter has only the defined fields and a permitted status.
+- Confirm status invariants, allowed transitions, and reciprocal replacement paths.
 - Confirm all required sections appear exactly once and in order.
 - Confirm every durable claim cites defined, resolvable sources.
 - Confirm the index has the fixed header, a unique Capsule row, and matching status.
+- Confirm all approved changes form one logical Capsule/index write set; report any partial failure with exact file state.
+- Confirm the body is unchanged for status-only updates, except for an explicitly approved typo or stale-link correction.
 - Confirm the result contains no Topic layer, sessions, draft, JSON index, or copied Spec content.

@@ -76,6 +76,39 @@ Classify each overlap before preview:
 
 If an overlap requires a user ruling, or if no unique source-backed candidate remains after deduplication, stop before preview and write nothing. Only a clean, source-backed result may proceed to the existing `preview → approve → write → verify` sequence.
 
+## Preview, Approval, and Write Protocol
+
+The preview is the approval object. Render the complete current candidate and do not summarize away any proposed change. Include all of the following in Chinese:
+
+- the full candidate Capsule, including frontmatter, sections, and source IDs;
+- the exact `index.md` row to add or replace;
+- every Capsule and index status transition, including `status_reason`, `supersedes`, and `superseded_by` changes;
+- conflicts, user rulings, and the Evidence Matrix source summary; and
+- the complete logical write set, with project-root-relative paths.
+
+Ask for explicit approval of this exact preview. If the user requests any change, keep the result in preview, revise the candidate and write set, show the new complete preview, and ask again. Do not interpret completion confirmation from `gate` as preview approval, and do not interpret preview approval as permission to distill another Feature.
+
+Before writing, validate the preview against `references/memory-format.md` again. Treat the Capsule and its matching index row, plus any explicitly approved status relationship changes, as one logical write set:
+
+1. Create or update only the listed paths under `ACTIVE_PROJECT_ROOT/project-memory/`.
+2. Never create a draft, staging Memory, or second index to stand in for an unapproved or failed write.
+3. After the write, parse both sides of every changed Capsule/index pair and verify paths, frontmatter, required sections, source IDs, status equality, and reciprocal replacement relationships.
+4. If a tool reports a partial write or post-write validation failure, report the exact files and observed contents, stop, and do not claim success or continue with another change set.
+
+## Status Evolution and Immutability
+
+Apply these invariants from `references/memory-format.md` to every new Capsule or approved maintenance change:
+
+- `active` is the only default-retrievable state. It has an empty `status_reason` and no required replacement relationship.
+- `needs-review` requires a non-empty reason describing suspected drift and is excluded from ordinary retrieval until explicitly reviewed.
+- `superseded` requires a non-empty reason and a resolvable `superseded_by` path. The replacement Capsule must point back with `supersedes`, and both Capsules and index rows must be updated in one write set.
+- `obsolete` requires a non-empty reason and no replacement path. It is historical only and excluded from ordinary retrieval.
+- A status in a Capsule and its index row must always match. A mismatch is a maintenance failure, not a reason to pick one value.
+
+Use only these intentional transitions: `active → needs-review`, `needs-review → active` after review, `active` or `needs-review → superseded`, and `active` or `needs-review → obsolete`. Do not reactivate a `superseded` or `obsolete` conclusion; create a new Capsule instead. Any other transition requires an explicit user ruling and a fresh preview.
+
+After approval, freeze everything after the frontmatter closing marker. Do not rewrite a Capsule's conclusion to reflect a later Feature. A later conclusion gets a new Capsule and an explicit replacement relationship. The only exception is a separately approved maintenance correction limited to a typo or a demonstrably stale link; preserve the claim meaning, record the reason, and keep the index synchronized.
+
 ## Memory Contract
 
 - Use exactly one `project-memory/index.md` as the human- and Agent-readable index.

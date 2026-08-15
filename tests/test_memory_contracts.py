@@ -6,6 +6,34 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SKILL_ROOT = ROOT / "distill-spec-memory"
+FIXTURE_ROOT = ROOT / "tests" / "fixtures" / "project-memory"
+
+
+def read_frontmatter(path):
+    text = path.read_text()
+    match = re.match(r"\A---\n(.*?)\n---\n", text, re.DOTALL)
+    if not match:
+        raise AssertionError(f"fixture has no frontmatter: {path}")
+    fields = {}
+    for line in match.group(1).splitlines():
+        key, value = line.split(":", 1)
+        fields[key.strip()] = value.strip()
+    return fields, text[match.end() :]
+
+
+def index_rows(path):
+    rows = {}
+    for line in path.read_text().splitlines():
+        if not line.startswith("| project-memory/features/"):
+            continue
+        cells = [cell.strip() for cell in line.strip("|").split("|")]
+        rows[cells[0]] = {
+            "summary": cells[1],
+            "tags": cells[2],
+            "status": cells[3],
+            "source_spec": cells[4],
+        }
+    return rows
 
 
 class MemorySkillContractTests(unittest.TestCase):
@@ -149,6 +177,108 @@ class MemorySkillContractTests(unittest.TestCase):
         for scenario in scenarios:
             with self.subTest(scenario=scenario):
                 self.assertIn(scenario, text)
+
+    def test_preview_approval_loop_and_logical_write_set_contract(self):
+        text = (SKILL_ROOT / "SKILL.md").read_text()
+        for required in (
+            "## Preview, Approval, and Write Protocol",
+            "The preview is the approval object",
+            "the full candidate Capsule",
+            "the exact `index.md` row",
+            "every Capsule and index status transition",
+            "the complete logical write set",
+            "If the user requests any change",
+            "ask again",
+            "Never create a draft, staging Memory, or second index",
+            "one logical write set",
+            "partial write",
+            "do not claim success",
+        ):
+            with self.subTest(required=required):
+                self.assertIn(required, text)
+
+    def test_status_invariants_and_transitions_contract(self):
+        text = (SKILL_ROOT / "SKILL.md").read_text()
+        reference = (SKILL_ROOT / "references" / "memory-format.md").read_text()
+        for required in (
+            "active",
+            "needs-review",
+            "superseded",
+            "obsolete",
+            "status_reason",
+            "superseded_by",
+            "supersedes",
+        ):
+            with self.subTest(required=required):
+                self.assertIn(required, text)
+                self.assertIn(required, reference)
+        for required in (
+            "A status in a Capsule and its index row must always match",
+            "Use only these intentional transitions",
+            "Do not reactivate a `superseded` or `obsolete` conclusion",
+            "freeze everything after the frontmatter closing marker",
+        ):
+            with self.subTest(document="skill", required=required):
+                self.assertIn(required, text)
+        for required in (
+            "The Capsule frontmatter status and its index row status must be identical",
+            "Allowed transitions are `active → needs-review`",
+            "`superseded` and `obsolete` are terminal",
+            "the body after the frontmatter closing marker is immutable",
+        ):
+            with self.subTest(document="reference", required=required):
+                self.assertIn(required, reference)
+
+    def test_fixture_capsule_and_index_statuses_stay_in_sync(self):
+        rows = index_rows(FIXTURE_ROOT / "index.md")
+        capsule_paths = sorted((FIXTURE_ROOT / "features").glob("*.md"))
+        self.assertEqual(
+            set(rows),
+            {f"project-memory/features/{path.name}" for path in capsule_paths},
+        )
+        for path in capsule_paths:
+            fields, _ = read_frontmatter(path)
+            row = rows[f"project-memory/features/{path.name}"]
+            with self.subTest(path=path):
+                self.assertEqual(fields["status"], row["status"])
+                self.assertEqual(fields["source_spec"], row["source_spec"])
+                if fields["status"] == "active":
+                    self.assertEqual(fields["status_reason"], '""')
+                else:
+                    self.assertNotEqual(fields["status_reason"], '""')
+
+    def test_fixture_supersession_is_bidirectional_and_non_active_is_excluded(self):
+        rows = index_rows(FIXTURE_ROOT / "index.md")
+        old_fields, _ = read_frontmatter(FIXTURE_ROOT / "features" / "memory-v1.md")
+        new_fields, _ = read_frontmatter(FIXTURE_ROOT / "features" / "memory-v2.md")
+        self.assertEqual(old_fields["status"], "superseded")
+        self.assertEqual(
+            old_fields["superseded_by"],
+            "[project-memory/features/memory-v2.md]",
+        )
+        self.assertEqual(new_fields["status"], "active")
+        self.assertEqual(
+            new_fields["supersedes"],
+            "[project-memory/features/memory-v1.md]",
+        )
+        self.assertEqual(rows["project-memory/features/memory-v1.md"]["status"], "superseded")
+        self.assertEqual(rows["project-memory/features/memory-v2.md"]["status"], "active")
+        default_paths = [path for path, row in rows.items() if row["status"] == "active"]
+        self.assertEqual(default_paths, ["project-memory/features/memory-v2.md"])
+
+    def test_fixture_status_only_update_preserves_capsule_body(self):
+        path = FIXTURE_ROOT / "features" / "memory-v1.md"
+        fields, body = read_frontmatter(path)
+        updated = path.read_text().replace("status: superseded", "status: obsolete", 1)
+        updated_path = FIXTURE_ROOT / "features" / "memory-v1-status-only.md"
+        updated_path.write_text(updated)
+        try:
+            updated_fields, updated_body = read_frontmatter(updated_path)
+            self.assertEqual(fields["status"], "superseded")
+            self.assertEqual(updated_fields["status"], "obsolete")
+            self.assertEqual(body, updated_body)
+        finally:
+            updated_path.unlink()
 
 
 if __name__ == "__main__":

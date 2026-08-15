@@ -14,7 +14,7 @@
   - 增加通过、Spec 缺失、未完成 Tasks、验证缺失、未确认、证据冲突和无证据结论场景的自动化契约测试
   - _Requirements: [2.1](./requirements.md#req-2-1), [2.2](./requirements.md#req-2-2), [2.3](./requirements.md#req-2-3), [2.4](./requirements.md#req-2-4), [3.1](./requirements.md#req-3-1), [3.2](./requirements.md#req-3-2), [3.3](./requirements.md#req-3-3), [3.4](./requirements.md#req-3-4)_
 
-- [ ] //TODO 3. 实现写入审批、四状态演化与不可变 Capsule
+- [x] //TODO 3. 实现写入审批、四状态演化与不可变 Capsule
 
   - 完成 `preview → approve → write → verify`：预览完整候选 Capsule、index 行、状态变化、冲突裁决和来源；未批准或要求修改时保持零正式写入
   - 将批准后的编辑作为一个逻辑写入集，同步 Capsule 与 index；实现 `active`、`needs-review`、`superseded`、`obsolete` 的状态不变量、替代关系和正文冻结边界，并准确报告部分失败
