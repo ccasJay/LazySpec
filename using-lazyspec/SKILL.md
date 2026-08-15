@@ -40,6 +40,31 @@ Resolve every routed Skill with this platform-neutral protocol:
 - Do not infer a distillation request from completing a task or from ordinary Brainstorming, Requirements, Design, Tasks, task questions, or task execution.
 - After routing, follow `distill-spec-memory` without changing the normal LazySpec phase order or approval gates.
 
+### Memory Recall Routing
+
+For every ordinary LazySpec request, after binding `ACTIVE_PROJECT_ROOT` and before selecting the phase Skill, build a session-only `RelevantMemoryContext`. An explicit Memory distillation request routes directly to `distill-spec-memory`; it does not receive an unrelated default recall context.
+
+1. Check only `ACTIVE_PROJECT_ROOT/project-memory/index.md`. If it does not exist, use an empty context and continue the original route. Do not create an index or scan `project-memory/features/` as a fallback.
+2. Parse the fixed index header and rows. If the header, columns, path, or status is malformed, report a non-fatal Chinese maintenance warning, use an empty context (or retain only independently valid rows), and continue the original route. Never guess a path or synthesize a missing row.
+3. For default recall, consider only rows whose index status is `active`. Resolve each candidate path against `ACTIVE_PROJECT_ROOT`; reject absolute paths, `..` traversal, paths outside `project-memory/features/`, missing Capsules, invalid frontmatter, or Capsule/index mismatches. Report each rejected row and do not scan other files to compensate.
+4. Rank valid candidates by query matches in `feature`, `tags`, `Summary`, and `Source Spec`, in that order of signal strength; break ties by the project-root-relative Memory path. Read the complete Capsule only after ranking, and select at most three. If more than three match, report the selected paths and that the remaining matches were omitted.
+5. Expose the result only as this session's context; never write it into a Spec or project file:
+
+```ts
+interface RelevantMemoryContext {
+  readonly query: string;
+  readonly memories: readonly {
+    readonly path: string;
+    readonly status: "active";
+    readonly sourceSpec: string;
+    readonly relevantSections: readonly string[];
+  }[]; // 0–3 items
+}
+```
+
+6. If there is no related valid `active` row, use an empty context and continue. If the user explicitly asks to trace history or review Memory status, select up to three matching `needs-review`, `superseded`, or `obsolete` rows separately, preserve their actual status, and attach a Chinese warning that they are not current facts. Never place a non-`active` item in `memories` or present it without the warning.
+7. Pass `RelevantMemoryContext` as advisory input to the selected phase. It may inform questions, requirements, design, tasks, or implementation, but it must not approve a phase, reorder Brainstorming → Requirements → Design → Tasks, bypass a task gate, or expand the one-task execution boundary. A missing index, no hit, omitted-over-three result, or maintenance warning is never a phase error.
+
 Inspect the requested feature's `specs/{feature_name}/requirements.md`, `design.md`, and `tasks.md` under `ACTIVE_PROJECT_ROOT`, the user's request, and explicit approvals available in the current conversation. Do not infer approval from file existence.
 
 1. For the first creation of `requirements.md`, when that file does not exist:

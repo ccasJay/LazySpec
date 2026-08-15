@@ -6,6 +6,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SKILL_ROOT = ROOT / "distill-spec-memory"
+ROUTER_ROOT = ROOT / "using-lazyspec"
 FIXTURE_ROOT = ROOT / "tests" / "fixtures" / "project-memory"
 
 
@@ -279,6 +280,51 @@ class MemorySkillContractTests(unittest.TestCase):
             self.assertEqual(body, updated_body)
         finally:
             updated_path.unlink()
+
+    def test_using_lazyspec_recall_protocol_is_bounded_and_non_blocking(self):
+        text = (ROUTER_ROOT / "SKILL.md").read_text()
+        for required in (
+            "### Memory Recall Routing",
+            "after binding `ACTIVE_PROJECT_ROOT` and before selecting the phase Skill",
+            "Check only `ACTIVE_PROJECT_ROOT/project-memory/index.md`",
+            "If it does not exist, use an empty context",
+            "Do not create an index or scan `project-memory/features/` as a fallback",
+            "header, columns, path, or status is malformed",
+            "absolute paths",
+            "`..` traversal",
+            "paths outside `project-memory/features/`",
+            "only rows whose index status is `active`",
+            "at most three",
+            "remaining matches were omitted",
+            "interface RelevantMemoryContext",
+            "readonly memories",
+            "readonly sourceSpec",
+            "readonly relevantSections",
+            'readonly status: "active"',
+            "If there is no related valid `active` row, use an empty context",
+            "needs-review`, `superseded`, or `obsolete`",
+            "not current facts",
+            "Never place a non-`active` item in `memories`",
+            "must not approve a phase",
+            "reorder Brainstorming → Requirements → Design → Tasks",
+            "one-task execution boundary",
+            "is never a phase error",
+        ):
+            with self.subTest(required=required):
+                self.assertIn(required, text)
+
+    def test_recall_fixture_has_more_than_three_active_matches_and_history(self):
+        rows = index_rows(FIXTURE_ROOT / "retrieval-index.md")
+        active = [path for path, row in rows.items() if row["status"] == "active"]
+        historical = [
+            path
+            for path, row in rows.items()
+            if row["status"] in {"needs-review", "superseded", "obsolete"}
+        ]
+        self.assertGreater(len(active), 3)
+        self.assertEqual(active[:3], sorted(active)[:3])
+        self.assertEqual(historical, ["project-memory/features/review-memory.md"])
+        self.assertNotIn("project-memory/features/review-memory.md", active[:3])
 
 
 if __name__ == "__main__":

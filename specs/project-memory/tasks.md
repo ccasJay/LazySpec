@@ -21,7 +21,7 @@
   - 使用 fixture 增加审批循环、禁止 draft、状态同步、双向替代、过期退出默认检索、正文不可变和维护性纠错的自动化回归测试
   - _Requirements: [4.1](./requirements.md#req-4-1), [4.2](./requirements.md#req-4-2), [4.3](./requirements.md#req-4-3), [4.4](./requirements.md#req-4-4), [6.1](./requirements.md#req-6-1), [6.2](./requirements.md#req-6-2), [6.3](./requirements.md#req-6-3), [6.4](./requirements.md#req-6-4), [6.5](./requirements.md#req-6-5)_
 
-- [ ] //TODO 4. 接入 LazySpec 按需检索并执行完整回归
+- [x] //TODO 4. 接入 LazySpec 按需检索并执行完整回归
 
   - 修改 `using-lazyspec/SKILL.md`：在阶段路由前读取 `project-memory/index.md`，依据请求从 index 选择最多三份相关 `active` Capsule，形成会话内 `RelevantMemoryContext` 并传入当前阶段
   - 实现无 index、无命中、超过三项、非 `active` 历史追溯、路径或状态损坏的处理，同时保持原 Brainstorming → Requirements → Design → Tasks 审批链和单任务边界
