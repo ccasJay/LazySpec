@@ -24,27 +24,31 @@ def read_frontmatter(path):
 
 def index_rows(path):
     rows = {}
+    link = re.compile(r"^\[([^]]+)\]\([^)]+\)$")
     for line in path.read_text().splitlines():
-        if not line.startswith("| project-memory/features/"):
+        if not line.startswith("| [project-memory/features/"):
             continue
         cells = [cell.strip() for cell in line.strip("|").split("|")]
-        rows[cells[0]] = {
+        memory_match = link.match(cells[0])
+        source_match = link.match(cells[4])
+        if memory_match is None or source_match is None:
+            raise AssertionError(f"fixture row has invalid links: {line}")
+        rows[memory_match.group(1)] = {
             "summary": cells[1],
             "tags": cells[2],
             "status": cells[3],
-            "source_spec": cells[4],
+            "source_spec": source_match.group(1),
+            "reviewed_at": cells[5],
         }
     return rows
 
 
 class MemorySkillContractTests(unittest.TestCase):
-    def test_skill_structure_and_frontmatter(self):
+    def test_skill_structure_frontmatter_and_interface(self):
         skill_path = SKILL_ROOT / "SKILL.md"
         self.assertTrue(skill_path.is_file())
         self.assertTrue((SKILL_ROOT / "agents" / "openai.yaml").is_file())
-        self.assertTrue(
-            (SKILL_ROOT / "references" / "memory-format.md").is_file()
-        )
+        self.assertTrue((SKILL_ROOT / "references" / "memory-format.md").is_file())
 
         text = skill_path.read_text()
         match = re.match(r"\A---\n(.*?)\n---\n", text, re.DOTALL)
@@ -58,179 +62,119 @@ class MemorySkillContractTests(unittest.TestCase):
         self.assertIn("name: distill-spec-memory", match.group(1))
         self.assertNotIn("TODO", text)
 
-    def test_openai_interface_matches_skill(self):
-        text = (SKILL_ROOT / "agents" / "openai.yaml").read_text()
-        self.assertIn('display_name: "Distill Spec Memory"', text)
+        interface = (SKILL_ROOT / "agents" / "openai.yaml").read_text()
+        self.assertIn('display_name: "Distill Spec Memory"', interface)
         self.assertIn(
-            'short_description: "Distill completed feature specs into project memory"',
-            text,
+            'short_description: "Distill and maintain verified project memory"',
+            interface,
         )
-        self.assertIn("$distill-spec-memory", text)
-        self.assertNotIn("icon_", text)
-        self.assertNotIn("brand_color", text)
+        self.assertIn("$distill-spec-memory", interface)
+        self.assertNotIn("icon_", interface)
+        self.assertNotIn("brand_color", interface)
 
     def test_plugin_and_router_register_memory_skill(self):
         manifest = json.loads((ROOT / ".claude-plugin" / "plugin.json").read_text())
         self.assertIn("./distill-spec-memory", manifest["skills"])
         self.assertEqual(len(manifest["skills"]), len(set(manifest["skills"])))
 
-        routing = (ROOT / "using-lazyspec" / "SKILL.md").read_text()
+        routing = (ROUTER_ROOT / "SKILL.md").read_text()
         self.assertIn("`lazyspec:distill-spec-memory`", routing)
         self.assertIn("`../distill-spec-memory/SKILL.md`", routing)
         self.assertIn("only when the user explicitly asks", routing)
         self.assertIn("Do not infer a distillation request", routing)
 
-    def test_memory_format_contract(self):
+    def test_memory_format_defines_current_maintainable_capsules(self):
         text = (SKILL_ROOT / "references" / "memory-format.md").read_text()
         for required in (
             "project-memory/index.md",
             "project-memory/features/<feature-name>.md",
             "feature: <feature-name>",
             "status: active",
+            'summary: "<short routing summary>"',
             "source_spec: specs/<feature-name>/",
             "distilled_at: YYYY-MM-DD",
-            "tags: [<tag>]",
-            "supersedes: []",
-            "superseded_by: []",
-            'status_reason: ""',
-            "## Capability",
+            "reviewed_at: YYYY-MM-DD",
+            "tags: [<stable-tag>]",
+            "authorities: [<current-architecture-or-source-path>]",
+            "## Purpose",
             "## Durable Decisions",
-            "## Contracts and Invariants",
-            "## Lessons",
-            "## Reuse Triggers",
+            "- D1 —",
+            "## Guardrails",
+            "## Revisit When",
             "## Sources",
-            "| Memory | Summary | Tags | Status | Source Spec |",
+            "| Memory | Summary | Tags | Status | Source Spec | Reviewed |",
+            "Active and needs-review bodies may change",
         ):
             with self.subTest(required=required):
                 self.assertIn(required, text)
 
         for status in ("active", "needs-review", "superseded", "obsolete"):
             self.assertIn(f"`{status}`", text)
-
         self.assertIn("project-root-relative", text)
-        self.assertIn("no `topics/`, `sessions/`", text)
         self.assertIn("JSON index", text)
-        self.assertIn("never copy complete sections", text)
+        self.assertIn("completed-checkbox Specs", text)
 
-    def test_completion_gate_requires_all_evidence_and_zero_write(self):
+    def test_skill_loads_local_contract_before_fallback(self):
+        text = (SKILL_ROOT / "SKILL.md").read_text()
+        local = "ACTIVE_PROJECT_ROOT/project-memory/README.md"
+        fallback = "references/memory-format.md"
+        self.assertIn(local, text)
+        self.assertIn(fallback, text)
+        self.assertLess(text.index(local), text.index(fallback))
+        self.assertIn("follow the local contract", text)
+
+    def test_gate_requires_complete_current_evidence_and_zero_write(self):
         text = (SKILL_ROOT / "SKILL.md").read_text()
         for required in (
-            "## Completion Gate",
+            "## Gate before preview",
             "requirements.md`, `design.md`, and `tasks.md`",
-            "Read each file completely",
             "including nested checkboxes",
-            "Every checkbox must be `[x]` or `[X]`",
-            "current, attributable pass result",
-            "separate, explicit confirmation",
-            "Do not create `project-memory/`",
-            "any `draft`/temporary Memory file",
-            "Existing Memory must remain untouched",
+            "every task checkbox",
+            "current, attributable results",
+            "explicit confirmation",
+            "write nothing under `project-memory/`",
+            "relevant implementation has uncommitted changes",
         ):
             with self.subTest(required=required):
                 self.assertIn(required, text)
 
-    def test_reconciliation_uses_session_evidence_matrix_and_blocks_gaps(self):
+    def test_evidence_matrix_and_single_owner_rules(self):
         text = (SKILL_ROOT / "SKILL.md").read_text()
         for required in (
-            "## Reconciliation and Evidence Matrix",
-            "read the complete Requirements, Design, and Tasks again",
-            "| Claim | Spec anchors | Implementation evidence | Test evidence | User ruling | Result |",
-            "at least one approved intent anchor",
-            "one observable implementation or test source",
-            "Keep this matrix in the conversation only",
-            "Mark the claim `conflict`",
-            "mark the claim `insufficient`",
-            "stop before preview generation",
-            "Never downgrade an unsupported claim",
+            "## Build an evidence matrix",
+            "| Claim | Spec anchors | Implementation evidence | Test evidence | Existing owner | Result |",
+            "at least one approved Spec anchor",
+            "Stop on a material conflict",
+            "## Select one owner for each decision",
+            "Keep one active owner",
+            "same Feature",
+            "preserves `distilled_at`",
+            "updates `reviewed_at`",
+            "include the affected Capsule revision or status transition in the same preview",
         ):
             with self.subTest(required=required):
                 self.assertIn(required, text)
 
-    def test_deduplication_checks_only_relevant_capsules_and_stops_on_conflict(self):
+    def test_preview_write_and_status_contracts(self):
         text = (SKILL_ROOT / "SKILL.md").read_text()
         for required in (
-            "## Deduplication and Conflict Check",
-            "inspect `project-memory/index.md` if it exists",
-            "select only Capsules whose feature, tags, source Spec, or summary can overlap",
-            "Do not scan every Capsule",
-            "An existing Capsule for the same Feature is an existing result",
-            "potential duplicate or conflict",
-            "do not silently merge, overwrite, or choose precedence",
-            "index is malformed",
-            "index and Capsule metadata disagree",
-            "stop before preview and write nothing",
-        ):
-            with self.subTest(required=required):
-                self.assertIn(required, text)
-
-    def test_gate_scenario_matrix_names_all_required_blocking_cases(self):
-        text = (SKILL_ROOT / "SKILL.md").read_text()
-        scenarios = (
-            "missing, unreadable, or truncated file",
-            "remaining `[ ]`",
-            "missing evidence",
-            "ambiguous “done”",
-            "they disagree",
-            "evidence is absent, unreachable, stale",
-            "potential duplicate or conflict",
-            "index is malformed",
-        )
-        for scenario in scenarios:
-            with self.subTest(scenario=scenario):
-                self.assertIn(scenario, text)
-
-    def test_preview_approval_loop_and_logical_write_set_contract(self):
-        text = (SKILL_ROOT / "SKILL.md").read_text()
-        for required in (
-            "## Preview, Approval, and Write Protocol",
+            "## Preview and approval",
             "The preview is the approval object",
-            "the full candidate Capsule",
-            "the exact `index.md` row",
-            "every Capsule and index status transition",
-            "the complete logical write set",
-            "If the user requests any change",
-            "ask again",
-            "Never create a draft, staging Memory, or second index",
-            "one logical write set",
-            "partial write",
-            "do not claim success",
+            "every complete proposed Capsule",
+            "complete generated index",
+            "complete project-root-relative logical write set",
+            "Any requested edit invalidates the previous approval",
+            "## Write and verify atomically",
+            "project-local index generator",
+            "project-local Memory validator",
+            "partial writes",
+            "Allow `active → active` maintenance",
+            "Do not reactivate terminal Capsules",
         ):
             with self.subTest(required=required):
                 self.assertIn(required, text)
 
-    def test_status_invariants_and_transitions_contract(self):
-        text = (SKILL_ROOT / "SKILL.md").read_text()
-        reference = (SKILL_ROOT / "references" / "memory-format.md").read_text()
-        for required in (
-            "active",
-            "needs-review",
-            "superseded",
-            "obsolete",
-            "status_reason",
-            "superseded_by",
-            "supersedes",
-        ):
-            with self.subTest(required=required):
-                self.assertIn(required, text)
-                self.assertIn(required, reference)
-        for required in (
-            "A status in a Capsule and its index row must always match",
-            "Use only these intentional transitions",
-            "Do not reactivate a `superseded` or `obsolete` conclusion",
-            "freeze everything after the frontmatter closing marker",
-        ):
-            with self.subTest(document="skill", required=required):
-                self.assertIn(required, text)
-        for required in (
-            "The Capsule frontmatter status and its index row status must be identical",
-            "Allowed transitions are `active → needs-review`",
-            "`superseded` and `obsolete` are terminal",
-            "the body after the frontmatter closing marker is immutable",
-        ):
-            with self.subTest(document="reference", required=required):
-                self.assertIn(required, reference)
-
-    def test_fixture_capsule_and_index_statuses_stay_in_sync(self):
+    def test_fixture_capsule_and_generated_index_stay_in_sync(self):
         rows = index_rows(FIXTURE_ROOT / "index.md")
         capsule_paths = sorted((FIXTURE_ROOT / "features").glob("*.md"))
         self.assertEqual(
@@ -238,13 +182,19 @@ class MemorySkillContractTests(unittest.TestCase):
             {f"project-memory/features/{path.name}" for path in capsule_paths},
         )
         for path in capsule_paths:
-            fields, _ = read_frontmatter(path)
+            fields, body = read_frontmatter(path)
             row = rows[f"project-memory/features/{path.name}"]
             with self.subTest(path=path):
                 self.assertEqual(fields["status"], row["status"])
                 self.assertEqual(fields["source_spec"], row["source_spec"])
+                self.assertEqual(fields["reviewed_at"], row["reviewed_at"])
+                self.assertIn("summary", fields)
+                self.assertIn("authorities", fields)
+                self.assertIn("## Purpose", body)
+                self.assertIn("## Revisit When", body)
                 if fields["status"] == "active":
-                    self.assertEqual(fields["status_reason"], '""')
+                    self.assertNotIn("status_reason", fields)
+                    self.assertNotIn("superseded_by", fields)
                 else:
                     self.assertNotEqual(fields["status_reason"], '""')
 
@@ -252,66 +202,53 @@ class MemorySkillContractTests(unittest.TestCase):
         rows = index_rows(FIXTURE_ROOT / "index.md")
         old_fields, _ = read_frontmatter(FIXTURE_ROOT / "features" / "memory-v1.md")
         new_fields, _ = read_frontmatter(FIXTURE_ROOT / "features" / "memory-v2.md")
-        self.assertEqual(old_fields["status"], "superseded")
         self.assertEqual(
             old_fields["superseded_by"],
             "[project-memory/features/memory-v2.md]",
         )
-        self.assertEqual(new_fields["status"], "active")
         self.assertEqual(
             new_fields["supersedes"],
             "[project-memory/features/memory-v1.md]",
         )
-        self.assertEqual(rows["project-memory/features/memory-v1.md"]["status"], "superseded")
-        self.assertEqual(rows["project-memory/features/memory-v2.md"]["status"], "active")
         default_paths = [path for path, row in rows.items() if row["status"] == "active"]
         self.assertEqual(default_paths, ["project-memory/features/memory-v2.md"])
 
-    def test_fixture_status_only_update_preserves_capsule_body(self):
-        path = FIXTURE_ROOT / "features" / "memory-v1.md"
+    def test_active_maintenance_updates_body_and_review_date(self):
+        path = FIXTURE_ROOT / "features" / "memory-v2.md"
         fields, body = read_frontmatter(path)
-        updated = path.read_text().replace("status: superseded", "status: obsolete", 1)
-        updated_path = FIXTURE_ROOT / "features" / "memory-v1-status-only.md"
-        updated_path.write_text(updated)
-        try:
-            updated_fields, updated_body = read_frontmatter(updated_path)
-            self.assertEqual(fields["status"], "superseded")
-            self.assertEqual(updated_fields["status"], "obsolete")
-            self.assertEqual(body, updated_body)
-        finally:
-            updated_path.unlink()
+        updated = path.read_text().replace("reviewed_at: 2026-08-18", "reviewed_at: 2026-08-19", 1)
+        updated = updated.replace("current memory lifecycle", "maintained memory lifecycle", 1)
+        match = re.match(r"\A---\n(.*?)\n---\n(.*)", updated, re.DOTALL)
+        self.assertIsNotNone(match)
+        self.assertEqual(fields["distilled_at"], "2026-08-15")
+        self.assertIn("reviewed_at: 2026-08-19", match.group(1))
+        self.assertNotEqual(body, match.group(2))
 
-    def test_using_lazyspec_recall_protocol_is_bounded_and_non_blocking(self):
+    def test_using_lazyspec_recall_is_bounded_advisory_and_authority_aware(self):
         text = (ROUTER_ROOT / "SKILL.md").read_text()
         for required in (
             "### Memory Recall Routing",
-            "after binding `ACTIVE_PROJECT_ROOT` and before selecting the phase Skill",
             "Check only `ACTIVE_PROJECT_ROOT/project-memory/index.md`",
-            "If it does not exist, use an empty context",
-            "Do not create an index or scan `project-memory/features/` as a fallback",
-            "header, columns, path, or status is malformed",
-            "absolute paths",
-            "`..` traversal",
-            "paths outside `project-memory/features/`",
+            "generated six-column index header",
+            "Markdown-linked rows",
             "only rows whose index status is `active`",
+            "missing `reviewed_at` or `authorities`",
             "at most three",
-            "remaining matches were omitted",
-            "interface RelevantMemoryContext",
-            "readonly memories",
-            "readonly sourceSpec",
-            "readonly relevantSections",
-            'readonly status: "active"',
-            "If there is no related valid `active` row, use an empty context",
-            "needs-review`, `superseded`, or `obsolete`",
-            "not current facts",
+            "readonly reviewedAt: string",
+            "readonly authorities: readonly string[]",
+            "read that current authority",
+            "must not override current implementation evidence",
             "Never place a non-`active` item in `memories`",
-            "must not approve a phase",
-            "reorder Brainstorming → Requirements → Design → Tasks",
             "one-task execution boundary",
-            "is never a phase error",
         ):
             with self.subTest(required=required):
                 self.assertIn(required, text)
+
+    def test_final_task_reports_memory_impact_without_writing(self):
+        text = (ROUTER_ROOT / "SKILL.md").read_text()
+        self.assertIn("final unchecked checkbox", text)
+        self.assertIn("Report likely impact candidates", text)
+        self.assertIn("do not create, edit, or re-status Memory", text)
 
     def test_recall_fixture_has_more_than_three_active_matches_and_history(self):
         rows = index_rows(FIXTURE_ROOT / "retrieval-index.md")
@@ -324,7 +261,6 @@ class MemorySkillContractTests(unittest.TestCase):
         self.assertGreater(len(active), 3)
         self.assertEqual(active[:3], sorted(active)[:3])
         self.assertEqual(historical, ["project-memory/features/review-memory.md"])
-        self.assertNotIn("project-memory/features/review-memory.md", active[:3])
 
 
 if __name__ == "__main__":

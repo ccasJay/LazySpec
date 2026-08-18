@@ -1,18 +1,8 @@
 # Project Memory Format
 
-Use this contract whenever preparing, writing, or validating Feature Memory. Resolve every stored path against `ACTIVE_PROJECT_ROOT` and write paths with `/` separators.
+Use this fallback contract when the active project has no `project-memory/README.md`. Resolve every stored path against `ACTIVE_PROJECT_ROOT` and use project-root-relative POSIX paths.
 
-## Contents
-
-- [Project Layout](#project-layout)
-- [Feature Capsule](#feature-capsule)
-- [Field Rules](#field-rules)
-- [Status Invariants and Transitions](#status-invariants-and-transitions)
-- [Content and Source Rules](#content-and-source-rules)
-- [Index](#index)
-- [Validation Checklist](#validation-checklist)
-
-## Project Layout
+## Project layout
 
 ```text
 project-memory/
@@ -21,45 +11,41 @@ project-memory/
     └── <feature-name>.md
 ```
 
-Use the source Spec directory name as `<feature-name>`. The MVP contains no `topics/`, `sessions/`, draft Memory, copied Spec files, or JSON index.
+Keep one current decision Capsule per completed Feature. Do not add Topic aggregation, sessions, draft Memory, copied Specs, or a JSON index.
 
-## Feature Capsule
+## Capsule format
 
-Use this exact field set and section order:
+Use this required metadata and section order:
 
 ```markdown
 ---
 feature: <feature-name>
 status: active
+summary: "<short routing summary>"
 source_spec: specs/<feature-name>/
 distilled_at: YYYY-MM-DD
-tags: [<tag>]
-supersedes: []
-superseded_by: []
-status_reason: ""
+reviewed_at: YYYY-MM-DD
+tags: [<stable-tag>]
+authorities: [<current-architecture-or-source-path>]
 ---
 
 # <Feature title>
 
-## Capability
+## Purpose
 
-- <Final capability and explicit boundary.> [S1, S2]
+- <Why this decision set exists and its boundary.> [S1, S2]
 
 ## Durable Decisions
 
-- <Decision, rationale, rejected alternative, and consequence.> [S1, S3]
+- D1 — <Decision, rationale, rejected alternative or consequence.> [S2, S3]
 
-## Contracts and Invariants
+## Guardrails
 
-- <Behavior, interface, data, compatibility, or workflow constraint.> [S2, S4]
+- <Negative guarantee, compatibility rule, or ownership constraint.> [S1, S4]
 
-## Lessons
+## Revisit When
 
-- <Non-obvious failure mode, compatibility finding, or verification lesson.> [S3, S4]
-
-## Reuse Triggers
-
-- <Future task, phrase, tag, or condition that should load this Memory.>
+- <Observable condition that should trigger review.>
 
 ## Sources
 
@@ -69,57 +55,55 @@ status_reason: ""
 - S4: `<project-root-relative-test-path>`
 ```
 
-## Field Rules
+Conditional metadata is omitted when unused:
 
-- `feature`: match the source Spec directory and Capsule filename exactly.
-- `status`: use one of `active`, `needs-review`, `superseded`, or `obsolete`.
-- `source_spec`: point to the source directory and end with `/`.
-- `distilled_at`: use the local calendar date in ISO `YYYY-MM-DD` form.
-- `tags`: use a short YAML flow sequence of stable retrieval terms; never encode prose.
-- `supersedes` and `superseded_by`: use project-root-relative Capsule paths; leave `status_reason` empty only for `active`, otherwise state why the Memory is not current.
+- `status_reason`: required for every non-`active` status.
+- `supersedes`: non-empty Capsule path sequence when this Capsule replaces another.
+- `superseded_by`: required non-empty Capsule path sequence only for `superseded`.
 
-## Status Invariants and Transitions
+## Field and content rules
 
-- `active` is current and default-retrievable; `status_reason` is empty.
-- `needs-review` means suspected implementation drift; `status_reason` is required and ordinary retrieval must exclude it.
-- `superseded` means a newer Capsule is authoritative; `status_reason` and a resolvable non-empty `superseded_by` are required. The newer Capsule must list this path in `supersedes`.
-- `obsolete` means invalid without a replacement; `status_reason` is required and `superseded_by` remains empty.
-- The Capsule frontmatter status and its index row status must be identical. Any mismatch is invalid.
+- `feature`, filename, and `source_spec` directory name must match.
+- `status` is `active`, `needs-review`, `superseded`, or `obsolete`.
+- `summary` is routing text, not a durable conclusion.
+- Preserve the first successful `distilled_at`; set `reviewed_at` whenever all current claims are reverified.
+- `tags` contains stable search terms. `authorities` points to current architecture or source owners and must not contain historical-only documents.
+- Use unique stable `D<N>` IDs within each Capsule.
+- End every factual bullet in Purpose, Durable Decisions, and Guardrails with defined source IDs.
+- Keep Revisit When operational and observable. Do not use age or word count alone as a trigger.
+- Include approved intent plus implementation or test evidence. Omit current control-flow narration, generic lessons, progress history, and facts cheaper to recover from code.
+- Active and needs-review bodies may change only through a complete evidence review and approved preview. Git and Specs preserve earlier versions.
 
-Allowed transitions are `active → needs-review`, `needs-review → active` after review, `active` or `needs-review → superseded`, and `active` or `needs-review → obsolete`. `superseded` and `obsolete` are terminal for that conclusion; a later conclusion requires a new Capsule. A status change must update the Capsule and index in one logical write set.
+## Status invariants
 
-After approval, the body after the frontmatter closing marker is immutable. Only a separately approved typo or stale-link correction may change body text, and it must preserve claim meaning. Status, reason, and replacement metadata may evolve without changing the body.
+- `active` is current and default-retrievable; omit `status_reason` and `superseded_by`.
+- `needs-review` is excluded from ordinary recall and requires a non-empty reason.
+- `superseded` is terminal and requires a reason plus reciprocal `superseded_by`/`supersedes` paths.
+- `obsolete` is terminal, requires a reason, and has no `superseded_by`.
 
-## Content and Source Rules
+Allow `active → active` maintenance, `active → needs-review`, `needs-review → active`, and `active|needs-review → superseded|obsolete`. Never reactivate terminal Capsules.
 
-- End every durable claim in Capability, Durable Decisions, Contracts and Invariants, and Lessons with one or more source IDs.
-- Define every cited source ID exactly once in Sources. Use project-root-relative paths and preserve requirement anchors when available.
-- Include only conclusions supported by approved Spec plus implementation or test evidence, or by an explicit user ruling on a conflict.
-- Omit temporary progress, completed checkbox history, routine command output, guesses, and facts that are cheaper to recover from current code.
-- Summarize; never copy complete sections from Requirements, Design, or Tasks.
+## Deterministic index
 
-## Index
-
-Create `project-memory/index.md` with exactly this heading and table shape:
+Generate one `project-memory/index.md` from Capsule metadata:
 
 ```markdown
 # Project Memory Index
 
-| Memory | Summary | Tags | Status | Source Spec |
-|---|---|---|---|---|
-| project-memory/features/<feature-name>.md | <one-line routing summary> | <comma-separated tags> | active | specs/<feature-name>/ |
+<!-- Generated from Capsule metadata; do not edit manually. -->
+
+| Memory | Summary | Tags | Status | Source Spec | Reviewed |
+|---|---|---|---|---|---|
+| [project-memory/features/<feature-name>.md](./features/<feature-name>.md) | <summary> | <tags> | active | [specs/<feature-name>/](../specs/<feature-name>/) | YYYY-MM-DD |
 ```
 
-Keep one row per Capsule path. Escape `|` characters inside cell values. Keep Summary short and useful only for routing; do not place durable conclusions in the index. Keep Status identical to the Capsule frontmatter.
+Sort rows deterministically by feature. Keep exactly one row per Capsule. The index status, paths, tags, summary, Source Spec, and reviewed date must equal frontmatter.
 
-## Validation Checklist
+## Validation checklist
 
-- Confirm the Capsule path, `feature`, and `source_spec` agree.
-- Confirm the frontmatter has only the defined fields and a permitted status.
-- Confirm status invariants, allowed transitions, and reciprocal replacement paths.
-- Confirm all required sections appear exactly once and in order.
-- Confirm every durable claim cites defined, resolvable sources.
-- Confirm the index has the fixed header, a unique Capsule row, and matching status.
-- Confirm all approved changes form one logical Capsule/index write set; report any partial failure with exact file state.
-- Confirm the body is unchanged for status-only updates, except for an explicitly approved typo or stale-link correction.
-- Confirm the result contains no Topic layer, sessions, draft, JSON index, or copied Spec content.
+- Validate required and conditional metadata, path containment, dates, and authority existence.
+- Validate section order, unique decision IDs, source definitions, citations, and resolvable source paths.
+- Validate index/Capsule bijection and deterministic generated content.
+- Validate reciprocal supersession and reject cycles.
+- Report completed-checkbox Specs without Capsules as candidates only; never create Memory automatically.
+- Treat the approved Capsule set and generated index as one logical write set.

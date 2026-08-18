@@ -1,33 +1,30 @@
 ---
 feature: memory-v2
 status: active
+summary: "current implementation memory"
 source_spec: specs/memory-v2/
 distilled_at: 2026-08-15
+reviewed_at: 2026-08-18
 tags: [memory, lifecycle]
+authorities: [docs/architecture/memory.md]
 supersedes: [project-memory/features/memory-v1.md]
-superseded_by: []
-status_reason: ""
 ---
 
 # Memory V2
 
-## Capability
+## Purpose
 
 - The second implementation provides the current memory lifecycle. [S1]
 
 ## Durable Decisions
 
-- The current capsule is the authoritative lifecycle summary. [S1]
+- D1 — The current capsule is the authoritative lifecycle summary. [S1]
 
-## Contracts and Invariants
+## Guardrails
 
 - The active capsule is the default retrieval target. [S1]
 
-## Lessons
-
-- Replacement must be represented in both directions. [S1]
-
-## Reuse Triggers
+## Revisit When
 
 - Read for current memory lifecycle work.
 
