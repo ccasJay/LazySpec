@@ -12,6 +12,7 @@
     "./writing-requirement",
     "./writing-design",
     "./writing-task",
-    "./distill-spec-memory"
+    "./distill-spec-memory",
+    "./fast"
   ]
 }

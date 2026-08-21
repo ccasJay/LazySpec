@@ -5,12 +5,14 @@
 ## 工作流程
 
 ```text
-Brainstorming → Requirements → Design → Tasks → 按需执行单个任务
+正常链路：Brainstorming → Requirements → Design → Tasks → 按需执行单个任务
+fast 链路：讨论 → plan.md → 一次审批 → 连续执行全部任务
 ```
 
 - Brainstorming 确认目标、范围、约束、成功标准和方案，仅保存在当前会话。
 - Requirements、Design、Tasks 分别生成 `requirements.md`、`design.md`、`tasks.md`。
 - 每个阶段都需要用户明确批准，未获批准不会进入下一阶段。
+- fast 模式面向轻量新功能：交互式讨论后生成单个 `specs/<feature-name>/plan.md`，一次明确批准后连续执行全部任务。仅限首次创建（无 `requirements.md`）；已有 Spec 的功能仍走正常链路。
 
 ## 安装与接入
 
@@ -20,7 +22,7 @@ Brainstorming → Requirements → Design → Tasks → 按需执行单个任务
 npx skills add ccasJay/LazySpec --skill '*' -g
 ```
 
-按提示选择目标代理。安装完成后，确认六个 Skill 均可发现；日常使用从
+按提示选择目标代理。安装完成后，确认七个 Skill 均可发现；日常使用从
 `using-lazyspec` 进入。
 
 ### Claude Code Plugin
@@ -40,7 +42,7 @@ claude --plugin-dir /absolute/path/to/LazySpec
 /lazyspec:using-lazyspec
 ```
 
-六个可显式调用的 Skill 为：
+七个可显式调用的 Skill 为：
 
 ```text
 /lazyspec:using-lazyspec
@@ -49,13 +51,14 @@ claude --plugin-dir /absolute/path/to/LazySpec
 /lazyspec:writing-design
 /lazyspec:writing-task
 /lazyspec:distill-spec-memory
+/lazyspec:fast
 ```
 
 Plugin 或 Skill 未出现时，按以下顺序排查：
 
 1. 确认 `claude --version` 不低于兼容性基线，并重新运行
    `claude plugin validate .`。
-2. 确认 Manifest 位于仓库根目录的 `.claude-plugin/plugin.json`，其中六个
+2. 确认 Manifest 位于仓库根目录的 `.claude-plugin/plugin.json`，其中七个
    `skills` 相对路径均指向包含 `SKILL.md` 的现有目录。
 3. 在会话中运行 `/reload-plugins`，然后用 `/help` 再次检查；仍未加载时，
    退出并用正确的绝对路径重新执行 `claude --plugin-dir ...`。
@@ -80,10 +83,14 @@ Plugin 或 Skill 未出现时，按以下顺序排查：
 
 # 执行单个任务
 使用 using-lazyspec 执行 specs/user-authentication/tasks.md 中的任务 2.1。
+
+# fast 模式创建轻量新功能
+使用 using-lazyspec 以 fast 模式为“导出 CSV”创建 plan 并执行。
 ```
 
-新功能会先进入 Brainstorming；修改已有 `requirements.md` 时默认直接进入
-Requirements。执行任务前会读取该功能的全部 Spec，并且一次只执行一个任务。
+新功能会先进入 Brainstorming（显式请求 fast 模式时除外）；修改已有
+`requirements.md` 时默认直接进入 Requirements。执行任务前会读取该功能的全部
+Spec，并且一次只执行一个任务；fast 模式审批后则连续执行 plan 中的全部任务。
 
 ## Spec 产物
 
@@ -94,6 +101,7 @@ Requirements。执行任务前会读取该功能的全部 Spec，并且一次只
 | `requirements.md` | 用户故事和带稳定锚点的 EARS 验收标准 |
 | `design.md` | 关键实现决策、测试策略及必要的技术章节 |
 | `tasks.md` | 可增量执行的编码任务及需求链接 |
+| `plan.md` | fast 模式产物：目标、约束、方案和带勾选框的任务清单 |
 
 Brainstorming Context 不会落盘；若进入 Requirements 前会话丢失，需要重新确认。
 
@@ -117,12 +125,14 @@ LazySpec 默认生成“最小充分文档”：Requirements 只记录可验证�
 | [`writing-design`](./writing-design/SKILL.md) | 基于已批准需求创建设计 |
 | [`writing-task`](./writing-task/SKILL.md) | 将已批准设计转为编码任务 |
 | [`distill-spec-memory`](./distill-spec-memory/SKILL.md) | 将已完成并验证的 Feature Spec 提炼为项目 Memory |
+| [`fast`](./fast/SKILL.md) | 轻量新功能快速通道：讨论生成 plan.md，一次审批后连续执行 |
 
 ## 约束
 
 - 文件存在不代表已经批准；审批以当前会话中的明确回复为准。
 - 手动运行 Brainstorming 不会自动修改已有 Spec。
 - Tasks 获批只代表规划完成，实际编码需单独发起任务执行请求。
+- fast 模式仅限首次创建（无 `requirements.md`）；`plan.md` 与 requirements/design/tasks 三件套互斥，同一 feature 只保留其中一种产物。
 - `templete` 是项目现有文件名约定，请勿自行改名。
 
 完整示例见 [`specs/lazyspec`](./specs/lazyspec/)。

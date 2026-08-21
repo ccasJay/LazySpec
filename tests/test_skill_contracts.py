@@ -21,6 +21,7 @@ class SkillContractTests(unittest.TestCase):
             "writing-design",
             "writing-task",
             "distill-spec-memory",
+            "fast",
         ):
             self.assertIn(f"`lazyspec:{name}`", text)
             self.assertIn(f"`../{name}/SKILL.md`", text)

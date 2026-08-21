@@ -1,6 +1,6 @@
 ---
 name: using-lazyspec
-description: Route LazySpec requests to Brainstorming, requirements, design, tasks, existing task execution, or explicit completed-feature Memory distillation. Use as the single entry point for Spec work and for user-requested completed Feature Spec distillation into `project-memory/` while enforcing phase and approval gates.
+description: Route LazySpec requests to Brainstorming, requirements, design, tasks, existing task execution, explicit fast mode for new features, or explicit completed-feature Memory distillation. Use as the single entry point for Spec work and for user-requested completed Feature Spec distillation into `project-memory/` while enforcing phase and approval gates.
 ---
 
 # LazySpec
@@ -22,7 +22,7 @@ Before inspecting or writing any Spec artifact, bind `ACTIVE_PROJECT_ROOT` to th
 
 Resolve every routed Skill with this platform-neutral protocol:
 
-1. Prefer the current environment's registered Skill invocation mechanism. Use the logical names `brainstorming`, `writing-requirement`, `writing-design`, `writing-task`, and `distill-spec-memory`; a Claude Code Plugin may expose them as `lazyspec:<logical-name>`, while an Agent Skills installation may expose the unnamespaced logical name.
+1. Prefer the current environment's registered Skill invocation mechanism. Use the logical names `brainstorming`, `writing-requirement`, `writing-design`, `writing-task`, `distill-spec-memory`, and `fast`; a Claude Code Plugin may expose them as `lazyspec:<logical-name>`, while an Agent Skills installation may expose the unnamespaced logical name.
 2. If no registered Skill invocation mechanism is available, or the logical Skill is not registered, read its sibling `SKILL.md` using the fallback mapping below. Resolve the path relative to this `using-lazyspec/SKILL.md`, never relative to the process working directory or repository root.
 3. After resolving the target, follow that Skill's instructions and resolve its supporting files by the target Skill's own resource rules.
 
@@ -33,12 +33,20 @@ Resolve every routed Skill with this platform-neutral protocol:
 | `writing-design` | `lazyspec:writing-design` | `../writing-design/SKILL.md` |
 | `writing-task` | `lazyspec:writing-task` | `../writing-task/SKILL.md` |
 | `distill-spec-memory` | `lazyspec:distill-spec-memory` | `../distill-spec-memory/SKILL.md` |
+| `fast` | `lazyspec:fast` | `../fast/SKILL.md` |
 
 ### Memory Distillation Routing
 
 - Route to `distill-spec-memory` only when the user explicitly asks to preserve, archive, or distill a completed Feature Spec into project Memory.
 - Do not infer a distillation request from completing a task or from ordinary Brainstorming, Requirements, Design, Tasks, task questions, or task execution.
 - After routing, follow `distill-spec-memory` without changing the normal LazySpec phase order or approval gates.
+
+### Fast Mode Routing
+
+- Route to `fast` only when the user explicitly asks for the fast mode (keywords such as `fast` or `快速`, or a direct `fast` / `lazyspec:fast` invocation) for a new feature.
+- Fast mode is only for first-time creation: route to `fast` only when the target feature has no `specs/{feature_name}/requirements.md`. If `requirements.md` already exists, keep the request on the normal chain, report in Chinese why fast mode was declined, and route by the ordinary rules below.
+- A `fast` request is an ordinary LazySpec request: apply Memory Recall Routing before routing, and pass `RelevantMemoryContext` to `fast` as advisory input.
+- Never route to `fast` by inference. Without an explicit fast-mode request, always use the normal chain.
 
 ### Memory Recall Routing
 
@@ -108,14 +116,21 @@ stateDiagram-v2
   ReviewTasks --> [*] : Explicit Approval
   
   Execute : Execute Task
-  
+
+  FastPlan : Fast Plan (plan.md)
+  FastExecute : Execute All Tasks Continuously
+
+  [*] --> FastPlan : Fast mode (no requirements.md)
+  FastPlan --> FastExecute : Explicit Approval
+  FastExecute --> [*] : Complete
+
   state "Entry Points" as EP {
       [*] --> Requirements : Update existing requirements
       [*] --> Design : Update existing design
       [*] --> Tasks : Update existing tasks
       [*] --> Execute : Execute task
   }
-  
+
   Execute --> [*] : Complete
 ```
 
