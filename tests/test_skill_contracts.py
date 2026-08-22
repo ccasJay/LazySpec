@@ -85,6 +85,18 @@ class SkillContractTests(unittest.TestCase):
         self.assertIn("Only option 1 or an unambiguous affirmative answer", text)
         self.assertIn("Do not set `approved: true`", text)
 
+    def test_fast_discussion_explicitly_recommends_an_approach(self):
+        text = (ROOT / "fast" / "SKILL.md").read_text()
+        self.assertIn("mark it as recommended", text)
+        self.assertIn("explain the recommendation concisely", text)
+        self.assertIn(
+            "explicitly present the recommended implementation approach", text
+        )
+        self.assertIn("explain why it best fits", text)
+        self.assertIn("Do not make the user infer the recommendation", text)
+        self.assertIn("present the viable alternatives", text)
+        self.assertIn("without forcing a three-approach comparison", text)
+
     def test_all_spec_task_checkboxes_keep_todo_marker_and_text(self):
         checkbox = re.compile(r"^\s*- \[[ xX]\] ")
         valid_task = re.compile(r"^\s*- \[[ xX]\] //TODO \S.+$")

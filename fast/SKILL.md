@@ -27,8 +27,9 @@ Before any discussion, inspect the target feature under `ACTIVE_PROJECT_ROOT`:
 Discuss interactively and keep it lightweight:
 
 - Establish the objective, scope, constraints, and a concrete implementation approach. Ask only one question at a time when information is missing or ambiguous.
-- For every user-facing question, provide exactly three concrete, mutually exclusive predefined options and a fourth free-form option, with the recommended option first. Accept an option number or a free-form answer. Prefer an applicable question-and-answer tool when one is available; if the tool adds its own free-form `Other` choice, provide exactly the first three options.
-- Do not force a three-approach comparison; present alternatives only when the choice materially changes the implementation.
+- For every user-facing question, provide exactly three concrete, mutually exclusive predefined options and a fourth free-form option. Put the recommended option first, mark it as recommended, and explain the recommendation concisely; describe the relevant trade-off for each other option. Accept an option number or a free-form answer. Prefer an applicable question-and-answer tool when one is available; if the tool adds its own free-form `Other` choice, provide exactly the first three options.
+- Before writing `plan.md`, explicitly present the recommended implementation approach and explain why it best fits the confirmed objective, scope, and constraints. Do not make the user infer the recommendation from option order or from the eventual plan.
+- When a different approach would materially change the implementation, present the viable alternatives with their relevant trade-offs and ask the user to choose, with the recommended approach first. Otherwise, state the single recommended approach and proceed without forcing a three-approach comparison.
 - Stop asking once no unresolved question would materially change the plan.
 
 ## Writing plan.md
