@@ -10,7 +10,7 @@ description: Create or revise a LazySpec design.md only after requirements.md ha
 - Keep the instructional prose in this Skill and its supporting resources in English.
 - Write all user-visible prose in generated `design.md` content in Chinese, including the overview, design decisions, research findings, testing strategy, and explanatory text under each section.
 - Keep `Overview`, `Key Design Decisions`, `Testing Strategy`, and any selected conditional section names in English as structural keywords.
-- Preserve project-specific names, technical terms, code identifiers, filenames, URLs, Markdown syntax, and Mermaid syntax when necessary.
+- Preserve project-specific names, technical terms, code identifiers, filenames, URLs, Markdown syntax, and diagram syntax when necessary.
 
 Before starting, read the approved `specs/{feature_name}/requirements.md`, then read `design-prompt.md` and `design-templete.md`. Resolve the Prompt and Template relative to the directory containing this `SKILL.md`, never relative to the process working directory or repository root. Resolve the upstream Spec and the new `design.md` against `ACTIVE_PROJECT_ROOT`, defined by `using-lazyspec` as the user's project working directory at session start. Never use this Skill's directory, its repository, or a Plugin cache as the project root. If invoked directly and the session working directory is unavailable or ambiguous, ask for the project root before reading or writing Specs. These rules apply unchanged in a Plugin cache and an Agent Skills installation. If Requirements has not received explicit user approval in the current conversation, stop and request completion of that approval first; never infer approval from the file's existence.
 
@@ -49,7 +49,7 @@ Only explicit approval in the current conversation records Design approval. File
 - The model SHOULD NOT create separate research files; cite relevant sources in the conversation and incorporate only decision-relevant findings into the design
 - The model MUST address all approved requirements by referencing their IDs or logical groups without restating their acceptance criteria
 - The model SHOULD record a decision and rationale only when a meaningful implementation choice or trade-off exists
-- The model SHOULD use Mermaid only when a relationship or sequence is materially clearer as a diagram than as short prose
+- The model SHOULD choose the smallest representation that makes the design unambiguous: ASCII diagrams for topology, ownership, lifecycle, state transitions, and multi-participant sequences; tables for repeated mappings; TypeScript for data contracts; and prose for rationale, invariants, failure semantics, and compatibility guarantees
 - The model MUST NOT repeat requirements, repository facts, obvious framework behavior, or implementation detail that does not help a coding agent make a decision
 - The model SHOULD target 100–180 lines for a typical design. A simple design may be shorter; never add content to reach the lower bound. This is a soft limit: consolidate repetition or recommend splitting an oversized Spec before exceeding it, but retain details needed to avoid implementation ambiguity
 - The model MAY ask the user for input on specific technical decisions during the design process
@@ -59,6 +59,16 @@ Only explicit approval in the current conversation records Design approval. File
 - The model MUST continue the feedback-revision cycle until explicit approval is received
 - The model MUST incorporate all user feedback into the design document before proceeding
 - The model MUST offer to return to feature requirements clarification if gaps are identified during design
+
+### Diagram Policy
+
+- Prefer an ASCII diagram when relationships or flows involving at least three meaningful nodes are materially clearer visually than as short prose
+- Put ASCII diagrams in fenced `text` blocks, use printable ASCII characters, and keep one primary reading direction per diagram
+- Give each diagram one purpose, use exact component, interface, event, and state names, and label edges whose meaning is not obvious
+- Split a diagram when crossing edges, excessive width, or mixed abstraction levels make its interpretation ambiguous
+- Do not encode mandatory constraints, invariants, failure behavior, compatibility guarantees, or requirement acceptance criteria only in a diagram; state the minimum non-geometric contract immediately beside it
+- Do not duplicate relationships already clear from the diagram in narrative prose
+- Use Mermaid only when the user explicitly requests it or when a materially important relationship remains ambiguous after splitting the ASCII diagram
 
 ### Research Limitations
 
