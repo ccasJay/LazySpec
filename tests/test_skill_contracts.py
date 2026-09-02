@@ -67,12 +67,17 @@ class SkillContractTests(unittest.TestCase):
                 self.assertIn("equivalent user-question tool", text)
                 self.assertIn("directly in the conversation", text)
 
-    def test_task_execution_contract_preserves_todo_text(self):
+    def test_task_execution_contract_batches_todos_on_feature_branch(self):
         routing = (ROOT / "using-lazyspec" / "SKILL.md").read_text()
         planning = (ROOT / "writing-task" / "SKILL.md").read_text()
         self.assertIn("complete `requirements.md`, `design.md`, and `tasks.md`", routing)
-        self.assertIn("Only focus on ONE user-selected task", routing)
-        self.assertIn("without modifying code, Spec files, or checkbox state", routing)
+        self.assertIn("all currently unchecked TODOs", routing)
+        self.assertIn("without waiting for per-task approval", routing)
+        self.assertIn("new feature branch", routing)
+        self.assertIn("codex/<feature-name>", routing)
+        self.assertIn("After each TODO passes its verification", routing)
+        self.assertNotIn("Only focus on ONE user-selected task", routing)
+        self.assertNotIn("If multiple tasks are requested, ask the user to select one", routing)
         for text in (routing, planning):
             self.assertIn("checkbox token from `[ ]` to `[x]`", text)
             self.assertIn("`//TODO`", text)

@@ -139,12 +139,14 @@ stateDiagram-v2
 ### Executing Instructions
 - Before executing any task, ALWAYS read the feature's complete `requirements.md`, `design.md`, and `tasks.md` in the current execution context. Executing a task without all three artifacts is forbidden.
 - Look at the task details in the task list; start with sub-tasks if present.
-- Only focus on ONE user-selected task at a time, including its listed sub-tasks. Do not implement functionality for sibling or subsequent tasks. If multiple tasks are requested, ask the user to select one and do not start implementation.
+- When the user explicitly requests execution of a `tasks.md` plan, execute all currently unchecked TODOs in their listed order, including their sub-tasks, without waiting for per-task approval or another user instruction. If the user explicitly names one TODO number, limit execution to that TODO and its sub-tasks.
+- Before the first file modification, create a new feature branch by default using `codex/<feature-name>` (or the user's explicitly requested branch name). If the default branch name already belongs to unrelated work, use a unique `codex/` branch name and report the choice. Do not commit unrelated pre-existing changes.
 - Verify implementation against any requirements specified in the task or its details.
 - When marking a completed task in `tasks.md`, change only its checkbox token from `[ ]` to `[x]`. Preserve `//TODO` and every character after it exactly; do not remove, replace, or rewrite the task text.
-- Once you complete the requested task, stop and let the user review. DO NOT proceed to the next task automatically without user instruction.
-- When that task completes the final unchecked checkbox, inspect only the Project Memory index for Capsules whose feature, tags, summary, Source Spec, or authorities overlap the changed paths. Report likely impact candidates in the handoff, but do not create, edit, or re-status Memory without a separate explicit distillation or maintenance request.
-- If the user doesn't specify which task to work on, recommend the next task from the list.
+- After each TODO passes its verification, stage only that TODO's related files, update only its checkbox token, and create a separate commit before continuing. The commit must preserve the original `//TODO` text and must not include unrelated working-tree changes.
+- Continue through all requested unchecked TODOs without an intentional pause. Stop only for an actual verification failure, merge or working-tree conflict, commit failure, missing user decision, or user interruption, and report the exact blocker.
+- When all requested TODOs are complete, inspect only the Project Memory index for Capsules whose feature, tags, summary, Source Spec, or authorities overlap the changed paths. Report likely impact candidates in the handoff, but do not create, edit, or re-status Memory without a separate explicit distillation or maintenance request.
+- If the task file has no unchecked TODOs, report that it is already complete. If the requested task file or TODO cannot be resolved, ask for the exact path or number before modifying files.
 
 ### Task Questions
 Answer task-information requests without modifying code, Spec files, or checkbox state. For example, if the user asks what the next task is, provide the information without starting any task.

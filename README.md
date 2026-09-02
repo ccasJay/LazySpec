@@ -5,7 +5,7 @@
 ## 工作流程
 
 ```text
-正常链路：Brainstorming → Requirements → Design → Tasks → 按需执行单个任务
+正常链路：Brainstorming → Requirements → Design → Tasks → 按需执行任务清单
 fast 链路：讨论 → plan.md → 一次审批 → 连续执行全部任务
 ```
 
@@ -81,8 +81,11 @@ Plugin 或 Skill 未出现时，按以下顺序排查：
 # 修改已有需求
 使用 using-lazyspec 修改 specs/user-authentication/requirements.md，新增账户锁定要求。
 
-# 执行单个任务
-使用 using-lazyspec 执行 specs/user-authentication/tasks.md 中的任务 2.1。
+# 执行全部任务
+使用 using-lazyspec 执行 specs/user-authentication/tasks.md 中的全部 TODO。
+
+# 只执行指定 TODO
+使用 using-lazyspec 执行 specs/user-authentication/tasks.md 中的 TODO 2.1。
 
 # fast 模式创建轻量新功能
 使用 using-lazyspec 以 fast 模式为“导出 CSV”创建 plan 并执行。
@@ -90,7 +93,7 @@ Plugin 或 Skill 未出现时，按以下顺序排查：
 
 新功能会先进入 Brainstorming（显式请求 fast 模式时除外）；修改已有
 `requirements.md` 时默认直接进入 Requirements。执行任务前会读取该功能的全部
-Spec，并且一次只执行一个任务；fast 模式审批后则连续执行 plan 中的全部任务。
+Spec。用户明确要求执行 `tasks.md` 时，默认创建 `codex/<feature-name>` 特性分支，按顺序完成全部未完成 TODO，并在每个 TODO 验证通过后单独提交，中途不等待逐项确认；只有用户明确指定某个 TODO 编号时才限制为单项执行。fast 模式审批后则连续执行 plan 中的全部任务。
 
 ## Spec 产物
 
