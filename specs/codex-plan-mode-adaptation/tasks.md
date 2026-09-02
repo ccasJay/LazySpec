@@ -2,7 +2,7 @@
 
 每项任务完成后必须保持代码与 Skill 文档处于可用状态；用户明确执行本任务清单时，默认在特性分支上按顺序完成全部未完成 TODO，并在每个 TODO 验证通过后单独提交；只有用户明确指定 TODO 编号时才限制为单项执行。始终保留 `//TODO` 及其后的任务文本。
 
-- [ ] //TODO 1. 实现 Codex Plan Mode 路由与会话契约
+- [x] //TODO 1. 实现 Codex Plan Mode 路由与会话契约
 
   - 修改 `using-lazyspec/SKILL.md`，仅在新功能、Codex 运行时明确处于 Plan Mode 且尚无 `requirements.md` 时跳过标准 `brainstorming`，并将下一阶段保持为 `requirements`。
   - 增加 `RuntimeMode`、`CodexPlanArtifact` 和 `BrainstormingInput` 的逻辑契约；只在非空计划获得用户明确批准后建立会话产物，并保留完整原文。

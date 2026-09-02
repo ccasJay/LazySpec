@@ -77,9 +77,36 @@ interface RelevantMemoryContext {
 
 Inspect the requested feature's `specs/{feature_name}/requirements.md`, `design.md`, and `tasks.md` under `ACTIVE_PROJECT_ROOT`, the user's request, and explicit approvals available in the current conversation. Do not infer approval from file existence.
 
+### Codex Plan Mode 适配
+
+Codex 原生 Plan Mode 只作为新功能创建前的 Brainstorming 输入来源，不是新的 LazySpec 阶段。适配只依赖 Codex 运行时明确提供的模式标记，不猜测环境变量、文件名、用户措辞或其他信号。
+
+```ts
+interface RuntimeMode {
+  readonly platform: "codex" | "non-codex" | "unknown";
+  readonly planMode: "active" | "inactive" | "unknown";
+}
+
+interface CodexPlanArtifact {
+  readonly source: "codex-plan-mode";
+  readonly content: string;
+  readonly approved: true;
+}
+
+type BrainstormingInput =
+  | BrainstormingContext
+  | CodexPlanArtifact;
+```
+
+只有当 `RuntimeMode.platform` 为 `codex`、`RuntimeMode.planMode` 为 `active`、计划原文 `content.trim()` 非空，并且用户已明确批准该原生计划时，才建立 `CodexPlanArtifact`。适配层不要求固定章节、字段或额外头部；传递给 Requirements 的 `content` 必须是批准时的完整原文。`CodexPlanArtifact` 与运行时标记只保留在当前会话中，不序列化或写入项目文件。
+
+在首次创建且不存在 `requirements.md` 时，Codex Plan Mode 的有效产物直接路由到 `writing-requirement`，其 `RouteDecision.stage` 仍为 `"requirements"`；不得调用标准 `brainstorming`。计划批准前不得调用 `writing-requirement`。已知处于非 Codex 环境或 Codex 非 Plan Mode 时，继续走标准 `brainstorming`；平台或模式无法确认时不得自动选择任一分支，必须停留并要求用户明确切换到标准 Brainstorming 或补充有效的 Codex Plan Mode 计划。
+
 1. For the first creation of `requirements.md`, when that file does not exist:
-   - Route to `brainstorming`.
-   - Do not route to `writing-requirement` until Brainstorming has an explicitly approved session context containing objective, scope, constraints, success criteria, and selected approach.
+   - Apply the Codex Plan Mode adapter above when the runtime explicitly reports Codex Plan Mode; route an approved non-empty plan directly to `writing-requirement` without invoking standard `brainstorming`.
+   - Otherwise, when the runtime is known to be non-Codex or not in Plan Mode, route to `brainstorming`.
+   - Do not route to `writing-requirement` until the selected input has been explicitly approved. Standard Brainstorming still requires a session context containing objective, scope, constraints, success criteria, and selected approach.
+   - When the runtime platform or mode is unknown, stop and require an explicit route choice instead of guessing.
    - After the approved context is available, route to `writing-requirement`.
 
 2. For a revision of an existing `requirements.md`:

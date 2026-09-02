@@ -82,6 +82,25 @@ class SkillContractTests(unittest.TestCase):
             self.assertIn("checkbox token from `[ ]` to `[x]`", text)
             self.assertIn("`//TODO`", text)
 
+    def test_codex_plan_mode_routing_contract(self):
+        routing = (ROOT / "using-lazyspec" / "SKILL.md").read_text()
+        for token in (
+            "RuntimeMode",
+            'platform: "codex" | "non-codex" | "unknown"',
+            'planMode: "active" | "inactive" | "unknown"',
+            "CodexPlanArtifact",
+            'source: "codex-plan-mode"',
+            "BrainstormingInput",
+            "content.trim()",
+            "requirements.md",
+            'RouteDecision.stage` 仍为 `"requirements"',
+        ):
+            with self.subTest(token=token):
+                self.assertIn(token, routing)
+        self.assertIn("不得调用标准 `brainstorming`", routing)
+        self.assertIn("不得自动选择任一分支", routing)
+        self.assertIn("不序列化或写入项目文件", routing)
+
     def test_brainstorming_requires_separate_context_approval(self):
         text = (ROOT / "brainstorming" / "SKILL.md").read_text()
         self.assertIn("Selecting an approach records only `selectedApproach`", text)
