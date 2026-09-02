@@ -23,7 +23,7 @@
   - 验证既有 Spec 显式重新规划只更新会话 Context，不自动修改已有 Spec 文件；默认既有 Requirements 路由保持不变。
   - _Requirements: [3.3](./requirements.md#req-3-3), [3.4](./requirements.md#req-3-4), [5.2](./requirements.md#req-5-2), [5.3](./requirements.md#req-5-3)_
 
-- [ ] //TODO 4. 锁定标准三阶段与既有任务兼容性
+- [x] //TODO 4. 锁定标准三阶段与既有任务兼容性
 
   - 核对并按需调整 `using-lazyspec/SKILL.md`、`writing-requirement/SKILL.md` 和 `writing-task/SKILL.md`，确保 Requirements、Design、Tasks 的审批门继续独立生效。
   - 增加验证，确认 Tasks 审批只结束规划，不自动实施，并保留任务查询、完整 Spec 读取、逐 TODO 提交和 `//TODO` 文本规则。

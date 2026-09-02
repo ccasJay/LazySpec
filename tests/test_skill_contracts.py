@@ -118,6 +118,41 @@ class SkillContractTests(unittest.TestCase):
             with self.subTest(token=token):
                 self.assertIn(token, routing)
 
+    def test_downstream_approval_and_compatibility_boundaries(self):
+        routing = (ROOT / "using-lazyspec" / "SKILL.md").read_text()
+        requirements = (ROOT / "writing-requirement" / "SKILL.md").read_text()
+        design = (ROOT / "writing-design" / "SKILL.md").read_text()
+        tasks = (ROOT / "writing-task" / "SKILL.md").read_text()
+        brainstorming = (ROOT / "brainstorming" / "SKILL.md").read_text()
+
+        self.assertIn(
+            "For Design, route to `writing-design` only after Requirements has explicit user approval",
+            routing,
+        )
+        self.assertIn(
+            "For Tasks, route to `writing-task` only after Design has explicit user approval",
+            routing,
+        )
+        self.assertIn(
+            "known to be non-Codex or not in Plan Mode, route to `brainstorming`",
+            routing,
+        )
+        self.assertIn(
+            "Route to `brainstorming` first only when the user explicitly requests it",
+            routing,
+        )
+        self.assertIn("Only explicit approval in the current conversation records Requirements approval", requirements)
+        self.assertIn("MUST NOT proceed to the design document", requirements)
+        self.assertIn("Only explicit approval in the current conversation records Design approval", design)
+        self.assertIn("MUST NOT proceed to the implementation plan", design)
+        self.assertIn("Approval ends planning and MUST NOT start implementation", tasks)
+        self.assertIn("complete `requirements.md`, `design.md`, and `tasks.md`", routing)
+        self.assertIn("all currently unchecked TODOs", routing)
+        self.assertIn("After each TODO passes its verification", routing)
+        self.assertIn("Answer task questions without starting work", routing)
+        self.assertIn("`//TODO`", tasks)
+        self.assertIn("ask a separate approval question", brainstorming)
+
     def test_requirement_writer_accepts_codex_plan_artifact(self):
         skill = (ROOT / "writing-requirement" / "SKILL.md").read_text()
         prompt = (ROOT / "writing-requirement" / "requirement-prompt.md").read_text()
