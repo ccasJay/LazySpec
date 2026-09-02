@@ -239,14 +239,14 @@ class MemorySkillContractTests(unittest.TestCase):
             "read that current authority",
             "must not override current implementation evidence",
             "Never place a non-`active` item in `memories`",
-            "one-task execution boundary",
+            "user's explicit task scope",
         ):
             with self.subTest(required=required):
                 self.assertIn(required, text)
 
     def test_final_task_reports_memory_impact_without_writing(self):
         text = (ROUTER_ROOT / "SKILL.md").read_text()
-        self.assertIn("final unchecked checkbox", text)
+        self.assertIn("When all requested TODOs are complete", text)
         self.assertIn("Report likely impact candidates", text)
         self.assertIn("do not create, edit, or re-status Memory", text)
 

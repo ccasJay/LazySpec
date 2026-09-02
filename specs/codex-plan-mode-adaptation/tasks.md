@@ -30,7 +30,7 @@
   - 对 Codex 普通模式、非 Codex 环境和既有任务路径执行兼容性回归，确认标准 Brainstorming 与原有行为不变。
   - _Requirements: [4.2](./requirements.md#req-4-2), [4.3](./requirements.md#req-4-3), [4.4](./requirements.md#req-4-4), [5.1](./requirements.md#req-5-1), [5.4](./requirements.md#req-5-4)_
 
-- [ ] //TODO 5. 增加 Codex Plan Mode 隔离工作流回归验证
+- [x] //TODO 5. 增加 Codex Plan Mode 隔离工作流回归验证
 
   - 新增或扩展 Skill 契约测试，覆盖新建 Spec 的成功路由、原文传递、未批准/空计划/未知模式阻塞及无持久化产物。
   - 在隔离项目或会话场景中覆盖非 Codex、Codex 普通模式、既有 Spec 重新规划，以及 Requirements → Design → Tasks 的完整审批链。
