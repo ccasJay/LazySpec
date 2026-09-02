@@ -78,6 +78,7 @@ class SkillContractTests(unittest.TestCase):
         self.assertIn("After each TODO passes its verification", routing)
         self.assertNotIn("Only focus on ONE user-selected task", routing)
         self.assertNotIn("If multiple tasks are requested, ask the user to select one", routing)
+        self.assertNotIn("execute only one requested task at a time", routing)
         for text in (routing, planning):
             self.assertIn("checkbox token from `[ ]` to `[x]`", text)
             self.assertIn("`//TODO`", text)
@@ -100,6 +101,22 @@ class SkillContractTests(unittest.TestCase):
         self.assertIn("不得调用标准 `brainstorming`", routing)
         self.assertIn("不得自动选择任一分支", routing)
         self.assertIn("不序列化或写入项目文件", routing)
+
+    def test_codex_plan_mode_failure_and_session_boundaries(self):
+        routing = (ROOT / "using-lazyspec" / "SKILL.md").read_text()
+        for token in (
+            "fail closed",
+            "计划不存在或为空",
+            "计划已生成但未批准",
+            "平台或模式未知",
+            "不得创建或更新 `requirements.md`",
+            "不得创建 `plan.md`、Brainstorming 文档",
+            "旧的 `CodexPlanArtifact` 与批准状态立即失效",
+            "重新规划",
+            "已有 `requirements.md` 且用户未明确要求重新规划",
+        ):
+            with self.subTest(token=token):
+                self.assertIn(token, routing)
 
     def test_requirement_writer_accepts_codex_plan_artifact(self):
         skill = (ROOT / "writing-requirement" / "SKILL.md").read_text()

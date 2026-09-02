@@ -73,7 +73,7 @@ interface RelevantMemoryContext {
 ```
 
 6. If there is no related valid `active` row, use an empty context and continue. If the user explicitly asks to trace history or review Memory status, select up to three matching `needs-review`, `superseded`, or `obsolete` rows separately, preserve their actual status, and attach a Chinese warning that they are not current facts. Never place a non-`active` item in `memories` or present it without the warning.
-7. Pass `RelevantMemoryContext` as advisory input to the selected phase. If the request changes or disputes a listed authority, read that current authority and its relevant source/tests before relying on the Capsule. Memory may inform questions, requirements, design, tasks, or implementation, but it must not override current implementation evidence, approve a phase, reorder Brainstorming → Requirements → Design → Tasks, bypass a task gate, or expand the one-task execution boundary. A missing index, no hit, omitted-over-three result, or maintenance warning is never a phase error.
+7. Pass `RelevantMemoryContext` as advisory input to the selected phase. If the request changes or disputes a listed authority, read that current authority and its relevant source/tests before relying on the Capsule. Memory may inform questions, requirements, design, tasks, or implementation, but it must not override current implementation evidence, approve a phase, reorder Brainstorming → Requirements → Design → Tasks, bypass a task gate, or expand the user's explicit task scope. A missing index, no hit, omitted-over-three result, or maintenance warning is never a phase error.
 
 Inspect the requested feature's `specs/{feature_name}/requirements.md`, `design.md`, and `tasks.md` under `ACTIVE_PROJECT_ROOT`, the user's request, and explicit approvals available in the current conversation. Do not infer approval from file existence.
 
@@ -102,6 +102,10 @@ type BrainstormingInput =
 
 在首次创建且不存在 `requirements.md` 时，Codex Plan Mode 的有效产物直接路由到 `writing-requirement`，其 `RouteDecision.stage` 仍为 `"requirements"`；不得调用标准 `brainstorming`。计划批准前不得调用 `writing-requirement`。已知处于非 Codex 环境或 Codex 非 Plan Mode 时，继续走标准 `brainstorming`；平台或模式无法确认时不得自动选择任一分支，必须停留并要求用户明确切换到标准 Brainstorming 或补充有效的 Codex Plan Mode 计划。
 
+适配器必须对无效或未完成输入 fail closed：计划不存在或为空时，提示先补全非空计划并明确批准；计划已生成但未批准时，说明尚未获得用户批准；平台或模式未知时，说明无法确认运行时状态。以上情况都必须停留在当前会话，不得调用 `writing-requirement`，也不得创建或更新 `requirements.md`。下一步只能是补全并批准当前计划，或由用户明确切换到标准 Brainstorming。计划原文被修改、用户要求重新规划或当前产物内容发生变化时，旧的 `CodexPlanArtifact` 与批准状态立即失效，必须重新获得明确批准。
+
+Codex Plan Mode 适配过程只维护会话内输入，不得创建 `plan.md`、Brainstorming 文档或其他持久化中间产物。对已有 Spec 的显式重新规划同样只更新当前会话 Context；当已有 `requirements.md` 且用户未明确要求重新规划时，继续直接进入 `writing-requirement`，不得因适配自动修改既有 Spec 文件。
+
 1. For the first creation of `requirements.md`, when that file does not exist:
    - Apply the Codex Plan Mode adapter above when the runtime explicitly reports Codex Plan Mode; route an approved non-empty plan directly to `writing-requirement` without invoking standard `brainstorming`.
    - Otherwise, when the runtime is known to be non-Codex or not in Plan Mode, route to `brainstorming`.
@@ -116,7 +120,7 @@ type BrainstormingInput =
 
 3. For Design, route to `writing-design` only after Requirements has explicit user approval. For Tasks, route to `writing-task` only after Design has explicit user approval. Preserve each downstream Skill's approval gate.
 
-4. For questions about existing Spec tasks or requests to execute an existing task, apply the task instructions below. Answer task questions without starting work, and execute only one requested task at a time.
+4. For questions about existing Spec tasks or requests to execute an existing task, apply the task instructions below. Answer task questions without starting work; when execution is explicitly requested, follow the full TODO scope stated by the user.
 
 ## Workflow Diagram
 
@@ -142,7 +146,7 @@ stateDiagram-v2
   ReviewTasks --> Tasks : Feedback/Changes Requested
   ReviewTasks --> [*] : Explicit Approval
   
-  Execute : Execute Task
+  Execute : Execute Requested Tasks
 
   FastPlan : Fast Plan (plan.md)
   FastExecute : Execute All Tasks Continuously
@@ -155,10 +159,10 @@ stateDiagram-v2
       [*] --> Requirements : Update existing requirements
       [*] --> Design : Update existing design
       [*] --> Tasks : Update existing tasks
-      [*] --> Execute : Execute task
+      [*] --> Execute : Execute requested tasks
   }
 
-  Execute --> [*] : Complete
+  Execute --> [*] : All requested TODOs complete
 ```
 
 ## Task Instructions

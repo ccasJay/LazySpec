@@ -16,7 +16,7 @@
   - 保留 Requirements 自己的文档生成与独立审批行为，并增加原文保真度验证。
   - _Requirements: [2.1](./requirements.md#req-2-1), [2.2](./requirements.md#req-2-2), [2.3](./requirements.md#req-2-3), [2.4](./requirements.md#req-2-4), [4.1](./requirements.md#req-4-1)_
 
-- [ ] //TODO 3. 实现阻塞、重规划与会话不落盘边界
+- [x] //TODO 3. 实现阻塞、重规划与会话不落盘边界
 
   - 在 `using-lazyspec` 中补齐空计划、未批准计划和未知模式的阻塞反馈，说明原因及补全批准或明确切换标准 Brainstorming 的下一步。
   - 处理计划修改导致的批准失效，并确保适配过程不创建 `plan.md`、Brainstorming 文档或其他持久化中间产物。
