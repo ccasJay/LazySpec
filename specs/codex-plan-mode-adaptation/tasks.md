@@ -9,7 +9,7 @@
   - 增加针对 active、inactive 和未批准状态的聚焦契约验证。
   - _Requirements: [1.1](./requirements.md#req-1-1), [1.2](./requirements.md#req-1-2), [1.3](./requirements.md#req-1-3), [3.1](./requirements.md#req-3-1), [3.2](./requirements.md#req-3-2)_
 
-- [ ] //TODO 2. 接通 CodexPlanArtifact 到 Requirements 阶段
+- [x] //TODO 2. 接通 CodexPlanArtifact 到 Requirements 阶段
 
   - 修改 `writing-requirement/SKILL.md` 与 `requirement-prompt.md`，让 Requirements 同时接收标准 `BrainstormingContext` 和完整 Codex 计划。
   - 保证 Codex 计划不需要固定字段或额外头部，且原始 Markdown、换行和长文本在传递时不被摘要、改写或截断。

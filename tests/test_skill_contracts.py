@@ -101,6 +101,24 @@ class SkillContractTests(unittest.TestCase):
         self.assertIn("不得自动选择任一分支", routing)
         self.assertIn("不序列化或写入项目文件", routing)
 
+    def test_requirement_writer_accepts_codex_plan_artifact(self):
+        skill = (ROOT / "writing-requirement" / "SKILL.md").read_text()
+        prompt = (ROOT / "writing-requirement" / "requirement-prompt.md").read_text()
+        for text in (skill, prompt):
+            with self.subTest(document=text[:40]):
+                self.assertIn("CodexPlanArtifact", text)
+                self.assertIn("complete `content`", text)
+                self.assertIn("Markdown", text)
+                self.assertIn("line breaks", text)
+                self.assertIn("long text", text)
+                self.assertIn("summarize", text)
+                self.assertIn("rewrite", text)
+                self.assertIn("truncate", text)
+        self.assertIn("does not need those five fields", skill)
+        self.assertIn("lacking the `BrainstormingContext` shape", prompt)
+        self.assertIn("Plan approval is not Requirements approval", skill)
+        self.assertIn("request the Requirements approval separately", prompt)
+
     def test_brainstorming_requires_separate_context_approval(self):
         text = (ROOT / "brainstorming" / "SKILL.md").read_text()
         self.assertIn("Selecting an approach records only `selectedApproach`", text)
