@@ -80,14 +80,16 @@ class CodexPlanModeWorkflowContractTests(unittest.TestCase):
             ROUTER,
         )
         self.assertIn(
-            "Only explicit approval in the current conversation records Requirements approval",
+            "Only explicit approval in the current conversation records approval of the current `审批摘要`",
             REQUIREMENT_SKILL,
         )
+        self.assertIn("Any material change invalidates prior approval", REQUIREMENT_SKILL)
         self.assertIn("MUST NOT proceed to the design document", REQUIREMENT_SKILL)
         self.assertIn(
-            "Only explicit approval in the current conversation records Design approval",
+            "Only explicit approval in the current conversation records approval of the current `审批摘要`",
             DESIGN_SKILL,
         )
+        self.assertIn("Any material change invalidates prior approval", DESIGN_SKILL)
         self.assertIn("MUST NOT proceed to the implementation plan", DESIGN_SKILL)
         self.assertIn("Approval ends planning and MUST NOT start implementation", TASK_SKILL)
         self.assertIn("complete `requirements.md`, `design.md`, and `tasks.md`", ROUTER)

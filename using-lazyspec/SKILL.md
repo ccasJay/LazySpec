@@ -11,9 +11,22 @@ description: Route LazySpec requests to Brainstorming, requirements, design, tas
 ## Minimum-Sufficient Documentation
 - Default to the shortest document that remains reviewable, verifiable, and executable.
 - Put information in exactly one phase: Requirements define observable behavior, Design records implementation decisions, and Tasks identify coding actions and automated verification.
-- Refer to upstream requirement IDs instead of restating upstream content. Do not repeat the same rationale, constraint, or procedure in multiple sections.
+- Other than the bounded Human-First `审批摘要` projection defined below, refer to upstream requirement IDs instead of restating upstream content. Do not repeat the same rationale, constraint, or procedure in multiple detailed sections.
 - Expand a section only when omitting it would create a material implementation ambiguity or the user explicitly requests more detail. An explicit request expands only the relevant section; it does not enable a separate verbose mode.
 - Treat phase length targets as soft limits. Before exceeding one, remove repetition, merge closely related items, or recommend splitting an oversized Spec. Never truncate distinct approved behavior merely to meet a target.
+
+## Human-First Approval Contract
+
+Apply this contract to generated or revised Requirements and Design documents. Tasks, Brainstorming, fast mode, and Memory keep their existing approval objects.
+
+- Put a Chinese `审批摘要` at the top of each Requirements and Design document. It is the user-facing approval contract; the detailed body is the Agent-facing elaboration and MUST remain consistent with, and bounded by, the approved summary.
+- Treat observable behavior, scope and exclusions, public interfaces or data changes, compatibility, external side effects, security or privacy, failure and recovery behavior, key technical choices, and their risks as material. Treat filenames, internal helpers, code organization, test layout, and equivalent implementation refinements as non-material only when they do not alter any material item. When uncertain, classify a change as material.
+- Before requesting approval, verify internally that every material body item is represented directly or by one unambiguous group in `审批摘要`. A missing material item or any summary/body conflict blocks approval.
+- Let the model adapt the summary to the feature's cognitive complexity instead of enforcing a fixed item or character count. Aim for a complete one-screen review. If that is impossible without hiding material information, pause approval and recommend splitting the Spec; expand the summary only after the user explicitly chooses to keep one Spec.
+- Approval covers the current summary's material intent, decisions, and risks, plus the body's consistency with it. A material change invalidates the prior approval. A non-material body-only refinement that leaves the summary true and complete does not require reapproval.
+- After a material revision, update the complete summary in the document and present a concise conversation delta covering additions, changes, removals, and risk changes before asking for approval again.
+- Do not bulk-migrate existing Specs. Add `审批摘要` when a Requirements or Design document is next created or revised; an already approved legacy Requirements document may still be used to create Design without being rewritten.
+- Every downstream phase MUST treat an approved `审批摘要` as the upper-level material contract while continuing to read the complete Spec body for implementation detail.
 
 ## Routing Protocol
 Use this Skill as the single entry point. Route by logical Skill name and read only that Skill's required resources; do not copy a phase's detailed body here.
@@ -183,14 +196,14 @@ stateDiagram-v2
 Answer task-information requests without modifying code, Spec files, or checkbox state. For example, if the user asks what the next task is, provide the information without starting any task.
 
 ## Approval Protocol
-After every Requirements, Design, or Tasks update or revision, request approval in this order:
+After every new Requirements or Design document, every material Requirements or Design revision, and every Tasks update or revision, request approval in this order. Before initial approval, any requested edit remains in the current phase and is followed by another approval request; after approval, only a material Requirements or Design change invalidates it.
 
 1. If `AskUserQuestion` is available, call it with only its supported `questions` input. Use one question object with `question`, `header`, `options`, and `multiSelect`; use `Review` as the header, the two single-choice options `Approve` and `Request changes`, and `multiSelect: false`. Do not add unsupported top-level or question fields.
 2. Otherwise, if the environment provides an equivalent user-question tool, use it with the same single-choice meaning and only fields supported by that tool.
 3. Otherwise, ask the phase's approval question directly in the conversation and stop while awaiting the answer.
 
-- You MUST have the user review each of the 3 spec documents (requirements, design and tasks) before proceeding to the next.
-- Only an explicit approval in the current conversation (a clear "yes", "approved", selecting `Approve`, or equivalent affirmative response) records approval. File existence, timeout, silence, explanations, ambiguous replies, and requested changes do not imply approval.
+- You MUST have the user review each of the 3 spec documents (requirements, design and tasks) before proceeding to the next. For Requirements and Design, review the Human-First `审批摘要` and its consistency with the detailed body; Tasks keeps the complete task document as its approval object.
+- Only an explicit approval in the current conversation (a clear "yes", "approved", selecting `Approve`, or equivalent affirmative response) records approval of the current phase's approval object. File existence, timeout, silence, explanations, ambiguous replies, and requested changes do not imply approval.
 - You MUST NOT proceed to the next phase until you receive explicit approval from the user.
-- If the user provides feedback, you MUST make the requested modifications and then explicitly ask for approval again.
+- If the user provides material feedback, you MUST make the requested modifications, update the complete `审批摘要`, present the revision delta, and then explicitly ask for approval again. A verified non-material body-only refinement does not invalidate approval.
 - Follow workflow steps sequentially without skipping or combining phases.

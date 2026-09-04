@@ -141,9 +141,17 @@ class SkillContractTests(unittest.TestCase):
             "Route to `brainstorming` first only when the user explicitly requests it",
             routing,
         )
-        self.assertIn("Only explicit approval in the current conversation records Requirements approval", requirements)
+        self.assertIn(
+            "Only explicit approval in the current conversation records approval of the current `审批摘要`",
+            requirements,
+        )
+        self.assertIn("Any material change invalidates prior approval", requirements)
         self.assertIn("MUST NOT proceed to the design document", requirements)
-        self.assertIn("Only explicit approval in the current conversation records Design approval", design)
+        self.assertIn(
+            "Only explicit approval in the current conversation records approval of the current `审批摘要`",
+            design,
+        )
+        self.assertIn("Any material change invalidates prior approval", design)
         self.assertIn("MUST NOT proceed to the implementation plan", design)
         self.assertIn("Approval ends planning and MUST NOT start implementation", tasks)
         self.assertIn("complete `requirements.md`, `design.md`, and `tasks.md`", routing)
