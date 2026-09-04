@@ -13,6 +13,14 @@ Maintain a small corpus of current decision summaries. Treat Specs and Git as hi
 - Write user-facing analysis, blockers, previews, approval requests, and reports in Chinese unless the user requests another language.
 - Bind `ACTIVE_PROJECT_ROOT` to the user's project working directory. Resolve every Spec, Capsule, source, authority, command, and index path against it; never derive the project root from this Skill's installation path.
 
+## Conversation output policy
+
+- The conversation is a status and approval channel, not the full Memory payload.
+- Keep the complete evidence matrix, candidate Capsule content, generated index, relationship changes, and logical write set in a preview artifact outside `ACTIVE_PROJECT_ROOT/project-memory/` (for example, a temporary file or a host-supported artifact). Do not paste those full contents into the chat.
+- In chat, provide only a concise 1–3 sentence summary: what was reviewed, whether verification passed, what will be written, and the preview artifact path or link.
+- When approval is required, ask the user to approve that exact preview artifact. Include its path or link and, when available, a content hash or stable identifier. Never infer approval from silence or from approval of a different preview.
+- If a preview artifact cannot be exposed to the user, stop and report that limitation rather than dumping the full payload into the chat.
+
 ## Load the active contract
 
 Before preparing or validating Memory:
@@ -33,7 +41,7 @@ If the local contract conflicts with the fallback, follow the local contract and
 
 ## Gate before preview
 
-Keep all analysis and candidate text in the conversation until the gate passes:
+Keep all analysis and candidate text in the preview artifact until the gate passes; do not write under `project-memory/`:
 
 1. Resolve and read the complete `requirements.md`, `design.md`, and `tasks.md` for every source Feature involved.
 2. Verify that every task checkbox, including nested checkboxes, is `[x]` or `[X]`.
@@ -45,7 +53,7 @@ On any failure, report the exact path, task, check, or confirmation missing and 
 
 ## Build an evidence matrix
 
-Reconcile each candidate claim against approved intent and current implementation. Keep this matrix in the conversation only:
+Reconcile each candidate claim against approved intent and current implementation. Keep the complete matrix in the preview artifact; summarize its outcome in the conversation only:
 
 | Claim | Spec anchors | Implementation evidence | Test evidence | Existing owner | Result |
 |---|---|---|---|---|---|
@@ -70,15 +78,15 @@ Use index feature, summary, tags, Source Spec, and authorities to select only po
 
 ## Preview and approval
 
-The preview is the approval object. Show, in Chinese:
+The preview artifact is the approval object. Make it available to the user, and summarize it in Chinese in the chat without reproducing its full contents:
 
-- every complete proposed Capsule, including frontmatter, body, sources, and stable decision IDs;
-- the complete generated index or exact index change;
-- every status and reciprocal relationship change;
-- the evidence matrix summary, conflicts, and user rulings; and
-- the complete project-root-relative logical write set.
+- Include every complete proposed Capsule, including frontmatter, body, sources, and stable decision IDs in the preview artifact;
+- include the complete generated index or exact index change;
+- include every status and reciprocal relationship change;
+- include the evidence matrix summary, conflicts, and user rulings; and
+- include the complete project-root-relative logical write set.
 
-Ask for explicit approval of that exact preview. Any requested edit invalidates the previous approval: revise and show the complete preview again. Completion confirmation is not preview approval, and one preview never authorizes another Feature.
+Ask for explicit approval of that exact preview artifact. Any requested edit invalidates the previous approval: revise the artifact, provide its new path or identifier, and summarize the changes. Completion confirmation is not preview approval, and one preview never authorizes another Feature.
 
 ## Write and verify atomically
 
@@ -103,7 +111,7 @@ Allow `active → active` maintenance, `active → needs-review`, `needs-review 
 
 ## Write boundary
 
-- Keep evidence and candidate content in the conversation before exact preview approval.
+- Keep evidence and candidate content in the linked preview artifact before exact preview approval; do not paste the full payload into the conversation.
 - Treat all approved Capsule revisions, status relationships, and the generated index as one logical write set.
 - Do not delete, move, rename, or overwrite source Specs.
 - Stop after the requested Memory operation; do not begin another Feature automatically.

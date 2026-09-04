@@ -11,7 +11,9 @@ description: Create or revise a LazySpec requirements.md after approved brainsto
 - Write all user-visible prose in generated `requirements.md` content in Chinese, including the title, headings, introduction, user stories, and acceptance criteria.
 - Preserve project-specific names, code identifiers, filenames, Markdown syntax, and HTML anchor IDs when necessary.
 
-For a new feature, require a complete, explicitly approved `BrainstormingContext` from the current session before creating `requirements.md`. It must contain the confirmed objective, scope, constraints, success criteria, and selected approach. If it is missing, incomplete, unapproved, or lost, return to `brainstorming`; do not infer or restore it from disk.
+For a new feature, require one explicitly approved input from the current session before creating `requirements.md`: either a complete `BrainstormingContext` or a non-empty, explicitly approved `CodexPlanArtifact` received from the `using-lazyspec` Codex Plan Mode adapter. A standard `BrainstormingContext` must contain the confirmed objective, scope, constraints, success criteria, and selected approach. A `CodexPlanArtifact` is valid only with `source: "codex-plan-mode"`, a non-empty `content`, and `approved: true`; it does not need those five fields, fixed sections, or an extra header. If the selected input is missing, incomplete, unapproved, invalid, or lost, do not create or update `requirements.md`; return to the router for the appropriate clarification or standard `brainstorming` path. Never infer or restore either input from disk.
+
+When the input is a `CodexPlanArtifact`, use its complete `content` as the Requirements context. Preserve the original Markdown, line breaks, and long text exactly while passing it through the session; do not summarize, rewrite, normalize, truncate, or require a schema before deriving observable requirements. Plan approval is not Requirements approval. If the plan leaves a material gap, remain in Requirements and ask a targeted clarification question before drafting or advancing.
 
 For an existing `requirements.md`, use the existing document and explicit user feedback. Do not automatically rerun Brainstorming.
 
@@ -19,20 +21,30 @@ Before drafting or revising requirements, read `requirement-prompt.md` and `requ
 
 Prefix every numbered acceptance criterion with exactly one HTML anchor on the same line, using `req-<requirement-number>-<criterion-number>` as the unique ID. The numbers MUST match the criterion's requirement and ordinal, every acceptance criterion MUST have an anchor, and each anchor ID MUST occur exactly once in `requirements.md`.
 
+## Human-First Review Summary
+
+- Put `## 审批摘要` immediately after the document title and before `## 引言`, with the Chinese subsections `目标`, `范围`, `核心行为`, and `风险与待确认`.
+- Treat this summary as the user-facing approval contract. The detailed user stories and EARS criteria may elaborate it, but MUST NOT add, omit, broaden, narrow, or contradict a material behavior, boundary, or risk.
+- Cover every materially distinct acceptance outcome in the summary. Group multiple criteria only when one concise statement preserves the same approval intent; keep HTML anchors and traceability links out of the summary.
+- Adapt summary length to cognitive complexity rather than a fixed numerical budget. Aim for a complete one-screen review. If that is impossible without concealing material information, stop before approval and recommend splitting the Spec; expand only after the user explicitly keeps one Spec.
+- Resolve every material open question before requesting approval. Use `风险与待确认` to state known risks and explicitly record that no material decision remains unresolved.
+- On a material revision, replace the summary with the complete current version and present a concise additions/changes/removals/risk delta in the conversation. A material change invalidates prior approval; a verified non-material body-only refinement does not.
+- For a legacy Requirements document without `审批摘要`, add the summary only when that document is next revised. Do not rewrite already approved legacy Requirements merely because a downstream phase reads it.
+
 ## Approval
 
-After every Requirements update or revision, request approval using this protocol:
+After creating Requirements or making a material revision, request approval using this protocol:
 
 1. If `AskUserQuestion` is available, call it with exactly this supported input shape and no extra fields:
 
    ```json
    {
      "questions": [{
-       "question": "Do the requirements look good? If so, we can move on to the design.",
+       "question": "审批摘要是否准确覆盖了需求的目标、范围、核心行为与风险？",
        "header": "Review",
        "options": [
-         {"label": "Approve", "description": "Approve Requirements and allow routing to Design."},
-         {"label": "Request changes", "description": "Keep the current phase and revise Requirements from my feedback."}
+         {"label": "Approve", "description": "批准当前摘要表达的实质需求，并允许进入 Design。"},
+         {"label": "Request changes", "description": "留在 Requirements，根据反馈更新摘要与正文。"}
        ],
        "multiSelect": false
      }]
@@ -42,7 +54,7 @@ After every Requirements update or revision, request approval using this protoco
 2. Otherwise, if the environment provides an equivalent user-question tool, use it with the same single-choice meaning and only fields that tool supports.
 3. Otherwise, ask the same approval question directly in the conversation and stop while awaiting the answer.
 
-Only explicit approval in the current conversation records Requirements approval. File existence, timeout, silence, explanations, ambiguous replies, and requested changes do not imply approval. For any non-approval response, remain in Requirements; apply requested changes when provided and request approval again.
+Only explicit approval in the current conversation records approval of the current `审批摘要` and its consistency with the detailed Requirements body. It does not mean the user approved every non-material implementation detail. File existence, timeout, silence, explanations, ambiguous replies, and requested changes do not imply approval. For any non-approval response, remain in Requirements; apply requested changes when provided and request approval again. Any material change invalidates prior approval; a verified non-material body-only refinement does not.
 
 ## Content Boundaries and Size
 
@@ -50,7 +62,7 @@ Only explicit approval in the current conversation records Requirements approval
 - Consolidate overlapping behavior into one requirement instead of creating separate requirements for normal flow, edge cases, user experience, technical constraints, and success criteria when they describe the same outcome.
 - Target at most 8 requirements, 2–5 acceptance criteria per requirement, and 30 acceptance criteria in total.
 - Treat these targets as soft limits. Exceed them only when merging would lose distinct approved behavior; first consider narrowing or splitting the Spec, and explain any necessary exception in the conversation rather than the document.
-- Keep the introduction to one short paragraph. Do not add summaries, glossaries, traceability tables, or repeated context unless the user explicitly needs them.
+- Keep the introduction to one short paragraph. Other than the required `审批摘要`, do not add summaries, glossaries, traceability tables, or repeated context unless the user explicitly needs them.
 
 **Constraints:**
 
@@ -58,13 +70,13 @@ Only explicit approval in the current conversation records Requirements approval
 - The model MUST generate an initial version of the requirements document based on the user's rough idea WITHOUT asking sequential questions first
 - The model MUST express EARS semantics naturally in Chinese and MUST NOT copy the literal English EARS keywords `WHEN`, `THEN`, or `SHALL` into the generated document.
 - The model MUST format the initial requirements.md document with:
-- A clear introduction section that summarizes the feature
+- A Human-First `审批摘要` before the introduction, followed by a clear introduction section that summarizes the feature
 - A hierarchical numbered list of requirements where each contains:
   - A user story written in Chinese using the role-goal-benefit structure
   - A numbered list of acceptance criteria in EARS format (Easy Approach to Requirements Syntax)
 - The model SHOULD include an edge case, user-experience constraint, technical constraint, or success criterion only when it creates a distinct observable and verifiable outcome
-- The model MUST make modifications to the requirements document if the user requests changes or does not explicitly approve
-- The model MUST ask for explicit approval after every iteration of edits to the requirements document
+- The model MUST make modifications to the requirements summary and body if the user requests changes or does not explicitly approve
+- The model MUST ask for explicit approval after every material iteration of edits to the requirements document; verified non-material body-only refinements preserve approval
 - The model MUST NOT proceed to the design document until receiving clear approval (such as "yes", "approved", "looks good", etc.)
 - The model MUST continue the feedback-revision cycle until explicit approval is received
 - The model SHOULD identify only gaps that would materially change observable behavior; it MUST NOT suggest speculative expansion by default

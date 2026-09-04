@@ -5,6 +5,26 @@
 ```markdown
 # [功能名称] 需求
 
+## 审批摘要
+
+### 目标
+
+[用一至两句说明用户最终获得的结果]
+
+### 范围
+
+- 包含：[本次交付的边界]
+- 不包含：[明确排除的内容]
+
+### 核心行为
+
+- [用户需要理解和批准的行为；可无歧义地归组多条详细验收标准]
+
+### 风险与待确认
+
+- 风险：[已知风险，若无则写“无”]
+- 待确认：无
+
 ## 引言
 
 [用一段简短中文说明目标和范围]
@@ -33,6 +53,9 @@
 ## Usage Guidelines
 
 - Replace [placeholder] with actual content
+- Treat `审批摘要` as the user-facing approval contract and keep the detailed body consistent with and bounded by it
+- Adapt the summary to cognitive complexity and aim for a complete one-screen review; recommend splitting the Spec when that is impossible without hiding material information
+- Keep HTML anchors and traceability syntax out of `审批摘要`
 - Use HTML anchors for traceability: <a id="req-1-1"></a>
 - Focus on observable and verifiable behavior
 - Keep total acceptance criteria under 30

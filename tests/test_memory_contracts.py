@@ -159,7 +159,11 @@ class MemorySkillContractTests(unittest.TestCase):
         text = (SKILL_ROOT / "SKILL.md").read_text()
         for required in (
             "## Preview and approval",
-            "The preview is the approval object",
+            "The preview artifact is the approval object",
+            "outside `ACTIVE_PROJECT_ROOT/project-memory/`",
+            "concise 1–3 sentence summary",
+            "approve that exact preview artifact",
+            "content hash or stable identifier",
             "every complete proposed Capsule",
             "complete generated index",
             "complete project-root-relative logical write set",
@@ -239,14 +243,14 @@ class MemorySkillContractTests(unittest.TestCase):
             "read that current authority",
             "must not override current implementation evidence",
             "Never place a non-`active` item in `memories`",
-            "one-task execution boundary",
+            "user's explicit task scope",
         ):
             with self.subTest(required=required):
                 self.assertIn(required, text)
 
     def test_final_task_reports_memory_impact_without_writing(self):
         text = (ROUTER_ROOT / "SKILL.md").read_text()
-        self.assertIn("final unchecked checkbox", text)
+        self.assertIn("When all requested TODOs are complete", text)
         self.assertIn("Report likely impact candidates", text)
         self.assertIn("do not create, edit, or re-status Memory", text)
 
