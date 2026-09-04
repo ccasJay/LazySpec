@@ -159,7 +159,11 @@ class MemorySkillContractTests(unittest.TestCase):
         text = (SKILL_ROOT / "SKILL.md").read_text()
         for required in (
             "## Preview and approval",
-            "The preview is the approval object",
+            "The preview artifact is the approval object",
+            "outside `ACTIVE_PROJECT_ROOT/project-memory/`",
+            "concise 1–3 sentence summary",
+            "approve that exact preview artifact",
+            "content hash or stable identifier",
             "every complete proposed Capsule",
             "complete generated index",
             "complete project-root-relative logical write set",
