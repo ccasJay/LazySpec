@@ -10,6 +10,17 @@ Turn a feature idea into an explicitly approved direction that LazySpec can use 
 ## Rule
 - The output content should all be in chinese, except the key word from the project
 
+## Human-First Interaction
+
+- Use plain-language Chinese by default and lead with the user-visible result. Explain the implementation mechanism only when it changes the current choice.
+- Ask each question to make exactly one decision. Say what the decision affects before listing the options.
+- Name options by the result the user will notice, then describe the main experience, cost, risk, or compatibility trade-off.
+- If the user actively uses technical terms or asks for deeper detail, match that level without becoming verbose or losing the result-first framing.
+- Briefly explain every necessary technical term the first time it appears.
+- Hide type names, internal field names, Requirement IDs, file paths, and Agent work protocols by default. Show them only when they affect the user's choice or the user explicitly asks for them.
+- Do not omit the feature's scope, observable behavior, constraints, risks, or success criteria when simplifying the language.
+- Before sending a question, comparison, or approval view, self-check that the decision, option consequences, and recommendation reason are easy to understand. Rewrite the message before sending if they are not.
+
 ## Workflow
 
 1. Inspect the project context.
@@ -23,12 +34,12 @@ Turn a feature idea into an explicitly approved direction that LazySpec can use 
    - For every user-facing question, provide exactly three concrete, mutually exclusive predefined options and a fourth free-form option using this structure:
 
      ```text
-     [Question]
+     [用一句白话说明现在只需要决定什么，以及这个决定会影响什么]
 
-     1. [Recommended option] (Recommended) — [concise reason]
-     2. [Second option] — [relevant trade-off]
-     3. [Third option] — [relevant trade-off]
-     4. Other — provide your own answer
+     1. [按用户结果命名的推荐选项]（推荐）— [会得到什么，以及主要代价或风险]
+     2. [按用户结果命名的第二选项] — [会得到什么，以及主要代价或风险]
+     3. [按用户结果命名的第三选项] — [会得到什么，以及主要代价或风险]
+     4. 其他 — 用自己的话回答
      ```
 
    - Put the recommended option first and explain the recommendation concisely.
@@ -38,20 +49,34 @@ Turn a feature idea into an explicitly approved direction that LazySpec can use 
 
 3. Compare approaches.
    - Present exactly three viable approaches with their relevant trade-offs.
-   - Recommend one approach and explain the reason concisely.
+   - For each approach, show only `用户会得到什么`, `主要限制或风险`, and `适用条件` in the user-facing comparison.
+   - Name each approach by its user-visible result rather than its implementation pattern.
+   - Recommend one approach and explain the reason concisely in terms of the user's stated goal and constraints.
+   - Include technical details only when they materially affect the selection; otherwise leave them to Design.
    - Avoid speculative features and unrelated improvements.
 
 4. Obtain approval.
    - First ask the user to select one of the three compared approaches. Selecting an approach records only `selectedApproach`; it is not approval of the complete Brainstorming Context.
-   - After the selection, present the final `objective`, `scope`, `constraints`, `successCriteria`, and `selectedApproach`, then ask a separate approval question with these three predefined options plus the free-form option:
+   - After the selection, present the complete user-facing Context with exactly these headings. Put included scope under `包含` and excluded scope under `不包含`; do not show internal field names in this approval view:
 
      ```text
-     Approve this Brainstorming Context for Requirements?
+     目标
+     包含
+     不包含
+     必须遵守
+     完成表现
+     选定方案
+     ```
 
-     1. Approve (Recommended) — approve this complete context and allow routing to Requirements
-     2. Request changes — keep Brainstorming active and revise the context from feedback
-     3. Compare approaches again — discard the selection and return to approach comparison
-     4. Other — provide your own answer
+   - Then ask a separate approval question with these three predefined options plus the free-form option:
+
+     ```text
+     是否批准以上需求方向并进入 Requirements？
+
+     1. 批准并进入 Requirements（推荐）— 以上方向成为 Requirements 的输入
+     2. 修改内容 — 留在 Brainstorming，根据反馈修改后重新确认
+     3. 重新比较方案 — 放弃当前选择，返回三个方案的比较
+     4. 其他 — 用自己的话回答
      ```
 
    - Prefer the applicable user-question tool under the question rules above. Only option 1 or an unambiguous affirmative answer to this separate approval question counts as approval. Approach selection, silence, timeout, explanation, or an ambiguous answer does not.
@@ -59,6 +84,7 @@ Turn a feature idea into an explicitly approved direction that LazySpec can use 
    - Do not set `approved: true` or proceed to `writing-requirement` until the selected approach and the complete context receive this separate explicit approval.
 
 5. Prepare the session handoff.
+   - Map the six user-facing headings to the unchanged internal schema as follows: `目标` → `objective`; `包含` and `不包含` → `scope`; `必须遵守` → `constraints`; `完成表现` → `successCriteria`; `选定方案` → `selectedApproach`.
    - Retain only the final approved result in the current conversation context with all of these fields:
 
      ```text

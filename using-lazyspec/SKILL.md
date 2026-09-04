@@ -28,6 +28,19 @@ Apply this contract to generated or revised Requirements and Design documents. T
 - Do not bulk-migrate existing Specs. Add `审批摘要` when a Requirements or Design document is next created or revised; an already approved legacy Requirements document may still be used to create Design without being rewritten.
 - Every downstream phase MUST treat an approved `审批摘要` as the upper-level material contract while continuing to read the complete Spec body for implementation detail.
 
+## Brainstorming Human-First Conversation Contract
+
+Apply this contract only to the user-facing Brainstorming conversation. It does not create a new artifact, change the internal `BrainstormingContext` schema, or alter Requirements, Design, Tasks, fast mode, or Memory behavior.
+
+- Lead with the result the user will experience, then explain the implementation mechanism only when it helps the current decision.
+- Ask for exactly one decision in each question and state in plain language what that decision affects.
+- Name options by user-visible outcomes. Describe the meaningful experience, cost, risk, or compatibility trade-off instead of using internal implementation labels.
+- Use plain-language Chinese by default. When the user introduces technical terms or explicitly asks to go deeper, adapt to their level while keeping the answer concise and outcome-oriented.
+- When a necessary technical term first appears, immediately add a short plain-language explanation.
+- Proactively show technical details only when an implementation difference would materially change which option the user should choose. Leave non-decision-making details to Design.
+- Plain language is a presentation rule, not a reason to omit substance. Preserve the feature's scope, observable behavior, constraints, risks, and success criteria.
+- Before sending a Brainstorming question or comparison, self-check that the user can easily understand what they are deciding, the consequence of each option, and why the recommended option is recommended. Rewrite it first if any part is unclear.
+
 ## Routing Protocol
 Use this Skill as the single entry point. Route by logical Skill name and read only that Skill's required resources; do not copy a phase's detailed body here.
 

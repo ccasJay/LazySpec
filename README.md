@@ -10,6 +10,7 @@ fast 链路：讨论 → plan.md → 一次审批 → 连续执行全部任务
 ```
 
 - Brainstorming 确认目标、范围、约束、成功标准和方案，仅保存在当前会话。
+- Brainstorming 默认用白话中文、先讲用户能获得的结果，再说明必要的技术取舍；每次只请用户做一个决定。用户主动使用术语或要求深入时，表达会随之提高专业程度，但仍保持简洁且不会省略范围、约束、风险和成功标准。
 - Requirements、Design、Tasks 分别生成 `requirements.md`、`design.md`、`tasks.md`。
 - 每个阶段都需要用户明确批准，未获批准不会进入下一阶段。
 - fast 模式面向轻量新功能：交互式讨论后生成单个 `specs/<feature-name>/plan.md`，一次明确批准后连续执行全部任务。仅限首次创建（无 `requirements.md`）；已有 Spec 的功能仍走正常链路。
