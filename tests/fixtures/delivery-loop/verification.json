@@ -1,0 +1,15 @@
+{
+  "risk": "high",
+  "status": "pending-human",
+  "freshness": "current",
+  "verified_at": "2026-09-05T10:00:00+08:00",
+  "tested_commit": "synthetic-fixture-not-a-real-commit",
+  "uncommitted_changes": [],
+  "contract_fingerprint": "synthetic-contract-v1",
+  "human_acceptance": false,
+  "required_outcomes": ["req-1-1", "req-1-2"],
+  "checks": [
+    {"outcomes": ["req-1-1"], "expected": "空输入不写入数据", "actual": "拒绝空输入，写入次数为零", "status": "passed", "evidence": "synthetic-result/input-validation"},
+    {"outcomes": ["req-1-2"], "expected": "有效输入写入一次", "actual": "写入一次", "status": "passed", "evidence": "synthetic-result/integration"}
+  ]
+}

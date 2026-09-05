@@ -17,6 +17,8 @@ Immediately after the document title, every generated Design document MUST begin
 
 ### 风险与待确认
 
+- 风险等级：[low / medium / high]；理由：[影响与可逆性]
+- 关键操作：[需要执行前确认的具体操作，若无则写“无”]
 - 风险：[已知风险，若无则写“无”]
 - 待确认：无
 ```

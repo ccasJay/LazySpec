@@ -1,12 +1,16 @@
 ---
 name: using-lazyspec
-description: Route LazySpec requests to Brainstorming, requirements, design, tasks, existing task execution, explicit fast mode for new features, or explicit completed-feature Memory distillation. Use as the single entry point for Spec work and for user-requested completed Feature Spec distillation into `project-memory/` while enforcing phase and approval gates.
+description: Route LazySpec planning, task execution, feature verification, explicit fast mode, and requested Feature/Learning Memory promotion or maintenance. Apply risk-based approval and evidence-backed repair boundaries.
 ---
 
 # LazySpec
 
 ## Rule
 - The output content should all be in chinese, except the key word from the project
+
+## Shared policies
+
+Before routing planning, revision, or execution, read [risk-policy.md](references/risk-policy.md). Before planning Tasks or executing either mode, also read [delivery-loop.md](references/delivery-loop.md). These references define risk-based approval timing, success criteria, feature verification, repair routing, and learning candidates. Resolve them relative to this Skill; if unavailable, report the missing resource rather than inventing a policy.
 
 ## Minimum-Sufficient Documentation
 - Default to the shortest document that remains reviewable, verifiable, and executable.
@@ -17,7 +21,7 @@ description: Route LazySpec requests to Brainstorming, requirements, design, tas
 
 ## Human-First Approval Contract
 
-Apply this contract to generated or revised Requirements and Design documents. Tasks, Brainstorming, fast mode, and Memory keep their existing approval objects.
+Apply this contract to generated or revised Requirements and Design documents. Brainstorming keeps its Context approval. Low-risk Spec approval combines both summaries with the Tasks plan; fast approves its plan, and Memory approves its exact write preview.
 
 - Put a Chinese `审批摘要` at the top of each Requirements and Design document. It is the user-facing approval contract; the detailed body is the Agent-facing elaboration and MUST remain consistent with, and bounded by, the approved summary.
 - Treat observable behavior, scope and exclusions, public interfaces or data changes, compatibility, external side effects, security or privacy, failure and recovery behavior, key technical choices, and their risks as material. Treat filenames, internal helpers, code organization, test layout, and equivalent implementation refinements as non-material only when they do not alter any material item. When uncertain, classify a change as material.
@@ -63,25 +67,25 @@ Resolve every routed Skill with this platform-neutral protocol:
 
 ### Memory Distillation Routing
 
-- Route to `distill-spec-memory` only when the user explicitly asks to preserve, archive, or distill a completed Feature Spec into project Memory.
-- Do not infer a distillation request from completing a task or from ordinary Brainstorming, Requirements, Design, Tasks, task questions, or task execution.
+- Route to `distill-spec-memory` only when the user explicitly asks to preserve or maintain Feature/Learning Memory, requests candidate promotion, or confirms a Learning Candidate for preview. Automatic candidate collection follows delivery-loop.md and does not authorize Memory writes.
+- Do not infer a distillation request from task completion. Collect valuable learning candidates in the task/plan artifact only; exact Memory write approval remains separate.
 - After routing, follow `distill-spec-memory` without changing the normal LazySpec phase order or approval gates.
 
 ### Fast Mode Routing
 
-- Route to `fast` only when the user explicitly asks for the fast mode (keywords such as `fast` or `快速`, or a direct `fast` / `lazyspec:fast` invocation) for a new feature.
-- Fast mode is only for first-time creation: route to `fast` only when the target feature has no `specs/{feature_name}/requirements.md`. If `requirements.md` already exists, keep the request on the normal chain, report in Chinese why fast mode was declined, and route by the ordinary rules below.
+- For new features, route to `fast` only when the user explicitly asks for fast mode (keywords such as `fast` or `快速`, or a direct `fast` / `lazyspec:fast` invocation). Also route explicit requests to execute, verify, or revise an existing fast plan.md to fast; this resumes its existing mode rather than inferring fast for a new feature.
+- Fast creation and subsequent plan operations are allowed only when the target feature has no `specs/{feature_name}/requirements.md`. If `requirements.md` already exists, keep the request on the normal chain, report in Chinese why fast mode was declined, and route by the ordinary rules below.
 - A `fast` request is an ordinary LazySpec request: apply Memory Recall Routing before routing, and pass `RelevantMemoryContext` to `fast` as advisory input.
-- Never route to `fast` by inference. Without an explicit fast-mode request, always use the normal chain.
+- Never choose fast for a new feature by inference. Without an explicit fast-mode request or an explicit operation on an existing fast plan, use the normal chain.
 
 ### Memory Recall Routing
 
-For every ordinary LazySpec request, after binding `ACTIVE_PROJECT_ROOT` and before selecting the phase Skill, build a session-only `RelevantMemoryContext`. An explicit Memory distillation request routes directly to `distill-spec-memory`; it does not receive an unrelated default recall context.
+For every ordinary LazySpec request, after binding `ACTIVE_PROJECT_ROOT` and before selecting the phase Skill, build a session-only `RelevantMemoryContext`. For metadata validation, load project-memory/README.md when present, otherwise [memory-format.md](../distill-spec-memory/references/memory-format.md); use the index alone for candidate discovery, not a Capsule directory scan. An explicit Memory distillation request routes directly to `distill-spec-memory`; it does not receive an unrelated default recall context.
 
 1. Check only `ACTIVE_PROJECT_ROOT/project-memory/index.md`. If it does not exist, use an empty context and continue the original route. Do not create an index or scan `project-memory/features/` as a fallback.
 2. Parse the generated six-column index header and Markdown-linked rows. If the marker, header, columns, path, or status is malformed, report a non-fatal Chinese maintenance warning, use an empty context (or retain only independently valid rows), and continue the original route. Never guess a path, synthesize a missing row, or rewrite the index during recall.
-3. For default recall, consider only rows whose index status is `active`. Resolve each Memory link against `ACTIVE_PROJECT_ROOT`; reject absolute paths, `..` traversal, paths outside `project-memory/features/`, missing Capsules, invalid frontmatter, missing `reviewed_at` or `authorities`, or Capsule/index mismatches. Report each rejected row and do not scan other files to compensate.
-4. Rank valid candidates by query matches in `feature`, `tags`, `Summary`, and `Source Spec`, in that order of signal strength; break ties by the project-root-relative Memory path. Read the complete Capsule only after ranking, and select at most three. If more than three match, report the selected paths and that the remaining matches were omitted.
+3. For default recall, consider only rows whose index status is `active`. Resolve each Memory link against `ACTIVE_PROJECT_ROOT`; reject absolute paths, `..` traversal, paths outside the allowed roots `project-memory/features/` and `project-memory/learnings/`, missing Capsules, invalid frontmatter or kind/path mismatch (legacy kind defaults to feature), symlinks escaping the project, missing `reviewed_at` or `authorities`, or Capsule/index mismatches. Report each rejected row and do not scan other files to compensate.
+4. Rank valid candidates by query matches in `feature` (or Learning `learning` ID), `tags`, `Summary`, and `Source Spec`, in that order of signal strength; break ties by the project-root-relative Memory path. Read the complete Capsule only after ranking, and select at most three across both kinds combined. Check Learning applicability and limits before using it; omit inapplicable guidance without treating a candidate in tasks.md/plan.md as Memory. If more than three match, report the selected paths and that the remaining matches were omitted.
 5. Expose the result only as this session's context; never write it into a Spec or project file:
 
 ```ts
@@ -89,6 +93,7 @@ interface RelevantMemoryContext {
   readonly query: string;
   readonly memories: readonly {
     readonly path: string;
+    readonly kind: "feature" | "learning"; // legacy Capsules default to feature
     readonly status: "active";
     readonly sourceSpec: string;
     readonly reviewedAt: string;
@@ -144,11 +149,13 @@ Codex Plan Mode 适配过程只维护会话内输入，不得创建 `plan.md`、
    - Route to `brainstorming` first only when the user explicitly requests it.
    - Brainstorming updates only conversation context; do not modify a Spec artifact unless separately requested.
 
-3. For Design, route to `writing-design` only after Requirements has explicit user approval. For Tasks, route to `writing-task` only after Design has explicit user approval. Preserve each downstream Skill's approval gate.
+3. For medium/high risk, route to `writing-design` only after Requirements has explicit user approval, and to `writing-task` only after Design has explicit user approval. For low risk, draft these phases in order and request one combined approval at Tasks under risk-policy.md. Draft advancement never records upstream approval.
 
-4. For questions about existing Spec tasks or requests to execute an existing task, apply the task instructions below. Answer task questions without starting work; when execution is explicitly requested, follow the full TODO scope stated by the user.
+4. For questions about existing Spec tasks or requests to execute or verify an existing task plan, apply the task instructions below and delivery-loop.md. Verification-only requests do not authorize implementation repairs. Answer task questions without starting work; when execution is explicitly requested, follow the full TODO scope stated by the user.
 
 ## Workflow Diagram
+
+The normal phase-approval edges below apply to medium/high risk. Low risk drafts all three phases before combined approval; see risk-policy.md.
 
 ```mermaid
 stateDiagram-v2
@@ -179,7 +186,10 @@ stateDiagram-v2
 
   [*] --> FastPlan : Fast mode (no requirements.md)
   FastPlan --> FastExecute : Explicit Approval
-  FastExecute --> [*] : Complete
+  FastExecute --> FastVerify : All tasks complete
+  FastVerify --> FastExecute : Scoped repair
+  FastVerify --> FastPlan : Material plan gap
+  FastVerify --> [*] : Report verification and learning candidates
 
   state "Entry Points" as EP {
       [*] --> Requirements : Update existing requirements
@@ -188,35 +198,42 @@ stateDiagram-v2
       [*] --> Execute : Execute requested tasks
   }
 
-  Execute --> [*] : All requested TODOs complete
+  Execute --> Verify : All feature TODOs complete
+  Verify --> Execute : Implementation repair
+  Verify --> Requirements : Behavior gap
+  Verify --> Design : Design gap
+  Verify --> Tasks : Plan gap
+  Verify --> [*] : Report verification and learning candidates
 ```
 
 ## Task Instructions
 
 ### Executing Instructions
+- These executing instructions apply to normal tasks.md plans; route fast plan.md execution to fast and the shared delivery loop.
 - Before executing any task, ALWAYS read the feature's complete `requirements.md`, `design.md`, and `tasks.md` in the current execution context. Executing a task without all three artifacts is forbidden.
+- Before implementing, confirm the current normal Spec has the applicable combined or phase approvals under risk-policy.md. An execution request alone does not approve unseen material plan changes.
 - Look at the task details in the task list; start with sub-tasks if present.
 - When the user explicitly requests execution of a `tasks.md` plan, execute all currently unchecked TODOs in their listed order, including their sub-tasks, without waiting for per-task approval or another user instruction. If the user explicitly names one TODO number, limit execution to that TODO and its sub-tasks.
 - Before the first file modification, create a new feature branch by default using `codex/<feature-name>` (or the user's explicitly requested branch name). If the default branch name already belongs to unrelated work, use a unique `codex/` branch name and report the choice. Do not commit unrelated pre-existing changes.
 - Verify implementation against any requirements specified in the task or its details.
 - When marking a completed task in `tasks.md`, change only its checkbox token from `[ ]` to `[x]`. Preserve `//TODO` and every character after it exactly; do not remove, replace, or rewrite the task text.
 - After each TODO passes its verification, stage only that TODO's related files, update only its checkbox token, and create a separate commit before continuing. The commit must preserve the original `//TODO` text and must not include unrelated working-tree changes.
-- Continue through all requested unchecked TODOs without an intentional pause. Stop only for an actual verification failure, merge or working-tree conflict, commit failure, missing user decision, or user interruption, and report the exact blocker.
+- Continue through all requested unchecked TODOs without an intentional pause. Verification failures follow delivery-loop.md: diagnose, repair within authorization while progressing, or route to the earliest invalid contract. Stop for its no-progress threshold, merge or working-tree conflict, commit failure, missing authority/user decision, or user interruption; report the exact blocker.
 - When all requested TODOs are complete, inspect only the Project Memory index for Capsules whose feature, tags, summary, Source Spec, or authorities overlap the changed paths. Report likely impact candidates in the handoff, but do not create, edit, or re-status Memory without a separate explicit distillation or maintenance request.
-- If the task file has no unchecked TODOs, report that it is already complete. If the requested task file or TODO cannot be resolved, ask for the exact path or number before modifying files.
+- If the task file has no unchecked TODOs, complete missing or stale Feature Verification on an execution request. For partial execution, report only the authorized subset unless all feature TODOs are now complete. Follow delivery-loop.md for the in-file report and Learning Candidates. If the requested task file or TODO cannot be resolved, ask for the exact path or number before modifying files.
 
 ### Task Questions
 Answer task-information requests without modifying code, Spec files, or checkbox state. For example, if the user asks what the next task is, provide the information without starting any task.
 
 ## Approval Protocol
-After every new Requirements or Design document, every material Requirements or Design revision, and every Tasks update or revision, request approval in this order. Before initial approval, any requested edit remains in the current phase and is followed by another approval request; after approval, only a material Requirements or Design change invalidates it.
+Apply risk-policy.md first: low-risk drafting defers approval to one complete package at Tasks; medium/high request approval after each new or materially revised Requirements/Design and each Tasks plan revision. Recording verification evidence or learning candidates is not a plan revision. At the applicable gate, request approval in this order. Before initial approval, apply edits within the draft sequence and use the applicable package/phase gate. After approval, material Requirements/Design changes and Tasks plan revisions invalidate affected approvals; evidence-only updates do not.
 
 1. If `AskUserQuestion` is available, call it with only its supported `questions` input. Use one question object with `question`, `header`, `options`, and `multiSelect`; use `Review` as the header, the two single-choice options `Approve` and `Request changes`, and `multiSelect: false`. Do not add unsupported top-level or question fields.
 2. Otherwise, if the environment provides an equivalent user-question tool, use it with the same single-choice meaning and only fields supported by that tool.
 3. Otherwise, ask the phase's approval question directly in the conversation and stop while awaiting the answer.
 
-- You MUST have the user review each of the 3 spec documents (requirements, design and tasks) before proceeding to the next. For Requirements and Design, review the Human-First `审批摘要` and its consistency with the detailed body; Tasks keeps the complete task document as its approval object.
+- You MUST have the user review each of the 3 spec documents (requirements, design and tasks), together for low risk or before the next phase for medium/high risk. For Requirements and Design, review the Human-First `审批摘要` and its consistency with the detailed body; Tasks keeps the complete task document as its approval object.
 - Only an explicit approval in the current conversation (a clear "yes", "approved", selecting `Approve`, or equivalent affirmative response) records approval of the current phase's approval object. File existence, timeout, silence, explanations, ambiguous replies, and requested changes do not imply approval.
-- You MUST NOT proceed to the next phase until you receive explicit approval from the user.
+- For medium/high risk, you MUST NOT proceed to the next phase until you receive explicit approval from the user. Low-risk drafting may advance without approval, but execution may not.
 - If the user provides material feedback, you MUST make the requested modifications, update the complete `审批摘要`, present the revision delta, and then explicitly ask for approval again. A verified non-material body-only refinement does not invalidate approval.
-- Follow workflow steps sequentially without skipping or combining phases.
+- Draft workflow steps sequentially without skipping phases; combine approval only for low risk.

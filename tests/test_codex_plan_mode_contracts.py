@@ -72,11 +72,11 @@ class CodexPlanModeWorkflowContractTests(unittest.TestCase):
 
     def test_requirements_design_tasks_chain_keeps_approval_and_execution_boundaries(self):
         self.assertIn(
-            "For Design, route to `writing-design` only after Requirements has explicit user approval",
+            "For medium/high risk, route to `writing-design` only after Requirements has explicit user approval",
             ROUTER,
         )
         self.assertIn(
-            "For Tasks, route to `writing-task` only after Design has explicit user approval",
+            "to `writing-task` only after Design has explicit user approval",
             ROUTER,
         )
         self.assertIn(

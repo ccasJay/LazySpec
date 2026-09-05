@@ -1,6 +1,8 @@
 ### 3. Create Task List
 
-After the user approves Design, create the shortest actionable checklist that implements it. Each task should identify a coding objective, only the essential affected components or files, and automated verification. Refer to Requirements and Design instead of repeating their content.
+After Design approval for medium/high risk, or after the complete low-risk Design draft, create the shortest actionable checklist that implements it. Each task should identify a coding objective, only the essential affected components or files, and automated verification. Refer to Requirements and Design instead of repeating their content.
+
+Read the shared risk-policy.md and delivery-loop.md through this Skill. Add Feature Verification (Planned Checks and Latest Result) after the task list; evidence recording is separate from plan approval.
 
 **Constraints:**
 
@@ -11,5 +13,5 @@ After the user approves Design, create the shortest actionable checklist that im
 - The model MUST use the following specific instructions when creating the implementation plan:
 
 ```
-Convert the design into incremental coding tasks with early automated verification. Each task must leave the code integrated and usable, with no orphaned work. Focus only on writing, modifying, or testing code.
+Convert the design into incremental coding tasks with scenario-based observable success criteria and executable verification entry points. Each task must leave the code integrated and usable, with no orphaned work. Focus only on writing, modifying, or testing code.
 ```

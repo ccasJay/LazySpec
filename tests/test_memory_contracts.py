@@ -26,7 +26,7 @@ def index_rows(path):
     rows = {}
     link = re.compile(r"^\[([^]]+)\]\([^)]+\)$")
     for line in path.read_text().splitlines():
-        if not line.startswith("| [project-memory/features/"):
+        if not line.startswith(("| [project-memory/features/", "| [project-memory/learnings/")):
             continue
         cells = [cell.strip() for cell in line.strip("|").split("|")]
         memory_match = link.match(cells[0])

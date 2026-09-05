@@ -7,6 +7,10 @@ description: Explore and clarify a feature in the current session before LazySpe
 
 Turn a feature idea into an explicitly approved direction that LazySpec can use as the input to `writing-requirement`. Keep every result in the current conversation context only.
 
+## Shared risk policy
+
+Read [risk-policy.md](../using-lazyspec/references/risk-policy.md) before this workflow; resolve it relative to this Skill directory. It determines low-risk combined approval versus medium/high phase gates, and fast critical-operation confirmation.
+
 ## Rule
 - The output content should all be in chinese, except the key word from the project
 
@@ -30,6 +34,7 @@ Turn a feature idea into an explicitly approved direction that LazySpec can use 
 
 2. Clarify the idea.
    - Establish the objective, scope, constraints, and success criteria.
+   - Propose the initial risk level and reason using risk-policy.md. Include it in constraints without changing BrainstormingContext or adding an approval gate.
    - Ask only one question at a time when information is missing or ambiguous.
    - For every user-facing question, provide exactly three concrete, mutually exclusive predefined options and a fourth free-form option using this structure:
 

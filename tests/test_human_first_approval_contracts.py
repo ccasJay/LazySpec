@@ -50,7 +50,7 @@ class HumanFirstApprovalContractTests(unittest.TestCase):
             "A material change invalidates the prior approval",
             "non-material body-only refinement",
             "additions, changes, removals, and risk changes",
-            "only a material Requirements or Design change invalidates it",
+            "material Requirements/Design changes and Tasks plan revisions invalidate affected approvals",
         ):
             with self.subTest(required=required):
                 self.assertIn(required, ROUTER)

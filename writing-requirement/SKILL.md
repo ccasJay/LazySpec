@@ -1,9 +1,13 @@
 ---
 name: writing-requirement
-description: Create or revise a LazySpec requirements.md after approved brainstorming context is available for a new feature, or when editing existing requirements. Use to produce EARS requirements, obtain explicit approval, and hand off only approved requirements to writing-design.
+description: Create or revise EARS requirements from approved brainstorming or native planning input. Draft toward combined approval for low risk, or obtain separate Requirements approval for medium/high risk.
 ---
 
 # Writing Requirements
+
+## Shared risk policy
+
+Read [risk-policy.md](../using-lazyspec/references/risk-policy.md) before this workflow; resolve it relative to this Skill directory. It determines low-risk combined approval versus medium/high phase gates, and fast critical-operation confirmation.
 
 ## Language
 
@@ -33,7 +37,7 @@ Prefix every numbered acceptance criterion with exactly one HTML anchor on the s
 
 ## Approval
 
-After creating Requirements or making a material revision, request approval using this protocol:
+For low risk, finish the unapproved Requirements draft and continue to Design for combined approval at Tasks. For medium/high risk, after creating Requirements or making a material revision, request approval using this protocol:
 
 1. If `AskUserQuestion` is available, call it with exactly this supported input shape and no extra fields:
 
@@ -75,9 +79,9 @@ Only explicit approval in the current conversation records approval of the curre
   - A user story written in Chinese using the role-goal-benefit structure
   - A numbered list of acceptance criteria in EARS format (Easy Approach to Requirements Syntax)
 - The model SHOULD include an edge case, user-experience constraint, technical constraint, or success criterion only when it creates a distinct observable and verifiable outcome
-- The model MUST make modifications to the requirements summary and body if the user requests changes or does not explicitly approve
-- The model MUST ask for explicit approval after every material iteration of edits to the requirements document; verified non-material body-only refinements preserve approval
-- The model MUST NOT proceed to the design document until receiving clear approval (such as "yes", "approved", "looks good", etc.)
+- Modify the requirements summary and body when the user requests changes; silence or an explanation neither approves nor automatically requires edits
+- Apply risk-policy.md after material edits: low-risk package approval or medium/high Requirements approval; verified non-material body-only refinements preserve approval
+- For medium/high risk, the model MUST NOT proceed to the design document until receiving clear approval; low risk may advance an unapproved draft under risk-policy.md
 - The model MUST continue the feedback-revision cycle until explicit approval is received
 - The model SHOULD identify only gaps that would materially change observable behavior; it MUST NOT suggest speculative expansion by default
 - The model MAY ask targeted questions about specific aspects of the requirements that need clarification

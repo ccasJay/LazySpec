@@ -126,11 +126,11 @@ class SkillContractTests(unittest.TestCase):
         brainstorming = (ROOT / "brainstorming" / "SKILL.md").read_text()
 
         self.assertIn(
-            "For Design, route to `writing-design` only after Requirements has explicit user approval",
+            "For medium/high risk, route to `writing-design` only after Requirements has explicit user approval",
             routing,
         )
         self.assertIn(
-            "For Tasks, route to `writing-task` only after Design has explicit user approval",
+            "to `writing-task` only after Design has explicit user approval",
             routing,
         )
         self.assertIn(
