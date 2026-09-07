@@ -1,18 +1,18 @@
 ---
 name: writing-task
-description: Create or revise a LazySpec tasks.md with executable success criteria and feature checks. Obtain combined low-risk Spec approval or medium/high Tasks approval, then stop without implementation.
+description: Create or revise a LazySpec tasks.md with executable success criteria and feature checks. Prepare combined Spec review, retaining existing authorization and asking only for material decisions; planning alone does not authorize implementation.
 ---
 
 # Writing Tasks
 
 ## Shared risk policy
 
-Read [risk-policy.md](../using-lazyspec/references/risk-policy.md) before this workflow; resolve it relative to this Skill directory. It determines low-risk combined approval versus medium/high phase gates, and fast critical-operation confirmation. Also read [delivery-loop.md](../using-lazyspec/references/delivery-loop.md) for executable success criteria, Feature Verification, repair, and Learning Candidates.
+Read [risk-policy.md](../using-lazyspec/references/risk-policy.md) before this workflow; resolve it relative to this Skill directory. It separates risk-based verification from decision-based approval and defines model autonomy within the user's scope. Also read [delivery-loop.md](../using-lazyspec/references/delivery-loop.md) for executable success criteria, Feature Verification, repair, and Learning Candidates.
 
 ## Rule
 - The output content should all be in chinese, except the key word from the project
 
-Before starting, read the complete `specs/{feature_name}/requirements.md` and `specs/{feature_name}/design.md`, then read `task-prompt.md` and `task-templete.md`. Resolve the Prompt and Template relative to the directory containing this `SKILL.md`, never relative to the process working directory or repository root. Resolve the upstream Specs and the new `tasks.md` against `ACTIVE_PROJECT_ROOT`, defined by `using-lazyspec` as the user's project working directory at session start. Never use this Skill's directory, its repository, or a Plugin cache as the project root. If invoked directly and the session working directory is unavailable or ambiguous, ask for the project root before reading or writing Specs. These rules apply unchanged in a Plugin cache and an Agent Skills installation. For medium/high risk, if either upstream artifact has not received explicit user approval in the current conversation, stop and request the missing approval first; never infer approval from file existence. Low risk uses both complete drafts and obtains combined approval here.
+Before starting, read the complete `specs/{feature_name}/requirements.md` and `specs/{feature_name}/design.md`, then read `task-prompt.md` and `task-templete.md`. Resolve the Prompt and Template relative to the directory containing this `SKILL.md`, never relative to the process working directory or repository root. Resolve the upstream Specs and the new `tasks.md` against `ACTIVE_PROJECT_ROOT`, defined by `using-lazyspec` as the user's project working directory at session start. Never use this Skill's directory, its repository, or a Plugin cache as the project root. If invoked directly and the session working directory is unavailable or ambiguous, ask for the project root before reading or writing Specs. These rules apply unchanged in a Plugin cache and an Agent Skills installation. Use both complete upstream drafts for combined review; never infer approval from file existence. Stop earlier only for unresolved material decisions or user-requested phase gates.
 
 Format every requirement number in each task's Requirements list as its own relative Markdown link: `[<requirement-number>.<criterion-number>](./requirements.md#req-<requirement-number>-<criterion-number>)`. Link multiple requirement numbers separately; never leave a requirement number as plain text or combine multiple numbers in one link.
 
@@ -20,7 +20,7 @@ Before requesting Tasks approval, validate every requirement link against `requi
 
 ## Approval
 
-After every Tasks plan revision, request approval using this protocol. For low risk the object is both Requirements/Design summaries and their body consistency plus the complete Tasks plan including Planned Checks; adapt the question and option descriptions to name this combined package. For medium/high risk the object is Tasks. Evidence updates and Learning Candidates alone do not require Tasks approval:
+For initial combined review, the object is both Requirements/Design summaries, their body consistency, and the complete Tasks plan including success criteria. Adapt the question to the package or material delta still needing approval. Internal decomposition, dependency-preserving ordering, and equivalent verification-method changes do not require approval; update the plan and continue. Honor explicit user phase gates. When approval is necessary:
 
 1. If `AskUserQuestion` is available, call it with exactly this supported input shape and no extra fields:
 
@@ -41,7 +41,7 @@ After every Tasks plan revision, request approval using this protocol. For low r
 2. Otherwise, if the environment provides an equivalent user-question tool, use it with the same single-choice meaning and only fields that tool supports.
 3. Otherwise, ask the same approval question directly in the conversation and stop while awaiting the answer.
 
-Only explicit approval in the current conversation records Tasks approval (and all three documents for a low-risk combined package). File existence, timeout, silence, explanations, ambiguous replies, and requested changes do not imply approval. For any non-approval response, remain in Tasks; apply requested changes when provided and request approval again. Approval ends planning and MUST NOT start implementation.
+Only explicit approval in the current conversation records Tasks approval (and all three documents for a combined package). File existence, timeout, silence, explanations, ambiguous replies, and requested changes do not imply approval. For any non-approval response, remain in Tasks; apply requested changes when provided and request approval again. Approval alone ends planning and MUST NOT start implementation. If the user already explicitly requested implementation after planning, hand off to execution within that authorization without asking again.
 
 ## Plan Shape and Size
 
@@ -57,13 +57,13 @@ Only explicit approval in the current conversation records Tasks approval (and a
 - If a requirement or design gap prevents an actionable task, route to the earliest affected phase under delivery-loop.md rather than padding the task with assumptions.
 - Append Feature Verification with approved Planned Checks and an initially unexecuted Latest Result, following delivery-loop.md. Cover all acceptance outcomes, composed flows, risk requirements, and necessary human checks outside the coding TODO list. Add Learning Candidates only when execution yields useful evidence.
 - Modify the tasks plan when the user requests changes; a non-approval response alone does not require speculative edits.
-- Request explicit approval after every revision of the task plan, not after execution evidence or candidate updates.
+- Request approval for material changes or user-reserved decisions, not internal plan refinements, execution evidence, or candidate updates.
 - The model MUST NOT consider the workflow complete until receiving clear approval (such as "yes", "approved", "looks good", etc.).
 - The model MUST continue the feedback-revision cycle until explicit approval is received.
-- The model MUST stop once the task document has been approved.
+- Stop after planning-only requests; an existing explicit execution request may continue through the execution workflow.
 
 **This workflow is ONLY for creating design and planning artifacts. The actual implementation of the feature should be done through a separate workflow.**
 
-- The model MUST NOT attempt to implement the feature as part of this workflow
+- This skill authors the plan; use the execution workflow for any already authorized implementation
 - The model MUST clearly communicate to the user that this workflow is complete once the design and planning artifacts are created
 - The model MUST inform the user that they can begin executing tasks by opening the tasks.md file, or by asking to execute a specific task from tasks.md (e.g. "start task 1.1" / "execute next task").

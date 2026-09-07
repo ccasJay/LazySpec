@@ -28,7 +28,7 @@ Generate the requirements.md document for the specified feature.
 11. Include edge cases, user-experience constraints, technical constraints, or success criteria only when they create a distinct observable and verifiable outcome.
 12. Target at most 8 requirements, 2-5 acceptance criteria per requirement, and 30 acceptance criteria in total.
 13. If the input is a `CodexPlanArtifact`, use its complete `content` as context even when it has no fixed fields, sections, or extra header. Preserve the original Markdown, line breaks, and long text exactly while passing it through the session; do not summarize, rewrite, normalize, truncate, or reject it for lacking the `BrainstormingContext` shape.
-14. Convert the approved plan into observable requirements. The approval of the Codex plan does not approve `requirements.md`; request the Requirements approval separately for medium/high risk, or as part of the separate combined Spec approval for low risk under risk-policy.md. If material information is missing, ask a targeted clarification question and remain in Requirements.
+14. Convert the approved plan into observable requirements. The approval of the Codex plan does not approve `requirements.md`; request the Requirements approval separately only for a user-requested phase gate or unresolved material decision; otherwise include it in combined review under risk-policy.md. If material information is missing, ask a targeted clarification question and remain in Requirements.
 15. On a material revision, update the complete summary and present a concise conversation delta for additions, changes, removals, and risk changes. A verified non-material body-only refinement does not invalidate approval.
 
 **Output Format:**

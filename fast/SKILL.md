@@ -9,7 +9,7 @@ Turn a new feature idea into an approved `plan.md` and execute it in one continu
 
 ## Shared risk policy
 
-Read [risk-policy.md](../using-lazyspec/references/risk-policy.md) before this workflow; resolve it relative to this Skill directory. It determines low-risk combined approval versus medium/high phase gates, and fast critical-operation confirmation. Also read [delivery-loop.md](../using-lazyspec/references/delivery-loop.md) for executable success criteria, Feature Verification, repair, and Learning Candidates.
+Read [risk-policy.md](../using-lazyspec/references/risk-policy.md) before this workflow; resolve it relative to this Skill directory. It separates risk-based verification from decision-based approval and defines model autonomy within the user's scope. Also read [delivery-loop.md](../using-lazyspec/references/delivery-loop.md) for executable success criteria, Feature Verification, repair, and Learning Candidates.
 
 ## Rule
 - The output content should all be in chinese, except the key word from the project
@@ -31,7 +31,7 @@ Before any discussion, inspect the target feature under `ACTIVE_PROJECT_ROOT`:
 Discuss interactively and keep it lightweight:
 
 - Establish the objective, scope, constraints, and a concrete implementation approach. Ask only one question at a time when information is missing or ambiguous.
-- For every user-facing question, provide exactly three concrete, mutually exclusive predefined options and a fourth free-form option. Put the recommended option first, mark it as recommended, and explain the recommendation concisely; describe the relevant trade-off for each other option. Accept an option number or a free-form answer. Prefer an applicable question-and-answer tool when one is available; if the tool adds its own free-form `Other` choice, provide exactly the first three options.
+- Ask only for material unknowns or user-reserved choices. Offer meaningful alternatives when useful; never pad to a fixed count. Put the recommended option first, mark it as recommended, and explain the recommendation concisely. Accept free-form answers and use an applicable question tool when available.
 - Before writing `plan.md`, explicitly present the recommended implementation approach and explain why it best fits the confirmed objective, scope, and constraints. Do not make the user infer the recommendation from option order or from the eventual plan.
 - When a different approach would materially change the implementation, present the viable alternatives with their relevant trade-offs and ask the user to choose, with the recommended approach first. Otherwise, state the single recommended approach and proceed without forcing a three-approach comparison.
 - Stop asking once no unresolved question would materially change the plan.
@@ -52,22 +52,22 @@ Keep the plan minimal and directly executable. Exclude user testing, deployment,
 
 ## Approval
 
-After writing or revising `plan.md`, request approval using this protocol:
+After creating a plan or changing its material contract, obtain approval of any intent or decision not already explicitly approved. Internal refinements and equivalent verification methods do not need reapproval. When approval is needed, use this protocol:
 
 1. If `AskUserQuestion` is available, call it with only its supported `questions` input. Use one question object with `question`, `header`, `options`, and `multiSelect`; use `Review` as the header, the two single-choice options `Approve` and `Request changes`, and `multiSelect: false`. Do not add unsupported top-level or question fields.
 2. Otherwise, if the environment provides an equivalent user-question tool, use it with the same single-choice meaning and only fields supported by that tool.
 3. Otherwise, ask the approval question directly in the conversation and stop while awaiting the answer.
 
-Only explicit approval in the current conversation (a clear "yes", "approved", selecting `Approve`, or equivalent affirmative response) records approval. File existence, timeout, silence, explanations, ambiguous replies, and requested changes do not imply approval. For requested plan changes, revise `plan.md` from the feedback and request approval again. Silence or an explanation is not approval and does not require speculative edits. Evidence/candidate updates do not revise the approved plan. Never start execution before explicit approval.
+Only explicit approval in the current conversation (a clear "yes", "approved", selecting `Approve`, or equivalent affirmative response) records approval. File existence, timeout, silence, explanations, ambiguous replies, and requested changes do not imply approval. For material plan changes, revise `plan.md`, present the delta, and request approval of unresolved decisions. For internal refinements within the contract, update and continue. Silence or an explanation is not approval and does not require speculative edits. Evidence/candidate updates do not revise the approved plan. Never start execution before explicit approval.
 
 ## Execution
 
 After explicit approval, execute the plan continuously:
 
-- For the initial approved run, execute every task in order until all are complete; do not pause between tasks for confirmation. On a later request explicitly limited to a task subset, honor that subset and the shared verification scope boundary.
+- For the initial approved run, execute every task until all are complete, choosing a dependency-preserving order; do not pause between tasks for confirmation. On a later request explicitly limited to a task subset, honor that subset and the shared verification scope boundary.
 - Verify each task's implementation against its stated behavior and verification before moving on.
 - When a task completes, change only its checkbox token in `plan.md` from `[ ]` to `[x]`. Preserve `//TODO` and every character after it exactly; never remove, replace, or rewrite the task text.
-- Follow delivery-loop.md for failures: autonomously repair implementation errors within scope while progressing; route genuine plan gaps to Objective/Constraints, Approach, or Tasks and approve the revised plan before continuing. Apply the two-round no-progress stopping condition and risk-policy.md critical-operation confirmations.
+- Follow delivery-loop.md for failures: autonomously repair implementation errors within scope while progressing; route plan gaps to Objective/Constraints, Approach, or Tasks, autonomously update internal refinements, and ask only for material contract changes. Apply the no-progress reassessment and budget boundary and risk-policy.md critical-operation confirmations.
 
 ## Handoff
 

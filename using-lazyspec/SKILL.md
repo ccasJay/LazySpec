@@ -21,7 +21,7 @@ Before routing planning, revision, or execution, read [risk-policy.md](reference
 
 ## Human-First Approval Contract
 
-Apply this contract to generated or revised Requirements and Design documents. Brainstorming keeps its Context approval. Low-risk Spec approval combines both summaries with the Tasks plan; fast approves its plan, and Memory approves its exact write preview.
+Apply this contract to generated or revised Requirements and Design documents. Brainstorming keeps its Context approval. Spec approval combines both summaries with the Tasks plan unless the user requests phase-by-phase review; fast approves its plan, and Memory approves its exact write preview.
 
 - Put a Chinese `审批摘要` at the top of each Requirements and Design document. It is the user-facing approval contract; the detailed body is the Agent-facing elaboration and MUST remain consistent with, and bounded by, the approved summary.
 - Treat observable behavior, scope and exclusions, public interfaces or data changes, compatibility, external side effects, security or privacy, failure and recovery behavior, key technical choices, and their risks as material. Treat filenames, internal helpers, code organization, test layout, and equivalent implementation refinements as non-material only when they do not alter any material item. When uncertain, classify a change as material.
@@ -149,13 +149,13 @@ Codex Plan Mode 适配过程只维护会话内输入，不得创建 `plan.md`、
    - Route to `brainstorming` first only when the user explicitly requests it.
    - Brainstorming updates only conversation context; do not modify a Spec artifact unless separately requested.
 
-3. For medium/high risk, route to `writing-design` only after Requirements has explicit user approval, and to `writing-task` only after Design has explicit user approval. For low risk, draft these phases in order and request one combined approval at Tasks under risk-policy.md. Draft advancement never records upstream approval.
+3. Route to `writing-design` from complete Requirements and to `writing-task` from complete Design. Draft toward combined review at every risk level under risk-policy.md; stop earlier only for unresolved material decisions or explicitly requested phase gates. Draft advancement never records upstream approval.
 
 4. For questions about existing Spec tasks or requests to execute or verify an existing task plan, apply the task instructions below and delivery-loop.md. Verification-only requests do not authorize implementation repairs. Answer task questions without starting work; when execution is explicitly requested, follow the full TODO scope stated by the user.
 
 ## Workflow Diagram
 
-The normal phase-approval edges below apply to medium/high risk. Low risk drafts all three phases before combined approval; see risk-policy.md.
+The phase-review edges below apply when the user requests phase-by-phase review. Otherwise draft toward combined review; material decisions may interrupt at any stage under risk-policy.md.
 
 ```mermaid
 stateDiagram-v2
@@ -210,14 +210,14 @@ stateDiagram-v2
 
 ### Executing Instructions
 - These executing instructions apply to normal tasks.md plans; route fast plan.md execution to fast and the shared delivery loop.
-- Before executing any task, ALWAYS read the feature's complete `requirements.md`, `design.md`, and `tasks.md` in the current execution context. Executing a task without all three artifacts is forbidden.
+- Before executing, understand the complete `requirements.md`, `design.md`, and `tasks.md` contract. Reuse unchanged content already in context; read missing or changed content under delivery-loop.md. Never execute with missing or uncertain contract context.
 - Before implementing, confirm the current normal Spec has the applicable combined or phase approvals under risk-policy.md. An execution request alone does not approve unseen material plan changes.
 - Look at the task details in the task list; start with sub-tasks if present.
-- When the user explicitly requests execution of a `tasks.md` plan, execute all currently unchecked TODOs in their listed order, including their sub-tasks, without waiting for per-task approval or another user instruction. If the user explicitly names one TODO number, limit execution to that TODO and its sub-tasks.
+- When the user explicitly requests execution of a `tasks.md` plan, execute all currently unchecked TODOs, including their sub-tasks, without waiting for per-task approval or another user instruction. Listed order is a default; dependency-preserving reordering and grouping follow delivery-loop.md. If the user explicitly names one TODO number, limit execution to that TODO and its sub-tasks.
 - Before the first file modification, create a new feature branch by default using `codex/<feature-name>` (or the user's explicitly requested branch name). If the default branch name already belongs to unrelated work, use a unique `codex/` branch name and report the choice. Do not commit unrelated pre-existing changes.
 - Verify implementation against any requirements specified in the task or its details.
 - When marking a completed task in `tasks.md`, change only its checkbox token from `[ ]` to `[x]`. Preserve `//TODO` and every character after it exactly; do not remove, replace, or rewrite the task text.
-- After each TODO passes its verification, stage only that TODO's related files, update only its checkbox token, and create a separate commit before continuing. The commit must preserve the original `//TODO` text and must not include unrelated working-tree changes.
+- After each TODO passes its verification, update only its checkbox token. Group related verified work into coherent commits under delivery-loop.md unless the user specifies another commit policy. Preserve original `//TODO` text and exclude unrelated working-tree changes.
 - Continue through all requested unchecked TODOs without an intentional pause. Verification failures follow delivery-loop.md: diagnose, repair within authorization while progressing, or route to the earliest invalid contract. Stop for its no-progress threshold, merge or working-tree conflict, commit failure, missing authority/user decision, or user interruption; report the exact blocker.
 - When all requested TODOs are complete, inspect only the Project Memory index for Capsules whose feature, tags, summary, Source Spec, or authorities overlap the changed paths. Report likely impact candidates in the handoff, but do not create, edit, or re-status Memory without a separate explicit distillation or maintenance request.
 - If the task file has no unchecked TODOs, complete missing or stale Feature Verification on an execution request. For partial execution, report only the authorized subset unless all feature TODOs are now complete. Follow delivery-loop.md for the in-file report and Learning Candidates. If the requested task file or TODO cannot be resolved, ask for the exact path or number before modifying files.
@@ -226,14 +226,14 @@ stateDiagram-v2
 Answer task-information requests without modifying code, Spec files, or checkbox state. For example, if the user asks what the next task is, provide the information without starting any task.
 
 ## Approval Protocol
-Apply risk-policy.md first: low-risk drafting defers approval to one complete package at Tasks; medium/high request approval after each new or materially revised Requirements/Design and each Tasks plan revision. Recording verification evidence or learning candidates is not a plan revision. At the applicable gate, request approval in this order. Before initial approval, apply edits within the draft sequence and use the applicable package/phase gate. After approval, material Requirements/Design changes and Tasks plan revisions invalidate affected approvals; evidence-only updates do not.
+Apply risk-policy.md first: draft toward combined package review at every risk level. Ask earlier for unresolved material decisions or explicit user phase gates. Existing authorization remains valid within its scope. Material contract changes invalidate affected approvals; internal plan refinements and evidence-only updates do not. At a necessary approval gate, use this protocol:
 
 1. If `AskUserQuestion` is available, call it with only its supported `questions` input. Use one question object with `question`, `header`, `options`, and `multiSelect`; use `Review` as the header, the two single-choice options `Approve` and `Request changes`, and `multiSelect: false`. Do not add unsupported top-level or question fields.
 2. Otherwise, if the environment provides an equivalent user-question tool, use it with the same single-choice meaning and only fields supported by that tool.
 3. Otherwise, ask the phase's approval question directly in the conversation and stop while awaiting the answer.
 
-- You MUST have the user review each of the 3 spec documents (requirements, design and tasks), together for low risk or before the next phase for medium/high risk. For Requirements and Design, review the Human-First `审批摘要` and its consistency with the detailed body; Tasks keeps the complete task document as its approval object.
+- Make all 3 spec documents (requirements, design and tasks) reviewable together, or individually when the user requests it. For Requirements and Design, review the Human-First `审批摘要` and its consistency with the detailed body; Tasks keeps the complete task document as its approval object.
 - Only an explicit approval in the current conversation (a clear "yes", "approved", selecting `Approve`, or equivalent affirmative response) records approval of the current phase's approval object. File existence, timeout, silence, explanations, ambiguous replies, and requested changes do not imply approval.
-- For medium/high risk, you MUST NOT proceed to the next phase until you receive explicit approval from the user. Low-risk drafting may advance without approval, but execution may not.
+- Do not cross an unresolved material decision or unauthorized operation. Drafting and authorized internal refinements may proceed without phase approval; file existence never supplies approval.
 - If the user provides material feedback, you MUST make the requested modifications, update the complete `审批摘要`, present the revision delta, and then explicitly ask for approval again. A verified non-material body-only refinement does not invalidate approval.
-- Draft workflow steps sequentially without skipping phases; combine approval only for low risk.
+- Preserve the responsibilities and dependency order of planning artifacts; do not impose phase-by-phase approvals from risk level alone.

@@ -1,6 +1,6 @@
 ---
 name: brainstorming
-description: Explore and clarify a feature in the current session before LazySpec creates its first requirements.md, or when the user explicitly requests brainstorming for an existing Spec. Use to inspect relevant project context, compare three approaches, obtain explicit approval, and prepare an approved session-only context for writing-requirement.
+description: Explore and clarify a feature in the current session before LazySpec creates its first requirements.md, or when the user explicitly requests brainstorming for an existing Spec. Use to inspect relevant project context, compare meaningful alternatives, obtain explicit approval, and prepare an approved session-only context for writing-requirement.
 ---
 
 # Brainstorming
@@ -9,7 +9,7 @@ Turn a feature idea into an explicitly approved direction that LazySpec can use 
 
 ## Shared risk policy
 
-Read [risk-policy.md](../using-lazyspec/references/risk-policy.md) before this workflow; resolve it relative to this Skill directory. It determines low-risk combined approval versus medium/high phase gates, and fast critical-operation confirmation.
+Read [risk-policy.md](../using-lazyspec/references/risk-policy.md) before this workflow; resolve it relative to this Skill directory. It separates risk-based verification from decision-based approval and defines model autonomy within the user's scope.
 
 ## Rule
 - The output content should all be in chinese, except the key word from the project
@@ -36,7 +36,7 @@ Read [risk-policy.md](../using-lazyspec/references/risk-policy.md) before this w
    - Establish the objective, scope, constraints, and success criteria.
    - Propose the initial risk level and reason using risk-policy.md. Include it in constraints without changing BrainstormingContext or adding an approval gate.
    - Ask only one question at a time when information is missing or ambiguous.
-   - For every user-facing question, provide exactly three concrete, mutually exclusive predefined options and a fourth free-form option using this structure:
+   - Ask only when the answer changes a material outcome, boundary, risk, or user-reserved choice. Supply only meaningful mutually exclusive options when useful; do not pad the list. The following is an optional example, not a required option count:
 
      ```text
      [用一句白话说明现在只需要决定什么，以及这个决定会影响什么]
@@ -48,12 +48,12 @@ Read [risk-policy.md](../using-lazyspec/references/risk-policy.md) before this w
      ```
 
    - Put the recommended option first and explain the recommendation concisely.
-   - Prefer an applicable question-and-answer tool when one is available. If the tool automatically adds a free-form `Other` choice, provide exactly the first three predefined options and use the automatic choice as option 4. If the tool cannot preserve this structure, ask the question directly in the conversation.
+   - Prefer an applicable question-and-answer tool when available, using its supported option count and free-form handling. A focused free-text question is sufficient when choices would be artificial.
    - Accept either an option number or the user's free-form answer.
    - Continue until the required context is complete and no unresolved question would materially change the result.
 
 3. Compare approaches.
-   - Present exactly three viable approaches with their relevant trade-offs.
+   - Compare viable approaches only when their trade-offs materially affect the user's choice. If one approach is appropriate, recommend it directly; do not manufacture alternatives or ask the user to select routine internal techniques.
    - For each approach, show only `用户会得到什么`, `主要限制或风险`, and `适用条件` in the user-facing comparison.
    - Name each approach by its user-visible result rather than its implementation pattern.
    - Recommend one approach and explain the reason concisely in terms of the user's stated goal and constraints.
@@ -61,7 +61,7 @@ Read [risk-policy.md](../using-lazyspec/references/risk-policy.md) before this w
    - Avoid speculative features and unrelated improvements.
 
 4. Obtain approval.
-   - First ask the user to select one of the three compared approaches. Selecting an approach records only `selectedApproach`; it is not approval of the complete Brainstorming Context.
+   - Ask the user to select an approach only for an unresolved material trade-off. Selecting an approach records only `selectedApproach`; it is not approval of the complete Brainstorming Context unless the user explicitly approved that full context. Reuse already explicit decisions.
    - After the selection, present the complete user-facing Context with exactly these headings. Put included scope under `包含` and excluded scope under `不包含`; do not show internal field names in this approval view:
 
      ```text
@@ -73,7 +73,7 @@ Read [risk-policy.md](../using-lazyspec/references/risk-policy.md) before this w
      选定方案
      ```
 
-   - Then ask a separate approval question with these three predefined options plus the free-form option:
+   - If the complete Context has not already been explicitly approved, ask a separate approval question. The following options illustrate a review, not a mandatory number of choices:
 
      ```text
      是否批准以上需求方向并进入 Requirements？
@@ -86,7 +86,7 @@ Read [risk-policy.md](../using-lazyspec/references/risk-policy.md) before this w
 
    - Prefer the applicable user-question tool under the question rules above. Only option 1 or an unambiguous affirmative answer to this separate approval question counts as approval. Approach selection, silence, timeout, explanation, or an ambiguous answer does not.
    - If the user requests changes, revise the approaches or continue clarifying one question at a time, then present the complete context and ask the separate approval question again.
-   - Do not set `approved: true` or proceed to `writing-requirement` until the selected approach and the complete context receive this separate explicit approval.
+   - Do not set `approved: true` or proceed to `writing-requirement` until the selected approach and complete context have explicit approval. An already explicit approval of that same full context does not need a repeated question.
 
 5. Prepare the session handoff.
    - Map the six user-facing headings to the unchanged internal schema as follows: `目标` → `objective`; `包含` and `不包含` → `scope`; `必须遵守` → `constraints`; `完成表现` → `successCriteria`; `选定方案` → `selectedApproach`.
