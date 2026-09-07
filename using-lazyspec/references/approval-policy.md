@@ -1,6 +1,6 @@
 # Approval policy
 
-Single source of truth for approval semantics across all LazySpec gates: Requirements/Design/Tasks review, fast plan approval, Brainstorming context approval, and Memory write previews. It defines what approval means, when to ask, and how to ask; risk levels and verification depth live in [risk-policy.md](risk-policy.md). Resolve this reference from the installed `using-lazyspec` skill, never the user's project directory.
+Single source of truth for approval semantics across all LazySpec gates: Requirements/Design/Tasks review, fast plan approval, Brainstorming context approval, multi-Spec orchestration review, and Memory write previews. It defines what approval means, when to ask, and how to ask; risk levels and verification depth live in [risk-policy.md](risk-policy.md). Resolve this reference from the installed `using-lazyspec` skill, never the user's project directory.
 
 ## Explicit approval semantics
 
@@ -23,6 +23,7 @@ Single source of truth for approval semantics across all LazySpec gates: Require
 - Prior approval of a BrainstormingContext or CodexPlanArtifact remains input approval, not approval of newly introduced Spec decisions. Reuse explicit decisions and authorization already available in context; request approval only for the complete package or a material delta not yet approved.
 - Confirm only concrete critical operations not already explicitly authorized at their current scope. General plan approval is not permission for an unnamed destructive operation. Human acceptance is required only when explicitly requested, mandated by binding project rules, or necessary to establish an outcome unavailable to automated evidence; when required, it covers the current implementation, not an old result.
 - Fast retains one plan and one plan approval followed by continuous execution, at every risk level. A material plan change requires approval of the complete revised plan with its delta.
+- Multi-Spec orchestration retains one approval gate: explicit approval of the complete `orchestration.md` before any participating Spec's execution starts. A material change — participating Spec set, joint objective, dependency/order, parallelism, branch strategy, coordination constraints, or integration verification — requires approval of the complete revised orchestration with its delta. Orchestration approval never approves new Spec content; participating Specs remain governed by their own approvals.
 - A rejected combined package remains in planning: apply feedback and present the revised package.
 
 ## How to ask

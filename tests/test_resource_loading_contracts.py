@@ -16,6 +16,7 @@ ROUTE_TO_SKILL = {
     "tasks": "writing-task",
     "execute": "using-lazyspec",
     "fast": "fast",
+    "orchestration": "orchestrating-specs",
     "memory-recall": "using-lazyspec",
     "memory-distill": "distill-spec-memory",
     "codex-plan-adapter": "using-lazyspec",

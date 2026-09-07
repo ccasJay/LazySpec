@@ -54,7 +54,7 @@ def lint_report(report):
 class DeliveryContractTests(unittest.TestCase):
     def test_shared_references_resolve_from_every_installed_skill(self):
         manifest = json.loads((ROOT / ".claude-plugin/plugin.json").read_text())
-        self.assertEqual(7, len(manifest["skills"]))
+        self.assertEqual(8, len(manifest["skills"]))
         risk_readers = [d for d in manifest["skills"] if not d.endswith("distill-spec-memory")]
         for directory in risk_readers:
             skill = ROOT / directory / "SKILL.md"

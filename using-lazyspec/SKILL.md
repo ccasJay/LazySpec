@@ -20,6 +20,7 @@ Load only resources required by the selected route.
 | tasks | risk-policy, approval-policy, doc-policy, delivery-loop |
 | execute | risk-policy, approval-policy, delivery-loop |
 | fast | risk-policy, approval-policy, delivery-loop |
+| orchestration | risk-policy, approval-policy, delivery-loop |
 | memory-recall | memory-recall |
 | memory-distill | approval-policy |
 | codex-plan-adapter | codex-plan-mode |
@@ -37,7 +38,7 @@ Rules:
 
 The approval contract for Requirements and Design documents — the Chinese `审批摘要` as the user-facing approval object, materiality classification, summary/body consistency, invalidation and revision deltas, and legacy migration — is defined exclusively in approval-policy.md. Routing and phase scoping keep only these rules:
 
-- Spec approval combines both summaries with the Tasks plan unless the user requests phase-by-phase review; fast approves its plan; Brainstorming keeps its Context approval; Memory approves its exact write preview.
+- Spec approval combines both summaries with the Tasks plan unless the user requests phase-by-phase review; fast approves its plan; Brainstorming keeps its Context approval; Memory approves its exact write preview; multi-Spec orchestration approves its complete `orchestration.md`.
 - Every downstream phase MUST treat an approved `审批摘要` as the upper-level material contract while continuing to read the complete Spec body for implementation detail.
 
 ## Brainstorming Human-First Conversation Contract
@@ -51,7 +52,7 @@ Before inspecting or writing any Spec artifact, bind `ACTIVE_PROJECT_ROOT` to th
 
 Resolve every routed Skill with this platform-neutral protocol:
 
-1. Prefer the current environment's registered Skill invocation mechanism. Use the logical names `brainstorming`, `writing-requirement`, `writing-design`, `writing-task`, `distill-spec-memory`, and `fast`; a Claude Code Plugin may expose them as `lazyspec:<logical-name>`, while an Agent Skills installation may expose the unnamespaced logical name.
+1. Prefer the current environment's registered Skill invocation mechanism. Use the logical names `brainstorming`, `writing-requirement`, `writing-design`, `writing-task`, `distill-spec-memory`, `fast`, and `orchestrating-specs`; a Claude Code Plugin may expose them as `lazyspec:<logical-name>`, while an Agent Skills installation may expose the unnamespaced logical name.
 2. If no registered Skill invocation mechanism is available, or the logical Skill is not registered, read its sibling `SKILL.md` using the fallback mapping below. Resolve the path relative to this `using-lazyspec/SKILL.md`, never relative to the process working directory or repository root.
 3. After resolving the target, follow that Skill's instructions and resolve its supporting files by the target Skill's own resource rules.
 
@@ -63,6 +64,7 @@ Resolve every routed Skill with this platform-neutral protocol:
 | `writing-task` | `lazyspec:writing-task` | `../writing-task/SKILL.md` |
 | `distill-spec-memory` | `lazyspec:distill-spec-memory` | `../distill-spec-memory/SKILL.md` |
 | `fast` | `lazyspec:fast` | `../fast/SKILL.md` |
+| `orchestrating-specs` | `lazyspec:orchestrating-specs` | `../orchestrating-specs/SKILL.md` |
 
 ### Memory Distillation Routing
 
@@ -76,6 +78,12 @@ Resolve every routed Skill with this platform-neutral protocol:
 - Fast creation and subsequent plan operations are allowed only when the target feature has no `specs/{feature_name}/requirements.md`. If `requirements.md` already exists, keep the request on the normal chain, report in Chinese why fast mode was declined, and route by the ordinary rules below.
 - A `fast` request is an ordinary LazySpec request: apply Memory Recall Routing before routing, and pass `RelevantMemoryContext` to `fast` as advisory input.
 - Never choose fast for a new feature by inference. Without an explicit fast-mode request or an explicit operation on an existing fast plan, use the normal chain.
+
+### Multi-Spec Orchestration Routing
+
+- Route to `orchestrating-specs` only when the user explicitly asks to jointly execute, orchestrate, or implement multiple approved Specs. Never infer an orchestration request from the mere existence of multiple Specs; single-Spec requests keep the normal chain unchanged.
+- An orchestration request is an ordinary LazySpec request: apply Memory Recall Routing before routing, and pass `RelevantMemoryContext` to `orchestrating-specs` as advisory input.
+- `specs/orchestration.md` only coordinates cross-Spec execution — Spec-level ordering, dependencies, parallelism, stacked branches, and integration verification. It is not a new planning layer, does not override approved Spec content, and does not govern how tasks inside any individual Spec are executed; gaps between Specs route back to the affected Spec's Requirements/Design/Tasks revision.
 
 ### Memory Recall Routing
 
