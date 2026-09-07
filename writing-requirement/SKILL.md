@@ -5,9 +5,9 @@ description: Create or revise EARS requirements from approved brainstorming or n
 
 # Writing Requirements
 
-## Shared risk policy
+## Shared policies
 
-Read [risk-policy.md](../using-lazyspec/references/risk-policy.md) before this workflow; resolve it relative to this Skill directory. It separates risk-based verification from decision-based approval and defines model autonomy within the user's scope.
+Read [risk-policy.md](../using-lazyspec/references/risk-policy.md), [approval-policy.md](../using-lazyspec/references/approval-policy.md), and [doc-policy.md](../using-lazyspec/references/doc-policy.md) before this workflow; resolve them relative to this Skill directory. risk-policy.md separates risk-based verification from decision-based approval and defines model autonomy within the user's scope; approval-policy.md is the single source of explicit-approval, materiality, invalidation, summary-contract, and approval-asking semantics; doc-policy.md keeps the document minimum-sufficient.
 
 ## Language
 
@@ -28,37 +28,14 @@ Prefix every numbered acceptance criterion with exactly one HTML anchor on the s
 ## Human-First Review Summary
 
 - Put `## 审批摘要` immediately after the document title and before `## 引言`, with the Chinese subsections `目标`, `范围`, `核心行为`, and `风险与待确认`.
-- Treat this summary as the user-facing approval contract. The detailed user stories and EARS criteria may elaborate it, but MUST NOT add, omit, broaden, narrow, or contradict a material behavior, boundary, or risk.
+- Treat this summary as the user-facing approval contract under approval-policy.md. The detailed user stories and EARS criteria may elaborate it, but MUST NOT add, omit, broaden, narrow, or contradict a material behavior, boundary, or risk.
 - Cover every materially distinct acceptance outcome in the summary. Group multiple criteria only when one concise statement preserves the same approval intent; keep HTML anchors and traceability links out of the summary.
-- Adapt summary length to cognitive complexity rather than a fixed numerical budget. Aim for a complete one-screen review. If that is impossible without concealing material information, stop before approval and recommend splitting the Spec; expand only after the user explicitly keeps one Spec.
 - Resolve every material open question before requesting approval. Use `风险与待确认` to state known risks and explicitly record that no material decision remains unresolved.
-- On a material revision, replace the summary with the complete current version and present a concise additions/changes/removals/risk delta in the conversation. A material change invalidates prior approval; a verified non-material body-only refinement does not.
 - For a legacy Requirements document without `审批摘要`, add the summary only when that document is next revised. Do not rewrite already approved legacy Requirements merely because a downstream phase reads it.
 
 ## Approval
 
-Finish the Requirements draft and continue toward combined review unless an unresolved material decision or user-requested phase gate requires approval here. Reuse explicit decisions already supplied by the user. When approval is needed, use this protocol:
-
-1. If `AskUserQuestion` is available, call it with exactly this supported input shape and no extra fields:
-
-   ```json
-   {
-     "questions": [{
-       "question": "审批摘要是否准确覆盖了需求的目标、范围、核心行为与风险？",
-       "header": "Review",
-       "options": [
-         {"label": "Approve", "description": "批准当前摘要表达的实质需求，并允许进入 Design。"},
-         {"label": "Request changes", "description": "留在 Requirements，根据反馈更新摘要与正文。"}
-       ],
-       "multiSelect": false
-     }]
-   }
-   ```
-
-2. Otherwise, if the environment provides an equivalent user-question tool, use it with the same single-choice meaning and only fields that tool supports.
-3. Otherwise, ask the same approval question directly in the conversation and stop while awaiting the answer.
-
-Only explicit approval in the current conversation records approval of the current `审批摘要` and its consistency with the detailed Requirements body. It does not mean the user approved every non-material implementation detail. File existence, timeout, silence, explanations, ambiguous replies, and requested changes do not imply approval. For any non-approval response, remain in Requirements; apply requested changes when provided and request approval again. Any material change invalidates prior approval; a verified non-material body-only refinement does not.
+Finish the Requirements draft and continue toward combined review unless an unresolved material decision or user-requested phase gate requires approval here. Reuse explicit decisions already supplied by the user. When approval is needed, follow approval-policy.md's asking protocol and ask: "审批摘要是否准确覆盖了需求的目标、范围、核心行为与风险？" For any non-approval response, remain in Requirements; apply approval-policy.md's explicit-approval, revision-delta, and invalidation semantics.
 
 ## Content Boundaries and Size
 
@@ -79,8 +56,6 @@ Only explicit approval in the current conversation records approval of the curre
   - A user story written in Chinese using the role-goal-benefit structure
   - A numbered list of acceptance criteria in EARS format (Easy Approach to Requirements Syntax)
 - The model SHOULD include an edge case, user-experience constraint, technical constraint, or success criterion only when it creates a distinct observable and verifiable outcome
-- Modify the requirements summary and body when the user requests changes; silence or an explanation neither approves nor automatically requires edits
-- Apply risk-policy.md after material edits; verified non-material refinements preserve approval
 - Continue drafting Design when no unresolved material decision or user-requested phase gate blocks it; never mark an unapproved draft approved
 - The model MUST continue the feedback-revision cycle until explicit approval is received
 - The model SHOULD identify only gaps that would materially change observable behavior; it MUST NOT suggest speculative expansion by default

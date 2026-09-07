@@ -54,16 +54,26 @@ def lint_report(report):
 class DeliveryContractTests(unittest.TestCase):
     def test_shared_references_resolve_from_every_installed_skill(self):
         manifest = json.loads((ROOT / ".claude-plugin/plugin.json").read_text())
-        self.assertEqual(7, len(manifest["skills"]))
-        for directory in manifest["skills"]:
+        self.assertEqual(8, len(manifest["skills"]))
+        risk_readers = [d for d in manifest["skills"] if not d.endswith("distill-spec-memory")]
+        for directory in risk_readers:
             skill = ROOT / directory / "SKILL.md"
             links = re.findall(r"\]\(([^)]+risk-policy\.md)\)", skill.read_text())
             self.assertEqual(1, len(links), skill)
             self.assertEqual((POLICIES / "risk-policy.md").resolve(), (skill.parent / links[0]).resolve())
+            approval = re.findall(r"\]\(([^)]+approval-policy\.md)\)", skill.read_text())
+            self.assertEqual(1, len(approval), skill)
+            self.assertEqual((POLICIES / "approval-policy.md").resolve(), (skill.parent / approval[0]).resolve())
+        distill = (ROOT / "distill-spec-memory" / "SKILL.md").read_text()
+        self.assertEqual([], re.findall(r"\]\(([^)]+risk-policy\.md)\)", distill))
+        approval, = re.findall(r"\]\(([^)]+approval-policy\.md)\)", distill)
+        self.assertEqual((POLICIES / "approval-policy.md").resolve(), (ROOT / "distill-spec-memory" / approval).resolve())
         for directory in ("using-lazyspec", "fast", "writing-task"):
             skill = ROOT / directory / "SKILL.md"
-            link, = re.findall(r"\]\(([^)]+delivery-loop\.md)\)", skill.read_text())
-            self.assertEqual((POLICIES / "delivery-loop.md").resolve(), (skill.parent / link).resolve())
+            links = re.findall(r"\]\(([^)]+delivery-loop\.md)\)", skill.read_text())
+            self.assertGreaterEqual(len(links), 1, skill)
+            for link in links:
+                self.assertEqual((POLICIES / "delivery-loop.md").resolve(), (skill.parent / link).resolve())
 
     def test_policy_tables_have_all_levels_and_failure_destinations(self):
         risk = (POLICIES / "risk-policy.md").read_text()

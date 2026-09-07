@@ -5,9 +5,9 @@ description: Create or revise a LazySpec design.md from complete Requirements. C
 
 # Writing Design
 
-## Shared risk policy
+## Shared policies
 
-Read [risk-policy.md](../using-lazyspec/references/risk-policy.md) before this workflow; resolve it relative to this Skill directory. It separates risk-based verification from decision-based approval and defines model autonomy within the user's scope.
+Read [risk-policy.md](../using-lazyspec/references/risk-policy.md), [approval-policy.md](../using-lazyspec/references/approval-policy.md), and [doc-policy.md](../using-lazyspec/references/doc-policy.md) before this workflow; resolve them relative to this Skill directory. risk-policy.md separates risk-based verification from decision-based approval and defines model autonomy within the user's scope; approval-policy.md is the single source of explicit-approval, materiality, invalidation, summary-contract, and approval-asking semantics; doc-policy.md keeps the document minimum-sufficient.
 
 ## Language
 
@@ -21,39 +21,17 @@ Before starting, read the complete `specs/{feature_name}/requirements.md`, then 
 ## Human-First Review Summary
 
 - Put `## 审批摘要` immediately after the document title and before `## Overview`, with the Chinese subsections `方案`, `关键决策`, and `风险与待确认`.
-- Treat this summary as the user-facing approval contract. The detailed design may elaborate Agent-facing implementation mechanics, but MUST remain consistent with and bounded by the approved summary.
+- Treat this summary as the user-facing approval contract under approval-policy.md. The detailed design may elaborate Agent-facing implementation mechanics, but MUST remain consistent with and bounded by the approved summary.
 - Include every material choice involving public behavior or interfaces, data, dependencies, compatibility or migration, security or privacy, external or irreversible effects, failure and recovery behavior, or material risk. Keep internal file layout, helpers, test organization, and equivalent implementation refinements out of the summary.
 - Render `关键决策` as a compact table with the columns `决策`, `选择与理由`, and `影响`. Reuse each summary decision's exact short title in its corresponding `Key Design Decisions` subsection so the relationship is unambiguous without adding traceability noise.
-- Adapt summary length to cognitive complexity rather than a fixed numerical budget. Aim for a complete one-screen review. If that is impossible without concealing a material decision, stop before approval and recommend splitting the Spec; expand only after the user explicitly keeps one Spec.
+- Adapt summary length to cognitive complexity rather than a fixed numerical budget, following approval-policy.md's one-screen and splitting rules.
 - Resolve every material open decision before requesting approval. Use `风险与待确认` to state known risks and explicitly record that no material decision remains unresolved.
-- Before approval, verify that the body contains no material decision missing from or conflicting with the summary. Any material revision invalidates prior approval; a verified non-material body-only refinement does not.
-- On a material revision, replace the summary with the complete current version and present a concise additions/changes/removals/risk delta in the conversation.
+- Before approval, verify that the body contains no material decision missing from or conflicting with the summary; a missing material decision or a summary/body conflict blocks approval under approval-policy.md.
 - For a legacy Design document without `审批摘要`, add the summary only when that document is next revised. Creating Design from an approved legacy Requirements document does not require rewriting Requirements.
 
 ## Approval
 
-Finish the Design draft and continue toward combined review unless an unresolved material decision or explicit user phase gate requires approval here. Internal implementation details remain the model's choice within the contract. When approval is needed, use this protocol:
-
-1. If `AskUserQuestion` is available, call it with exactly this supported input shape and no extra fields:
-
-   ```json
-   {
-     "questions": [{
-       "question": "审批摘要是否准确覆盖了设计方案、关键决策及风险？",
-       "header": "Review",
-       "options": [
-         {"label": "Approve", "description": "批准当前摘要表达的实质设计，并允许进入 Tasks。"},
-         {"label": "Request changes", "description": "留在 Design，根据反馈更新摘要与正文。"}
-       ],
-       "multiSelect": false
-     }]
-   }
-   ```
-
-2. Otherwise, if the environment provides an equivalent user-question tool, use it with the same single-choice meaning and only fields that tool supports.
-3. Otherwise, ask the same approval question directly in the conversation and stop while awaiting the answer.
-
-Only explicit approval in the current conversation records approval of the current `审批摘要` and its consistency with the detailed Design body. It does not mean the user approved every non-material implementation detail. File existence, timeout, silence, explanations, ambiguous replies, and requested changes do not imply approval. For any non-approval response, remain in Design; apply requested changes when provided and request approval again. Any material change invalidates prior approval; a verified non-material body-only refinement does not.
+Finish the Design draft and continue toward combined review unless an unresolved material decision or explicit user phase gate requires approval here. Internal implementation details remain the model's choice within the contract. When approval is needed, follow approval-policy.md's asking protocol and ask: "审批摘要是否准确覆盖了设计方案、关键决策及风险？" For any non-approval response, remain in Design; apply approval-policy.md's explicit-approval, revision-delta, and invalidation semantics.
 
 **Constraints:**
 

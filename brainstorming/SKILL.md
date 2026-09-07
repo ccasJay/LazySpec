@@ -7,14 +7,16 @@ description: Explore and clarify a feature in the current session before LazySpe
 
 Turn a feature idea into an explicitly approved direction that LazySpec can use as the input to `writing-requirement`. Keep every result in the current conversation context only.
 
-## Shared risk policy
+## Shared policies
 
-Read [risk-policy.md](../using-lazyspec/references/risk-policy.md) before this workflow; resolve it relative to this Skill directory. It separates risk-based verification from decision-based approval and defines model autonomy within the user's scope.
+Read [risk-policy.md](../using-lazyspec/references/risk-policy.md) and [approval-policy.md](../using-lazyspec/references/approval-policy.md) before this workflow; resolve them relative to this Skill directory. risk-policy.md separates risk-based verification from decision-based approval; approval-policy.md is the single source of explicit-approval, materiality, invalidation, and approval-asking semantics.
 
 ## Rule
 - The output content should all be in chinese, except the key word from the project
 
 ## Human-First Interaction
+
+Apply these rules only to the user-facing Brainstorming conversation. They do not create a new artifact, change the internal `BrainstormingContext` schema, or alter Requirements, Design, Tasks, fast mode, or Memory behavior.
 
 - Use plain-language Chinese by default and lead with the user-visible result. Explain the implementation mechanism only when it changes the current choice.
 - Ask each question to make exactly one decision. Say what the decision affects before listing the options.
@@ -61,6 +63,7 @@ Read [risk-policy.md](../using-lazyspec/references/risk-policy.md) before this w
    - Avoid speculative features and unrelated improvements.
 
 4. Obtain approval.
+   - General explicit-approval semantics follow approval-policy.md; this step adds only the Brainstorming-specific rules below.
    - Ask the user to select an approach only for an unresolved material trade-off. Selecting an approach records only `selectedApproach`; it is not approval of the complete Brainstorming Context unless the user explicitly approved that full context. Reuse already explicit decisions.
    - After the selection, present the complete user-facing Context with exactly these headings. Put included scope under `包含` and excluded scope under `不包含`; do not show internal field names in this approval view:
 

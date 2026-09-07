@@ -13,6 +13,7 @@
     "./writing-design",
     "./writing-task",
     "./distill-spec-memory",
-    "./fast"
+    "./fast",
+    "./orchestrating-specs"
   ]
 }
