@@ -41,50 +41,63 @@ class SkillContractTests(unittest.TestCase):
         self.assertIn("Never derive `ACTIVE_PROJECT_ROOT`", routing)
         self.assertIn("never default to the Plugin installation directory", routing)
 
-    def test_approval_payloads_use_only_supported_fields(self):
+    def test_approval_payload_lives_only_in_policy(self):
+        policy = (
+            ROOT / "using-lazyspec" / "references" / "approval-policy.md"
+        ).read_text()
+        payloads = re.findall(r"```json\n(.*?)\n\s*```", policy, re.DOTALL)
+        self.assertEqual(1, len(payloads))
+        payload = json.loads(payloads[0])
+        self.assertEqual({"questions"}, payload.keys())
+        self.assertEqual(1, len(payload["questions"]))
+        question = payload["questions"][0]
+        self.assertEqual(
+            {"question", "header", "options", "multiSelect"},
+            question.keys(),
+        )
+        self.assertEqual("Review", question["header"])
+        self.assertFalse(question["multiSelect"])
+        self.assertEqual(
+            ["Approve", "Request changes"],
+            [option["label"] for option in question["options"]],
+        )
+        for option in question["options"]:
+            self.assertEqual({"label", "description"}, option.keys())
+        self.assertIn("equivalent user-question tool", policy)
+        self.assertIn("directly in the conversation", policy)
+
         for path in WRITING_SKILLS:
             with self.subTest(path=path):
                 text = path.read_text()
                 self.assertNotIn("metadata.source", text)
-                payloads = re.findall(r"```json\n(.*?)\n\s*```", text, re.DOTALL)
-                self.assertEqual(1, len(payloads))
-                payload = json.loads(payloads[0])
-                self.assertEqual({"questions"}, payload.keys())
-                self.assertEqual(1, len(payload["questions"]))
-                question = payload["questions"][0]
-                self.assertEqual(
-                    {"question", "header", "options", "multiSelect"},
-                    question.keys(),
-                )
-                self.assertEqual("Review", question["header"])
-                self.assertFalse(question["multiSelect"])
-                self.assertEqual(
-                    ["Approve", "Request changes"],
-                    [option["label"] for option in question["options"]],
-                )
-                for option in question["options"]:
-                    self.assertEqual({"label", "description"}, option.keys())
-                self.assertIn("equivalent user-question tool", text)
-                self.assertIn("directly in the conversation", text)
+                self.assertEqual(0, len(re.findall(r"```json\n", text)))
+                self.assertIn("approval-policy.md", text)
 
     def test_task_execution_contract_batches_todos_on_feature_branch(self):
         routing = (ROOT / "using-lazyspec" / "SKILL.md").read_text()
+        delivery = (
+            ROOT / "using-lazyspec" / "references" / "delivery-loop.md"
+        ).read_text()
         planning = (ROOT / "writing-task" / "SKILL.md").read_text()
-        self.assertIn("complete `requirements.md`, `design.md`, and `tasks.md`", routing)
-        self.assertIn("all currently unchecked TODOs", routing)
-        self.assertIn("without waiting for per-task approval", routing)
-        self.assertIn("new feature branch", routing)
-        self.assertIn("codex/<feature-name>", routing)
-        self.assertIn("After each TODO passes its verification", routing)
+        self.assertIn("complete `requirements.md`, `design.md`, and `tasks.md`", delivery)
+        self.assertIn("all currently unchecked TODOs", delivery)
+        self.assertIn("without waiting for per-task approval", delivery)
+        self.assertIn("new feature branch", delivery)
+        self.assertIn("codex/<feature-name>", delivery)
+        self.assertIn("After each TODO passes its verification", delivery)
         self.assertNotIn("Only focus on ONE user-selected task", routing)
         self.assertNotIn("If multiple tasks are requested, ask the user to select one", routing)
         self.assertNotIn("execute only one requested task at a time", routing)
-        for text in (routing, planning):
+        for text in (delivery, planning):
             self.assertIn("checkbox token from `[ ]` to `[x]`", text)
             self.assertIn("`//TODO`", text)
 
     def test_codex_plan_mode_routing_contract(self):
         routing = (ROOT / "using-lazyspec" / "SKILL.md").read_text()
+        adapter = (
+            ROOT / "using-lazyspec" / "references" / "codex-plan-mode.md"
+        ).read_text()
+        self.assertIn("[codex-plan-mode.md](references/codex-plan-mode.md)", routing)
         for token in (
             "RuntimeMode",
             'platform: "codex" | "non-codex" | "unknown"',
@@ -94,69 +107,71 @@ class SkillContractTests(unittest.TestCase):
             "BrainstormingInput",
             "content.trim()",
             "requirements.md",
-            'RouteDecision.stage` 仍为 `"requirements"',
+            'RouteDecision.stage` remaining `"requirements"`',
         ):
             with self.subTest(token=token):
-                self.assertIn(token, routing)
+                self.assertIn(token, adapter)
         self.assertIn("不得调用标准 `brainstorming`", routing)
         self.assertIn("不得自动选择任一分支", routing)
-        self.assertIn("不序列化或写入项目文件", routing)
+        self.assertIn("do not serialize them or write them into project files", adapter)
 
     def test_codex_plan_mode_failure_and_session_boundaries(self):
         routing = (ROOT / "using-lazyspec" / "SKILL.md").read_text()
+        adapter = (
+            ROOT / "using-lazyspec" / "references" / "codex-plan-mode.md"
+        ).read_text()
         for token in (
             "fail closed",
-            "计划不存在或为空",
-            "计划已生成但未批准",
-            "平台或模式未知",
-            "不得创建或更新 `requirements.md`",
-            "不得创建 `plan.md`、Brainstorming 文档",
-            "旧的 `CodexPlanArtifact` 与批准状态立即失效",
-            "重新规划",
-            "已有 `requirements.md` 且用户未明确要求重新规划",
+            "when the plan is missing or empty",
+            "when a plan has been generated but not approved",
+            "when the platform or mode is unknown",
+            "do not create or update `requirements.md`",
+            "must not create `plan.md`, a Brainstorming document",
+            "the old `CodexPlanArtifact` and its approval status become invalid immediately",
+            "replanning",
+            "when `requirements.md` already exists and the user has not explicitly requested replanning",
         ):
             with self.subTest(token=token):
-                self.assertIn(token, routing)
+                self.assertIn(token, adapter)
+        self.assertIn("不得自动选择任一分支", routing)
 
     def test_downstream_approval_and_compatibility_boundaries(self):
         routing = (ROOT / "using-lazyspec" / "SKILL.md").read_text()
+        policy = (
+            ROOT / "using-lazyspec" / "references" / "approval-policy.md"
+        ).read_text()
         requirements = (ROOT / "writing-requirement" / "SKILL.md").read_text()
         design = (ROOT / "writing-design" / "SKILL.md").read_text()
         tasks = (ROOT / "writing-task" / "SKILL.md").read_text()
         brainstorming = (ROOT / "brainstorming" / "SKILL.md").read_text()
 
         self.assertIn(
-            "For medium/high risk, route to `writing-design` only after Requirements has explicit user approval",
+            "Draft toward combined review at every risk level under approval-policy.md",
             routing,
         )
         self.assertIn(
-            "to `writing-task` only after Design has explicit user approval",
-            routing,
+            "Only an explicit approval in the current conversation",
+            policy,
         )
         self.assertIn(
-            "known to be non-Codex or not in Plan Mode, route to `brainstorming`",
-            routing,
-        )
-        self.assertIn(
-            "Route to `brainstorming` first only when the user explicitly requests it",
-            routing,
+            "A material change invalidates the prior approval", policy
         )
         self.assertIn(
             "Only explicit approval in the current conversation records approval of the current `审批摘要`",
+            policy,
+        )
+        self.assertIn(
+            "never mark an unapproved draft approved",
             requirements,
         )
-        self.assertIn("Any material change invalidates prior approval", requirements)
-        self.assertIn("MUST NOT proceed to the design document", requirements)
-        self.assertIn(
-            "Only explicit approval in the current conversation records approval of the current `审批摘要`",
-            design,
-        )
-        self.assertIn("Any material change invalidates prior approval", design)
-        self.assertIn("MUST NOT proceed to the implementation plan", design)
+        self.assertIn("never mark an unapproved draft approved", design)
         self.assertIn("Approval ends planning and MUST NOT start implementation", tasks)
-        self.assertIn("complete `requirements.md`, `design.md`, and `tasks.md`", routing)
-        self.assertIn("all currently unchecked TODOs", routing)
-        self.assertIn("After each TODO passes its verification", routing)
+        delivery = (
+            ROOT / "using-lazyspec" / "references" / "delivery-loop.md"
+        ).read_text()
+        self.assertIn("complete `requirements.md`, `design.md`, and `tasks.md`", delivery)
+        self.assertIn("all currently unchecked TODOs", delivery)
+        self.assertIn("After each TODO passes its verification", delivery)
         self.assertIn("Answer task questions without starting work", routing)
         self.assertIn("`//TODO`", tasks)
         self.assertIn("ask a separate approval question", brainstorming)
@@ -177,7 +192,6 @@ class SkillContractTests(unittest.TestCase):
         self.assertIn("does not need those five fields", skill)
         self.assertIn("lacking the `BrainstormingContext` shape", prompt)
         self.assertIn("Plan approval is not Requirements approval", skill)
-        self.assertIn("request the Requirements approval separately", prompt)
 
     def test_brainstorming_requires_separate_context_approval(self):
         text = (ROOT / "brainstorming" / "SKILL.md").read_text()

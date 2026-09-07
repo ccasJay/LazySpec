@@ -54,12 +54,8 @@
 
 ## Usage Guidelines
 
-- Replace [placeholder] with actual content
-- Treat `审批摘要` as the user-facing approval contract and keep the detailed body consistent with and bounded by it
-- Adapt the summary to cognitive complexity and aim for a complete one-screen review; recommend splitting the Spec when that is impossible without hiding material information
-- Keep HTML anchors and traceability syntax out of `审批摘要`
+- Replace [placeholder] with actual content.
+- Keep HTML anchors and traceability syntax out of `审批摘要`.
 - Use HTML anchors for traceability: <a id="req-1-1"></a>
-- Focus on observable and verifiable behavior
-- Keep total acceptance criteria under 30
-- Write all generated document prose in Chinese; preserve project-specific terms and identifiers when necessary
-- Express EARS semantics naturally in Chinese without copying `WHEN`, `THEN`, or `SHALL`
+- Focus on observable and verifiable behavior.
+- Write all generated document prose in Chinese; preserve project-specific terms and identifiers when necessary.

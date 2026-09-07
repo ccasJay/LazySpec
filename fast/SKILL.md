@@ -7,9 +7,9 @@ description: Create or resume a lightweight LazySpec fast/快速 plan when no re
 
 Turn a new feature idea into an approved `plan.md` and execute it in one continuous run, skipping the full LazySpec phase pipeline. Use this Skill for first-time fast creation and subsequent execution, verification, or revision of that fast plan; never use it to revise an existing three-document Spec.
 
-## Shared risk policy
+## Shared policies
 
-Read [risk-policy.md](../using-lazyspec/references/risk-policy.md) before this workflow; resolve it relative to this Skill directory. It separates risk-based verification from decision-based approval and defines model autonomy within the user's scope. Also read [delivery-loop.md](../using-lazyspec/references/delivery-loop.md) for executable success criteria, Feature Verification, repair, and Learning Candidates.
+Read [risk-policy.md](../using-lazyspec/references/risk-policy.md), [approval-policy.md](../using-lazyspec/references/approval-policy.md), and [delivery-loop.md](../using-lazyspec/references/delivery-loop.md) before this workflow; resolve them relative to this Skill directory. risk-policy.md separates risk-based verification from decision-based approval; approval-policy.md is the single source of explicit-approval, materiality, invalidation, and approval-asking semantics; delivery-loop.md defines executable success criteria, Feature Verification, repair, and Learning Candidates.
 
 ## Rule
 - The output content should all be in chinese, except the key word from the project
@@ -52,13 +52,9 @@ Keep the plan minimal and directly executable. Exclude user testing, deployment,
 
 ## Approval
 
-After creating a plan or changing its material contract, obtain approval of any intent or decision not already explicitly approved. Internal refinements and equivalent verification methods do not need reapproval. When approval is needed, use this protocol:
+After creating a plan or changing its material contract, obtain approval of any intent or decision not already explicitly approved, following approval-policy.md's asking protocol. Internal refinements and equivalent verification methods do not need reapproval; evidence and candidate updates do not revise the approved plan.
 
-1. If `AskUserQuestion` is available, call it with only its supported `questions` input. Use one question object with `question`, `header`, `options`, and `multiSelect`; use `Review` as the header, the two single-choice options `Approve` and `Request changes`, and `multiSelect: false`. Do not add unsupported top-level or question fields.
-2. Otherwise, if the environment provides an equivalent user-question tool, use it with the same single-choice meaning and only fields supported by that tool.
-3. Otherwise, ask the approval question directly in the conversation and stop while awaiting the answer.
-
-Only explicit approval in the current conversation (a clear "yes", "approved", selecting `Approve`, or equivalent affirmative response) records approval. File existence, timeout, silence, explanations, ambiguous replies, and requested changes do not imply approval. For material plan changes, revise `plan.md`, present the delta, and request approval of unresolved decisions. For internal refinements within the contract, update and continue. Silence or an explanation is not approval and does not require speculative edits. Evidence/candidate updates do not revise the approved plan. Never start execution before explicit approval.
+Fast keeps its single approval gate: one plan approval followed by continuous execution at every risk level. For material plan changes, revise `plan.md`, present the delta, and request approval of unresolved decisions under approval-policy.md; never start execution before explicit approval. Silence or an explanation is not approval and does not require speculative edits.
 
 ## Execution
 

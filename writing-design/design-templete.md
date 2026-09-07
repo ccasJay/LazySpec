@@ -1,6 +1,6 @@
 The section names below are structural keywords and MUST remain in English. All generated prose under these sections MUST be written in Chinese. Preserve project-specific names, technical terms, code identifiers, filenames, URLs, Markdown syntax, and Mermaid syntax when necessary.
 
-Immediately after the document title, every generated Design document MUST begin with this Human-First approval contract before the English structural sections:
+Every generated Design document MUST begin with the Human-First approval contract shown below, immediately after the document title and before the English structural sections:
 
 ```markdown
 ## 审批摘要
@@ -22,8 +22,6 @@ Immediately after the document title, every generated Design document MUST begin
 - 风险：[已知风险，若无则写“无”]
 - 待确认：无
 ```
-
-Treat `审批摘要` as the user-facing approval contract. Keep the detailed body consistent with and bounded by it, reuse each summary decision title in `Key Design Decisions`, and keep non-material internal mechanics out of the summary. Adapt its length to cognitive complexity and aim for a complete one-screen review; recommend splitting the Spec when that is impossible without hiding material decisions.
 
 The design document MUST include these core sections:
 

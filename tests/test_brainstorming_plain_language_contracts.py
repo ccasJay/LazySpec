@@ -13,32 +13,48 @@ class BrainstormingPlainLanguageContractTests(unittest.TestCase):
         cls.router = ROUTER.read_text()
         cls.brainstorming = BRAINSTORMING.read_text()
 
-    def test_router_contract_is_result_first_and_brainstorming_only(self):
+    def test_router_defers_conversation_contract_to_brainstorming(self):
         text = self.router
-        self.assertIn("Apply this contract only to the user-facing Brainstorming conversation", text)
-        self.assertIn("Lead with the result the user will experience", text)
-        self.assertIn("Ask for exactly one decision in each question", text)
-        self.assertIn("Name options by user-visible outcomes", text)
-        self.assertIn("plain-language Chinese by default", text)
-        self.assertIn("technical term first appears", text)
-        self.assertIn("implementation difference would materially change", text)
-        self.assertIn("scope, observable behavior, constraints, risks, and success criteria", text)
-        self.assertIn("what they are deciding, the consequence of each option", text)
-        self.assertIn("why the recommended option is recommended", text)
-        self.assertIn("Requirements, Design, Tasks, fast mode, or Memory behavior", text)
+        self.assertIn(
+            "Human-First Interaction rules defined in `brainstorming/SKILL.md`", text
+        )
+        self.assertIn(
+            "do not create a new artifact, change the internal `BrainstormingContext` schema",
+            text,
+        )
+        self.assertIn(
+            "Requirements, Design, Tasks, fast mode, or Memory behavior", text
+        )
 
-    def test_questions_keep_three_options_plus_free_form_and_one_decision(self):
+    def test_brainstorming_contract_is_result_first_and_brainstorming_only(self):
+        text = self.brainstorming
+        self.assertIn(
+            "Apply these rules only to the user-facing Brainstorming conversation", text
+        )
+        self.assertIn("lead with the user-visible result", text)
+        self.assertIn("Ask each question to make exactly one decision", text)
+        self.assertIn("Name options by the result the user will notice", text)
+        self.assertIn("plain-language Chinese by default", text)
+        self.assertIn("technical term the first time it appears", text)
+        self.assertIn("Do not omit the feature's scope, observable behavior, constraints, risks, or success criteria", text)
+        self.assertIn("decision, option consequences, and recommendation reason", text)
+        self.assertIn(
+            "Requirements, Design, Tasks, fast mode, or Memory behavior", text
+        )
+
+    def test_questions_adapt_option_count_and_keep_one_decision(self):
         text = self.brainstorming
         self.assertIn("Ask only one question at a time", text)
-        self.assertIn("exactly three concrete, mutually exclusive predefined options", text)
-        self.assertIn("fourth free-form option", text)
+        self.assertIn("Supply only meaningful mutually exclusive options when useful; do not pad the list", text)
+        self.assertIn("not a required option count", text)
         self.assertIn("现在只需要决定什么，以及这个决定会影响什么", text)
         self.assertIn("（推荐）", text)
         self.assertIn("4. 其他", text)
 
     def test_approach_comparison_is_user_visible_and_decision_relevant(self):
         text = self.brainstorming
-        self.assertIn("Present exactly three viable approaches", text)
+        self.assertIn("Compare viable approaches only when their trade-offs materially affect the user's choice", text)
+        self.assertIn("do not manufacture alternatives", text)
         for heading in ("用户会得到什么", "主要限制或风险", "适用条件"):
             with self.subTest(heading=heading):
                 self.assertIn(f"`{heading}`", text)

@@ -7,7 +7,7 @@ description: Distill verified Feature Memory or evidence-backed Learning Memory,
 
 Maintain a small corpus of current feature decisions and bounded project-specific learning. Treat Specs and Git as history; treat only an `active` Capsule as default-retrievable current guidance.
 
-Read [risk-policy.md](../using-lazyspec/references/risk-policy.md) for approval boundaries. Candidate collection is defined in [delivery-loop.md](../using-lazyspec/references/delivery-loop.md); read it when promoting a candidate. Resolve these links from this Skill directory.
+Read [approval-policy.md](../using-lazyspec/references/approval-policy.md) for approval boundaries. Candidate collection is defined in [delivery-loop.md](../using-lazyspec/references/delivery-loop.md); read it when promoting a candidate. Resolve these links from this Skill directory.
 
 ## Language and project root
 

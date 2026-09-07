@@ -5,9 +5,9 @@ description: Create or revise a LazySpec tasks.md with executable success criter
 
 # Writing Tasks
 
-## Shared risk policy
+## Shared policies
 
-Read [risk-policy.md](../using-lazyspec/references/risk-policy.md) before this workflow; resolve it relative to this Skill directory. It separates risk-based verification from decision-based approval and defines model autonomy within the user's scope. Also read [delivery-loop.md](../using-lazyspec/references/delivery-loop.md) for executable success criteria, Feature Verification, repair, and Learning Candidates.
+Read [risk-policy.md](../using-lazyspec/references/risk-policy.md), [approval-policy.md](../using-lazyspec/references/approval-policy.md), [doc-policy.md](../using-lazyspec/references/doc-policy.md), and [delivery-loop.md](../using-lazyspec/references/delivery-loop.md) before this workflow; resolve them relative to this Skill directory. risk-policy.md separates risk-based verification from decision-based approval; approval-policy.md is the single source of explicit-approval, materiality, invalidation, and approval-asking semantics; doc-policy.md keeps the document minimum-sufficient; delivery-loop.md defines executable success criteria, Feature Verification, repair, and Learning Candidates.
 
 ## Rule
 - The output content should all be in chinese, except the key word from the project
@@ -20,28 +20,9 @@ Before requesting Tasks approval, validate every requirement link against `requi
 
 ## Approval
 
-For initial combined review, the object is both Requirements/Design summaries, their body consistency, and the complete Tasks plan including success criteria. Adapt the question to the package or material delta still needing approval. Internal decomposition, dependency-preserving ordering, and equivalent verification-method changes do not require approval; update the plan and continue. Honor explicit user phase gates. When approval is necessary:
+For initial combined review, the object is both Requirements/Design summaries, their body consistency, and the complete Tasks plan including success criteria. Adapt the question to the package or material delta still needing approval. Internal decomposition, dependency-preserving ordering, and equivalent verification-method changes do not require approval; update the plan and continue. Honor explicit user phase gates. When approval is necessary, follow approval-policy.md's asking protocol and adapt the question to the approval object; for Tasks completion ask: "Do the tasks look good?"
 
-1. If `AskUserQuestion` is available, call it with exactly this supported input shape and no extra fields:
-
-   ```json
-   {
-     "questions": [{
-       "question": "Do the tasks look good?",
-       "header": "Review",
-       "options": [
-         {"label": "Approve", "description": "Approve Tasks and finish the planning workflow."},
-         {"label": "Request changes", "description": "Keep the current phase and revise Tasks from my feedback."}
-       ],
-       "multiSelect": false
-     }]
-   }
-   ```
-
-2. Otherwise, if the environment provides an equivalent user-question tool, use it with the same single-choice meaning and only fields that tool supports.
-3. Otherwise, ask the same approval question directly in the conversation and stop while awaiting the answer.
-
-Only explicit approval in the current conversation records Tasks approval (and all three documents for a combined package). File existence, timeout, silence, explanations, ambiguous replies, and requested changes do not imply approval. For any non-approval response, remain in Tasks; apply requested changes when provided and request approval again. Approval alone ends planning and MUST NOT start implementation. If the user already explicitly requested implementation after planning, hand off to execution within that authorization without asking again.
+Approval ends planning and MUST NOT start implementation. If the user already explicitly requested implementation after planning, hand off to execution within that authorization without asking again. For any non-approval response, remain in Tasks; apply approval-policy.md's explicit-approval, revision-delta, and invalidation semantics.
 
 ## Plan Shape and Size
 

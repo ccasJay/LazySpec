@@ -32,6 +32,18 @@ Related implementation or acceptance-contract changes make previous evidence sta
 
 ## Execution strategy
 
+These rules apply to normal `tasks.md` plans; fast plan.md execution follows `fast` and this same loop.
+
+- Before executing, understand the complete `requirements.md`, `design.md`, and `tasks.md` contract. Reuse unchanged content already in context; read missing or changed sections. Never execute with missing or uncertain contract context.
+- Before implementing, confirm the current normal Spec has the applicable combined or phase approvals under approval-policy.md. An execution request alone does not approve unseen material plan changes.
+- When the user explicitly requests execution of a `tasks.md` plan, execute all currently unchecked TODOs, including their sub-tasks, without waiting for per-task approval or another user instruction. If the user explicitly names one TODO number, limit execution to that TODO and its sub-tasks. Look at the task details in the task list; start with sub-tasks if present.
+- Before the first file modification, create a new feature branch by default using `codex/<feature-name>` (or the user's explicitly requested branch name). If the default branch name already belongs to unrelated work, use a unique `codex/` branch name and report the choice. Do not commit unrelated pre-existing changes.
+- Verify implementation against any requirements specified in the task or its details.
+- After each TODO passes its verification, change only its checkbox token from `[ ]` to `[x]`. Preserve `//TODO` and every character after it exactly; do not remove, replace, or rewrite the task text. Group related verified work into coherent commits unless the user specifies another commit policy. Exclude unrelated working-tree changes.
+- Continue through all requested unchecked TODOs without an intentional pause. Verification failures follow Failure routing and repair below: diagnose, repair within authorization while progressing, or route to the earliest invalid contract. Stop for the no-progress threshold, merge or working-tree conflict, commit failure, missing authority/user decision, or user interruption; report the exact blocker.
+- When all requested TODOs are complete, inspect only the Project Memory index for Capsules whose feature, tags, summary, Source Spec, or authorities overlap the changed paths. Report likely impact candidates in the handoff, but do not create, edit, or re-status Memory without a separate explicit distillation or maintenance request.
+- If the task file has no unchecked TODOs, complete missing or stale Feature Verification on an execution request. For partial execution, report only the authorized subset unless all feature TODOs are now complete. Follow Feature Verification artifact and Learning Candidates below for the in-file report. If the requested task file or TODO cannot be resolved, ask for the exact path or number before modifying files.
+
 Ensure the complete current contract is understood; reuse unchanged content already available in context and read missing or changed sections rather than rereading every artifact. If context is incomplete or freshness uncertain, read the relevant complete artifact before acting. Choose research depth and tools based on unresolved facts, not a fixed exploration sequence.
 
 Treat listed task order as a default. Reorder independent tasks or group related work when dependencies, approved outcomes, and user scope are preserved; briefly record the reason. Do not renumber or rewrite completed TODO text. Parallel work must also be permitted by the host/user and have clear ownership; this policy does not grant delegation authority.

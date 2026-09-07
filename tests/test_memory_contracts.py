@@ -229,9 +229,11 @@ class MemorySkillContractTests(unittest.TestCase):
         self.assertNotEqual(body, match.group(2))
 
     def test_using_lazyspec_recall_is_bounded_advisory_and_authority_aware(self):
-        text = (ROUTER_ROOT / "SKILL.md").read_text()
+        router = (ROUTER_ROOT / "SKILL.md").read_text()
+        recall = (ROUTER_ROOT / "references" / "memory-recall.md").read_text()
+        self.assertIn("### Memory Recall Routing", router)
+        self.assertIn("[memory-recall.md](references/memory-recall.md)", router)
         for required in (
-            "### Memory Recall Routing",
             "Check only `ACTIVE_PROJECT_ROOT/project-memory/index.md`",
             "generated six-column index header",
             "Markdown-linked rows",
@@ -246,10 +248,10 @@ class MemorySkillContractTests(unittest.TestCase):
             "user's explicit task scope",
         ):
             with self.subTest(required=required):
-                self.assertIn(required, text)
+                self.assertIn(required, recall)
 
     def test_final_task_reports_memory_impact_without_writing(self):
-        text = (ROUTER_ROOT / "SKILL.md").read_text()
+        text = (ROUTER_ROOT / "references" / "delivery-loop.md").read_text()
         self.assertIn("When all requested TODOs are complete", text)
         self.assertIn("Report likely impact candidates", text)
         self.assertIn("do not create, edit, or re-status Memory", text)
