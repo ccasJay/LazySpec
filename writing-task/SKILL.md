@@ -1,6 +1,6 @@
 ---
 name: writing-task
-description: Create or revise a LazySpec tasks.md with executable success criteria and feature checks. Prepare combined Spec review, retaining existing authorization and asking only for material decisions; planning alone does not authorize implementation.
+description: Create or revise a LazySpec tasks.md with executable success criteria and feature checks after Requirements and Design approval. Request separate Tasks approval; planning alone does not authorize implementation.
 ---
 
 # Writing Tasks
@@ -12,7 +12,7 @@ Read [risk-policy.md](../using-lazyspec/references/risk-policy.md), [approval-po
 ## Rule
 - The output content should all be in chinese, except the key word from the project
 
-Before starting, read the complete `specs/{feature_name}/requirements.md` and `specs/{feature_name}/design.md`, then read `task-prompt.md` and `task-templete.md`. Resolve the Prompt and Template relative to the directory containing this `SKILL.md`, never relative to the process working directory or repository root. Resolve the upstream Specs and the new `tasks.md` against `ACTIVE_PROJECT_ROOT`, defined by `using-lazyspec` as the user's project working directory at session start. Never use this Skill's directory, its repository, or a Plugin cache as the project root. If invoked directly and the session working directory is unavailable or ambiguous, ask for the project root before reading or writing Specs. These rules apply unchanged in a Plugin cache and an Agent Skills installation. Use both complete upstream drafts for combined review; never infer approval from file existence. Stop earlier only for unresolved material decisions or user-requested phase gates.
+Before starting, read the complete `specs/{feature_name}/requirements.md` and `specs/{feature_name}/design.md`, then read `task-prompt.md` and `task-templete.md`. Resolve the Prompt and Template relative to the directory containing this `SKILL.md`, never relative to the process working directory or repository root. Resolve the upstream Specs and the new `tasks.md` against `ACTIVE_PROJECT_ROOT`, defined by `using-lazyspec` as the user's project working directory at session start. Never use this Skill's directory, its repository, or a Plugin cache as the project root. If invoked directly and the session working directory is unavailable or ambiguous, ask for the project root before reading or writing Specs. These rules apply unchanged in a Plugin cache and an Agent Skills installation. Require explicit approval of the current Requirements and Design before creating `tasks.md`; never infer approval from file existence.
 
 Format every requirement number in each task's Requirements list as its own relative Markdown link: `[<requirement-number>.<criterion-number>](./requirements.md#req-<requirement-number>-<criterion-number>)`. Link multiple requirement numbers separately; never leave a requirement number as plain text or combine multiple numbers in one link.
 
@@ -20,7 +20,7 @@ Before requesting Tasks approval, validate every requirement link against `requi
 
 ## Approval
 
-For initial combined review, the object is both Requirements/Design summaries, their body consistency, and the complete Tasks plan including success criteria. Adapt the question to the package or material delta still needing approval. Internal decomposition, dependency-preserving ordering, and equivalent verification-method changes do not require approval; update the plan and continue. Honor explicit user phase gates. When approval is necessary, follow approval-policy.md's asking protocol and adapt the question to the approval object; for Tasks completion ask: "Do the tasks look good?"
+The approval object is the complete Tasks plan, including success criteria and planned feature checks. Present it for separate approval after its upstream Requirements and Design have been approved. Internal decomposition, dependency-preserving ordering, and equivalent verification-method changes do not require reapproval when the approved outcome remains intact. Follow approval-policy.md's asking protocol; for Tasks completion ask: "Do the tasks look good?"
 
 Approval ends planning and MUST NOT start implementation. If the user already explicitly requested implementation after planning, hand off to execution within that authorization without asking again. For any non-approval response, remain in Tasks; apply approval-policy.md's explicit-approval, revision-delta, and invalidation semantics.
 

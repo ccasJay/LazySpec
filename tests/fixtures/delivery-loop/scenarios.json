@@ -1,14 +1,14 @@
 [
   {
-    "id": "low-package",
+    "id": "low-phases",
     "facts": "普通新功能，仅修改本地展示格式，无公共接口、数据或权限变化；方向已批准。",
-    "expected": "顺序起草三份文档，在 Tasks 合并审批；不开始编码。",
+    "expected": "先起草并审批 Requirements，获批后才生成 Design，Design 获批后才生成 Tasks；不开始编码。",
     "rule": "approval-policy.md#approval-timing"
   },
   {
     "id": "medium-phases",
     "facts": "普通功能改变两个组件间的公共接口；Requirements 草稿存在但未批准。",
-    "expected": "按 medium 请求 Requirements 审批，不把草稿当作已批准。",
+    "expected": "请求 Requirements 审批，不把草稿当作已批准；风险等级不改变阶段顺序。",
     "rule": "approval-policy.md#approval-timing"
   },
   {
@@ -80,7 +80,7 @@
   {
     "id": "design-gap",
     "facts": "需求仍成立，但设计选择的数据结构无法保证已要求的并发一致性。",
-    "expected": "回 Design 修订并检查受影响 Tasks，按风险审批。",
+    "expected": "回 Design 修订并检查受影响 Tasks；变更后的 Design 获批后再更新下游。",
     "rule": "delivery-loop.md#failure-routing-and-repair"
   },
   {

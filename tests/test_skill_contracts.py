@@ -1,4 +1,3 @@
-import json
 import re
 import unittest
 from pathlib import Path
@@ -42,30 +41,18 @@ class SkillContractTests(unittest.TestCase):
         self.assertIn("Never derive `ACTIVE_PROJECT_ROOT`", routing)
         self.assertIn("never default to the Plugin installation directory", routing)
 
-    def test_approval_payload_lives_only_in_policy(self):
+    def test_approval_question_tool_rule_lives_only_in_policy(self):
         policy = (
             ROOT / "using-lazyspec" / "references" / "approval-policy.md"
         ).read_text()
-        payloads = re.findall(r"```json\n(.*?)\n\s*```", policy, re.DOTALL)
-        self.assertEqual(1, len(payloads))
-        payload = json.loads(payloads[0])
-        self.assertEqual({"questions"}, payload.keys())
-        self.assertEqual(1, len(payload["questions"]))
-        question = payload["questions"][0]
-        self.assertEqual(
-            {"question", "header", "options", "multiSelect"},
-            question.keys(),
-        )
-        self.assertEqual("Review", question["header"])
-        self.assertFalse(question["multiSelect"])
-        self.assertEqual(
-            ["Approve", "Request changes"],
-            [option["label"] for option in question["options"]],
-        )
-        for option in question["options"]:
-            self.assertEqual({"label", "description"}, option.keys())
-        self.assertIn("equivalent user-question tool", policy)
+        self.assertIn("user-question tool exposed by the current agent environment", policy)
+        self.assertIn("Do not require a particular tool name", policy)
+        self.assertIn("only fields supported by the selected tool", policy)
+        self.assertIn("single-choice question", policy)
+        self.assertIn("`Approve` and `Request changes` meanings", policy)
         self.assertIn("directly in the conversation", policy)
+        self.assertNotIn("AskUserQuestion", policy)
+        self.assertNotIn("```json", policy)
 
         for path in WRITING_SKILLS:
             with self.subTest(path=path):
@@ -147,9 +134,11 @@ class SkillContractTests(unittest.TestCase):
         brainstorming = (ROOT / "brainstorming" / "SKILL.md").read_text()
 
         self.assertIn(
-            "Draft toward combined review at every risk level under approval-policy.md",
+            "create and approve Requirements, Design, and Tasks one at a time at every risk level",
             routing,
         )
+        self.assertIn("Do not create or draft Design until the current Requirements has explicit approval", requirements)
+        self.assertIn("Do not create or draft Tasks until the current Design has explicit approval", design)
         self.assertIn(
             "Only an explicit approval in the current conversation",
             policy,

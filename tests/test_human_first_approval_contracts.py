@@ -1,4 +1,3 @@
-import json
 import re
 import unittest
 from pathlib import Path
@@ -21,13 +20,6 @@ DESIGN_PROMPT = (ROOT / "writing-design" / "design-prompt.md").read_text()
 DESIGN_TEMPLATE = (ROOT / "writing-design" / "design-templete.md").read_text()
 
 
-def approval_payload(policy_text):
-    payloads = re.findall(r"```json\n(.*?)\n\s*```", policy_text, re.DOTALL)
-    if len(payloads) != 1:
-        raise AssertionError(f"expected one approval payload, got {len(payloads)}")
-    return json.loads(payloads[0])["questions"][0]
-
-
 class HumanFirstApprovalContractTests(unittest.TestCase):
     def test_policy_defines_summary_authority_and_materiality(self):
         for required in (
@@ -43,7 +35,7 @@ class HumanFirstApprovalContractTests(unittest.TestCase):
             with self.subTest(required=required):
                 self.assertIn(required, APPROVAL_POLICY)
 
-    def test_policy_defines_adaptive_review_and_revision_behavior(self):
+    def test_policy_defines_summary_size_and_revision_behavior(self):
         for required in (
             "cognitive complexity instead of enforcing a fixed item or character count",
             "complete one-screen review",
@@ -62,12 +54,14 @@ class HumanFirstApprovalContractTests(unittest.TestCase):
             "File existence, timeout, silence, explanations, ambiguous replies, and requested changes do not imply approval",
             "## Approval timing",
             "## How to ask",
-            "combined approval object",
+            "Requirements → explicit Requirements approval → Design → explicit Design approval → Tasks → explicit Tasks approval",
             "Fast retains one plan and one plan approval",
         ):
             with self.subTest(required=required):
                 self.assertIn(required, APPROVAL_POLICY)
         self.assertIn("bounded Human-First `审批摘要` projection", DOC_POLICY)
+        self.assertIn("Risk level and decision impact do not change this order", APPROVAL_POLICY)
+        self.assertNotIn("combined approval object", APPROVAL_POLICY)
 
     def test_legacy_specs_migrate_only_when_revised(self):
         self.assertIn("Do not bulk-migrate existing Specs", APPROVAL_POLICY)
@@ -106,7 +100,7 @@ class HumanFirstApprovalContractTests(unittest.TestCase):
             "every materially distinct acceptance outcome",
             "one unambiguous group",
             "HTML anchors and traceability",
-            "Resolve every material open question",
+            "Resolve open requirements questions",
             "conversation delta",
         ):
             with self.subTest(required=required):
@@ -145,21 +139,27 @@ class HumanFirstApprovalContractTests(unittest.TestCase):
             "Excluding the Human-First `审批摘要`", DESIGN_SKILL
         )
 
-    def test_policy_asking_payload_is_the_only_one(self):
-        payload = approval_payload(APPROVAL_POLICY)
-        self.assertEqual(
-            {"question", "header", "options", "multiSelect"}, payload.keys()
-        )
-        self.assertEqual("Review", payload["header"])
-        self.assertFalse(payload["multiSelect"])
-        self.assertEqual(
-            ["Approve", "Request changes"],
-            [option["label"] for option in payload["options"]],
-        )
-        for option in payload["options"]:
-            self.assertEqual({"label", "description"}, option.keys())
-        self.assertIn("equivalent user-question tool", APPROVAL_POLICY)
+    def test_design_collects_its_own_decisions_after_brainstorming(self):
+        brainstorming = (ROOT / "brainstorming" / "SKILL.md").read_text()
+        self.assertIn("Collect decisions about observable outcomes here", brainstorming)
+        self.assertIn("`selectedApproach` names the requirements direction", brainstorming)
+        self.assertIn("## Design Decision Collection", DESIGN_SKILL)
+        self.assertIn("hold a separate Design-stage user-question exchange", DESIGN_SKILL)
+        self.assertIn("ask at least one design-focused question", DESIGN_SKILL)
+        self.assertIn("Design decision collection is distinct from approval", DESIGN_SKILL)
+        self.assertIn("return to Requirements", DESIGN_SKILL)
+
+    def test_policy_asking_adapts_to_available_tool(self):
+        self.assertIn("Whenever a LazySpec workflow needs an answer", APPROVAL_POLICY)
+        self.assertIn("user-question tool exposed by the current agent environment", APPROVAL_POLICY)
+        self.assertIn("Do not require a particular tool name", APPROVAL_POLICY)
+        self.assertIn("only fields supported by the selected tool", APPROVAL_POLICY)
+        self.assertIn("one decision", APPROVAL_POLICY)
+        self.assertIn("single-choice question", APPROVAL_POLICY)
+        self.assertIn("`Approve` and `Request changes` meanings", APPROVAL_POLICY)
         self.assertIn("directly in the conversation", APPROVAL_POLICY)
+        self.assertNotIn("AskUserQuestion", APPROVAL_POLICY)
+        self.assertNotIn("```json", APPROVAL_POLICY)
         for text in (ROUTER, REQUIREMENT_SKILL, DESIGN_SKILL):
             with self.subTest(document=text[:40]):
                 self.assertEqual(

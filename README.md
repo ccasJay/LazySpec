@@ -11,10 +11,10 @@ fast 链路：讨论 → plan.md → 一次审批 → 连续执行 → 功能验
 经验学习：自动提取候选 → 确认完整写入预览 → Project Memory
 ```
 
-- Brainstorming 确认目标、范围、约束、成功标准和方案，仅保存在当前会话。
-- Brainstorming 默认用白话中文、先讲用户能获得的结果，再说明必要的技术取舍；每次只请用户做一个决定。用户主动使用术语或要求深入时，表达会随之提高专业程度，但仍保持简洁且不会省略范围、约束、风险和成功标准。
+- Brainstorming 只确认需求方向及目标、范围、约束和成功标准；进入 Design 后另行提问，收集设计层面的决策与约束。
+- Brainstorming 默认用白话中文、先讲用户能获得的结果，再说明影响需求的取舍；每次只请用户做一个决定。用户主动使用术语或要求深入时，表达会随之提高专业程度，但仍保持简洁且不会省略范围、约束、风险和成功标准。
 - Requirements、Design、Tasks 分别生成 `requirements.md`、`design.md`、`tasks.md`。
-- low 风险按顺序起草三份 Spec 后合并审批；medium/high 风险逐阶段审批。草稿存在不代表批准。
+- 所有风险等级均逐阶段生成并审批 Requirements、Design、Tasks；上一阶段未获明确批准前不得生成下一阶段文档。草稿存在不代表批准。
 - fast 模式面向轻量新功能：交互式讨论后生成单个 `specs/<feature-name>/plan.md`，一次明确批准后连续执行全部任务。仅限首次创建（无 `requirements.md`）；已有 Spec 的功能仍走正常链路。
 
 ## 安装与接入
@@ -139,16 +139,16 @@ LazySpec 默认生成“最小充分文档”：Requirements 只记录可验证�
 | Skill | 职责 |
 |---|---|
 | [`using-lazyspec`](./using-lazyspec/SKILL.md) | 统一入口、阶段路由、审批门和任务执行 |
-| [`brainstorming`](./brainstorming/SKILL.md) | 澄清目标、比较方案并生成会话 Context |
+| [`brainstorming`](./brainstorming/SKILL.md) | 澄清需求方向并生成会话 Context |
 | [`writing-requirement`](./writing-requirement/SKILL.md) | 创建或修改 Requirements |
-| [`writing-design`](./writing-design/SKILL.md) | 基于已批准需求创建设计 |
+| [`writing-design`](./writing-design/SKILL.md) | 单独收集设计决策，基于需求创建设计 |
 | [`writing-task`](./writing-task/SKILL.md) | 将已批准设计转为编码任务 |
 | [`distill-spec-memory`](./distill-spec-memory/SKILL.md) | 提炼已验证功能、推广经确认的学习候选，并维护两类项目 Memory |
 | [`fast`](./fast/SKILL.md) | 轻量新功能快速通道：讨论生成 plan.md，一次审批后连续执行 |
 
 ## 约束
 
-- 文件存在不代表已经批准；审批以当前会话中的明确回复为准。Requirements 和 Design 的审批对象是顶部摘要及其与正文的一致性，Tasks 审批完整任务计划及预定验收范围；运行证据和学习候选更新不重新触发计划审批。low 风险将三份文档合并审批。
+- 文件存在不代表已经批准；审批以当前会话中的明确回复为准。Requirements 和 Design 的审批对象是顶部摘要及其与正文的一致性，Tasks 审批完整任务计划及预定验收范围。三份文档依次单独审批，运行证据和学习候选更新不重新触发计划审批。
 - 手动运行 Brainstorming 不会自动修改已有 Spec。
 - Tasks 获批只代表规划完成，实际编码需单独发起任务执行请求。
 - fast 模式仅限首次创建（无 `requirements.md`）；`plan.md` 与 requirements/design/tasks 三件套互斥，同一 feature 只保留其中一种产物。
@@ -158,11 +158,11 @@ LazySpec 默认生成“最小充分文档”：Requirements 只记录可验证�
 
 | 风险 | 典型影响 | 审批与验证 |
 |---|---|---|
-| low | 局部可撤销，无公共接口、持久化数据、权限变化 | 三份 Spec 合并审批；验收标准覆盖与直接回归 |
-| medium | 跨组件、公共接口、兼容数据变化 | 逐阶段审批；增加集成、兼容、异常路径 |
-| high | 权限、敏感数据、破坏性迁移或不可逆影响 | 逐阶段审批；确认尚未授权的关键操作与最终验收证据，增加相关安全和恢复验证 |
+| low | 局部可撤销，无公共接口、持久化数据、权限变化 | 三阶段分别审批；验收标准覆盖与直接回归 |
+| medium | 跨组件、公共接口、兼容数据变化 | 三阶段分别审批；增加集成、兼容、异常路径 |
+| high | 权限、敏感数据、破坏性迁移或不可逆影响 | 三阶段分别审批；确认尚未授权的关键操作与最终验收证据，增加相关安全和恢复验证 |
 
-按最高适用风险判断，不打分；不能证明为 low 时先按 medium，存在未明确的高风险后果时先澄清。fast 各等级均保留单份计划和一次计划审批，同时遵守高风险操作及验收确认。风险升级会暂停受影响工作并补齐审批。
+按最高适用风险判断，不打分；不能证明为 low 时先按 medium，存在未明确的高风险后果时先澄清。fast 各等级均保留单份计划和一次计划审批，同时遵守高风险操作及验收确认。风险升级会调整验证深度；若已批准内容随之变化，按所属阶段重新审批。
 
 每个 TODO 写清实现目标、具体场景下的可观察成功判据、已发现的命令或测试入口。新测试标记为待实现，不能只用“测试通过”作为判据。完成时只修改复选框，保留 TODO 原文；后续修复追加记录，普通模式单独提交。
 

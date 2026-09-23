@@ -1,6 +1,6 @@
 ### 3. Create Task List
 
-From complete Design with no unresolved blocking material decision, create the shortest actionable checklist that implements it. Each task should identify a coding objective, only the essential affected components or files, and automated verification. Refer to Requirements and Design instead of repeating their content.
+From explicitly approved Requirements and Design with no unresolved blocking decision, create the shortest actionable checklist that implements them. Each task should identify a coding objective, only the essential affected components or files, and automated verification. Refer to Requirements and Design instead of repeating their content.
 
 Read the shared risk-policy.md and delivery-loop.md through this Skill. Add Feature Verification (Planned Checks and Latest Result) after the task list; evidence recording is separate from plan approval.
 

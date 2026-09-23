@@ -7,7 +7,7 @@ Single source of truth for approval semantics across all LazySpec gates: Require
 - Only an explicit approval in the current conversation — a clear "yes", "approved", "looks good", selecting `Approve`, or an equivalent affirmative response — records approval of the current approval object. File existence, timeout, silence, explanations, ambiguous replies, and requested changes do not imply approval.
 - For any non-approval response, remain in the current phase; apply requested changes when provided and request approval again.
 - Approval covers the current approval object's material intent, decisions, and risks, plus its detailed body's consistency with it. It does not mean the user approved every non-material implementation detail, and it never claims that unseen content was approved.
-- Approval of planning alone ends planning; execution requires a separate explicit request, which may already have been supplied earlier. An existing request to plan and implement authorizes handoff once unresolved decisions are settled; do not ask again merely because the phase changed.
+- Approval of Requirements permits the Design phase; approval of Design permits the Tasks phase; approval of Tasks ends planning. Execution requires a separate explicit request, which may already have been supplied earlier. An existing request to plan and implement authorizes handoff after all three phase approvals; do not ask again merely because the phase changed.
 
 ## Materiality
 
@@ -18,37 +18,23 @@ Single source of truth for approval semantics across all LazySpec gates: Require
 
 ## Approval timing
 
-- Risk determines verification depth, not the number of approval pauses. Every risk level permits unapproved upstream drafts, not assumed approval: continue drafting Requirements → Design → Tasks in phase order without intermediate approval requests, then present both approval summaries, their consistency with their bodies, and the complete task plan including planned feature checks as one combined approval object. Explicit approval approves all three together. Honor explicitly requested phase-by-phase review when the user asks for it.
-- Ask for approval earlier only for an unresolved material decision, an unauthorized critical operation, or a user-requested phase gate. Never cross an unresolved material decision or an unauthorized operation. Drafting and authorized internal refinements may proceed without phase approval.
-- Prior approval of a BrainstormingContext or CodexPlanArtifact remains input approval, not approval of newly introduced Spec decisions. Reuse explicit decisions and authorization already available in context; request approval only for the complete package or a material delta not yet approved.
+- For every normal Spec, create and review one phase at a time: Requirements → explicit Requirements approval → Design → explicit Design approval → Tasks → explicit Tasks approval. Never create a downstream phase document before the current phase is explicitly approved. Risk level and decision impact do not change this order or the three approval gates.
+- Before creating a new Design, collect Design-stage input through the separate question exchange in `writing-design`, after Requirements approval. Brainstorming approval covers the requirements direction only; answering a Design question does not approve the Design draft.
+- Resolve unanswered user decisions within the current phase. Do not advance past an unapproved phase or an unauthorized critical operation. Reuse explicit decisions and authorization already available in the conversation without asking twice for the same phase object.
+- Prior approval of a BrainstormingContext or CodexPlanArtifact remains input approval, not Requirements approval. Approval of one Spec phase never approves a later phase.
 - Confirm only concrete critical operations not already explicitly authorized at their current scope. General plan approval is not permission for an unnamed destructive operation. Human acceptance is required only when explicitly requested, mandated by binding project rules, or necessary to establish an outcome unavailable to automated evidence; when required, it covers the current implementation, not an old result.
 - Fast retains one plan and one plan approval followed by continuous execution, at every risk level. A material plan change requires approval of the complete revised plan with its delta.
 - Multi-Spec orchestration retains one approval gate: explicit approval of the complete `orchestration.md` before any participating Spec's execution starts. A material change — participating Spec set, joint objective, dependency/order, parallelism, branch strategy, coordination constraints, or integration verification — requires approval of the complete revised orchestration with its delta. Orchestration approval never approves new Spec content; participating Specs remain governed by their own approvals.
-- A rejected combined package remains in planning: apply feedback and present the revised package.
+- A rejected phase remains in that phase: apply feedback and present the revised phase for approval before creating any downstream document.
 
 ## How to ask
 
-At a necessary approval gate:
+Whenever a LazySpec workflow needs an answer from the user:
 
-1. If `AskUserQuestion` is available, call it with only its supported `questions` input and no extra fields. Use exactly one question object with `question`, `header`, `options`, and `multiSelect`; use `Review` as the header, exactly the two single-choice options `Approve` and `Request changes`, and `multiSelect: false`:
+1. Discover and use an applicable user-question tool exposed by the current agent environment when available and permitted. Do not require a particular tool name or copy another agent's input schema. Supply only fields supported by the selected tool.
+2. If no applicable tool is available, ask the user directly in the conversation and stop while awaiting the answer.
 
-   ```json
-   {
-     "questions": [{
-       "question": "<the asking phase's approval question>",
-       "header": "Review",
-       "options": [
-         {"label": "Approve", "description": "<phase-specific description>"},
-         {"label": "Request changes", "description": "<phase-specific description>"}
-       ],
-       "multiSelect": false
-     }]
-   }
-   ```
-
-   Do not add unsupported top-level or question fields. Each option uses only `label` and `description`; the question text and option descriptions are the asking phase's choice.
-2. Otherwise, if the environment provides an equivalent user-question tool, use it with the same single-choice meaning and only fields that tool supports.
-3. Otherwise, ask the phase's approval question directly in the conversation and stop while awaiting the answer.
+At a necessary approval gate, ask the phase's approval question as one decision. When the tool supports choices, offer mutually exclusive `Approve` and `Request changes` meanings as a single-choice question; adapt labels, descriptions, and free-form handling to its actual interface. An explicit affirmative free-form reply also counts under the approval semantics above.
 
 ## Human-First approval summary
 

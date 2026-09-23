@@ -1,11 +1,11 @@
 ---
 name: brainstorming
-description: Explore and clarify a feature in the current session before LazySpec creates its first requirements.md, or when the user explicitly requests brainstorming for an existing Spec. Use to inspect relevant project context, compare meaningful alternatives, obtain explicit approval, and prepare an approved session-only context for writing-requirement.
+description: Clarify requirements direction before LazySpec creates its first requirements.md, or when the user explicitly requests brainstorming for an existing Spec. Compare observable outcomes, obtain explicit approval, and prepare an approved session-only context for writing-requirement; leave implementation decisions to Design.
 ---
 
 # Brainstorming
 
-Turn a feature idea into an explicitly approved direction that LazySpec can use as the input to `writing-requirement`. Keep every result in the current conversation context only.
+Turn a feature idea into an explicitly approved requirements direction that LazySpec can use as the input to `writing-requirement`. Keep every result in the current conversation context only. Collect decisions about observable outcomes here; collect implementation design decisions separately in `writing-design`.
 
 ## Shared policies
 
@@ -38,7 +38,7 @@ Apply these rules only to the user-facing Brainstorming conversation. They do no
    - Establish the objective, scope, constraints, and success criteria.
    - Propose the initial risk level and reason using risk-policy.md. Include it in constraints without changing BrainstormingContext or adding an approval gate.
    - Ask only one question at a time when information is missing or ambiguous.
-   - Ask only when the answer changes a material outcome, boundary, risk, or user-reserved choice. Supply only meaningful mutually exclusive options when useful; do not pad the list. The following is an optional example, not a required option count:
+   - Ask for the information needed to define the requirements direction, scope, user-visible constraints, risks, and success criteria. Leave architecture, data models, APIs, dependencies, and other implementation choices for Design unless the user has already stated a binding technical constraint. Supply only meaningful mutually exclusive options when useful; do not pad the list. The following is an optional example, not a required option count:
 
      ```text
      [用一句白话说明现在只需要决定什么，以及这个决定会影响什么]
@@ -52,19 +52,19 @@ Apply these rules only to the user-facing Brainstorming conversation. They do no
    - Put the recommended option first and explain the recommendation concisely.
    - Prefer an applicable question-and-answer tool when available, using its supported option count and free-form handling. A focused free-text question is sufficient when choices would be artificial.
    - Accept either an option number or the user's free-form answer.
-   - Continue until the required context is complete and no unresolved question would materially change the result.
+   - Continue until the required requirements context is complete and no unanswered requirements question remains.
 
-3. Compare approaches.
-   - Compare viable approaches only when their trade-offs materially affect the user's choice. If one approach is appropriate, recommend it directly; do not manufacture alternatives or ask the user to select routine internal techniques.
-   - For each approach, show only `用户会得到什么`, `主要限制或风险`, and `适用条件` in the user-facing comparison.
-   - Name each approach by its user-visible result rather than its implementation pattern.
-   - Recommend one approach and explain the reason concisely in terms of the user's stated goal and constraints.
-   - Include technical details only when they materially affect the selection; otherwise leave them to Design.
+3. Compare requirements directions.
+   - Compare viable requirements directions when their observable outcomes or scope differ. If one direction is appropriate, recommend it directly; do not manufacture alternatives or ask the user to select implementation techniques.
+   - For each direction, show only `用户会得到什么`, `主要限制或风险`, and `适用条件` in the user-facing comparison.
+   - Name each direction by its user-visible result rather than its implementation pattern.
+   - Recommend one direction and explain the reason concisely in terms of the user's stated goal and constraints.
+   - Mention a technical constraint only when the user explicitly requires it or it changes an observable requirement; leave implementation design decisions to Design.
    - Avoid speculative features and unrelated improvements.
 
 4. Obtain approval.
    - General explicit-approval semantics follow approval-policy.md; this step adds only the Brainstorming-specific rules below.
-   - Ask the user to select an approach only for an unresolved material trade-off. Selecting an approach records only `selectedApproach`; it is not approval of the complete Brainstorming Context unless the user explicitly approved that full context. Reuse already explicit decisions.
+   - Ask the user to select a requirements direction when alternatives remain. Selecting an approach records only `selectedApproach`; it is not approval of the complete Brainstorming Context unless the user explicitly approved that full context. Reuse already explicit decisions. `selectedApproach` names the requirements direction, not a chosen implementation design.
    - After the selection, present the complete user-facing Context with exactly these headings. Put included scope under `包含` and excluded scope under `不包含`; do not show internal field names in this approval view:
 
      ```text
@@ -73,7 +73,7 @@ Apply these rules only to the user-facing Brainstorming conversation. They do no
      不包含
      必须遵守
      完成表现
-     选定方案
+     需求方向
      ```
 
    - If the complete Context has not already been explicitly approved, ask a separate approval question. The following options illustrate a review, not a mandatory number of choices:
@@ -83,16 +83,16 @@ Apply these rules only to the user-facing Brainstorming conversation. They do no
 
      1. 批准并进入 Requirements（推荐）— 以上方向成为 Requirements 的输入
      2. 修改内容 — 留在 Brainstorming，根据反馈修改后重新确认
-     3. 重新比较方案 — 放弃当前选择，返回三个方案的比较
+     3. 重新比较需求方向 — 放弃当前选择，重新比较需求方向
      4. 其他 — 用自己的话回答
      ```
 
    - Prefer the applicable user-question tool under the question rules above. Only option 1 or an unambiguous affirmative answer to this separate approval question counts as approval. Approach selection, silence, timeout, explanation, or an ambiguous answer does not.
-   - If the user requests changes, revise the approaches or continue clarifying one question at a time, then present the complete context and ask the separate approval question again.
+   - If the user requests changes, revise the requirements directions or continue clarifying one question at a time, then present the complete context and ask the separate approval question again.
    - Do not set `approved: true` or proceed to `writing-requirement` until the selected approach and complete context have explicit approval. An already explicit approval of that same full context does not need a repeated question.
 
 5. Prepare the session handoff.
-   - Map the six user-facing headings to the unchanged internal schema as follows: `目标` → `objective`; `包含` and `不包含` → `scope`; `必须遵守` → `constraints`; `完成表现` → `successCriteria`; `选定方案` → `selectedApproach`.
+   - Map the six user-facing headings to the unchanged internal schema as follows: `目标` → `objective`; `包含` and `不包含` → `scope`; `必须遵守` → `constraints`; `完成表现` → `successCriteria`; `需求方向` → `selectedApproach`.
    - Retain only the final approved result in the current conversation context with all of these fields:
 
      ```text
@@ -105,7 +105,7 @@ Apply these rules only to the user-facing Brainstorming conversation. They do no
      ```
 
    - Keep each field concise. Exclude rejected approaches, exploratory reasoning, raw notes, and information already captured by another field.
-   - Pass the selected approach as a constraint on Requirements; do not turn its implementation details into user-facing requirements.
+   - Pass the selected requirements direction to Requirements as input for observable behavior and scope. Do not carry an unconfirmed implementation choice into Requirements or treat the direction as Design approval.
    - Set `approved` to `true` only after explicit user approval.
    - When this skill ran before the first `requirements.md`, allow `using-lazyspec` to route the approved context to `writing-requirement`.
    - When the user manually invoked this skill during an existing Requirements, Design, Tasks, or task-execution stage, stop after updating the session context. Modify a Spec artifact only after a separate explicit user request.

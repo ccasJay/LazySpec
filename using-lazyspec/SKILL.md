@@ -38,7 +38,7 @@ Rules:
 
 The approval contract for Requirements and Design documents — the Chinese `审批摘要` as the user-facing approval object, materiality classification, summary/body consistency, invalidation and revision deltas, and legacy migration — is defined exclusively in approval-policy.md. Routing and phase scoping keep only these rules:
 
-- Spec approval combines both summaries with the Tasks plan unless the user requests phase-by-phase review; fast approves its plan; Brainstorming keeps its Context approval; Memory approves its exact write preview; multi-Spec orchestration approves its complete `orchestration.md`.
+- Normal Specs approve Requirements, Design, and Tasks separately in that order; fast approves its plan; Brainstorming keeps its Context approval; Memory approves its exact write preview; multi-Spec orchestration approves its complete `orchestration.md`.
 - Every downstream phase MUST treat an approved `审批摘要` as the upper-level material contract while continuing to read the complete Spec body for implementation detail.
 
 ## Brainstorming Human-First Conversation Contract
@@ -113,13 +113,13 @@ Codex Plan Mode 只作为新功能创建前的 Brainstorming 输入来源，不�
    - Route to `brainstorming` first only when the user explicitly requests it.
    - Brainstorming updates only conversation context; do not modify a Spec artifact unless separately requested.
 
-3. Route to `writing-design` from complete Requirements and to `writing-task` from complete Design. Draft toward combined review at every risk level under approval-policy.md; stop earlier only for unresolved material decisions or explicitly requested phase gates. Draft advancement never records upstream approval.
+3. Route to `writing-design` only after explicit approval of the current Requirements, and to `writing-task` only after explicit approval of the current Design. Create one normal-phase document at a time and request its approval before advancing, at every risk level. Approval of a prior phase never approves the next one.
 
 4. For questions about existing Spec tasks or requests to execute or verify an existing task plan, apply the task instructions below and delivery-loop.md. Verification-only requests do not authorize implementation repairs. Answer task questions without starting work; when execution is explicitly requested, follow the full TODO scope stated by the user.
 
 ## Workflow Diagram
 
-The phase-review edges below apply when the user requests phase-by-phase review. Otherwise draft toward combined review; material decisions may interrupt at any stage under approval-policy.md.
+The phase-review edges below apply to every normal Spec. Each review must receive explicit approval before the next phase document is created.
 
 ```mermaid
 stateDiagram-v2
@@ -176,7 +176,7 @@ stateDiagram-v2
 - Answer task-information requests without modifying code, Spec files, or checkbox state. For example, if the user asks what the next task is, provide the information without starting any task.
 
 ## Approval Protocol
-Apply approval-policy.md as the single source of approval semantics: draft toward combined package review at every risk level, ask earlier only for unresolved material decisions or explicit user phase gates, and use approval-policy.md's asking protocol at every necessary gate. Routing adds only these rules:
+Apply approval-policy.md as the single source of approval semantics: create and approve Requirements, Design, and Tasks one at a time at every risk level, using approval-policy.md's asking protocol at each gate. Routing adds only these rules:
 
-- Make all 3 spec documents (requirements, design and tasks) reviewable together, or individually when the user requests it. For Requirements and Design, review the Human-First `审批摘要` and its consistency with the detailed body; Tasks keeps the complete task document as its approval object.
-- Preserve the responsibilities and dependency order of planning artifacts; do not impose phase-by-phase approvals from risk level alone.
+- Present only the current phase document for approval. For Requirements and Design, review the Human-First `审批摘要` and its consistency with the detailed body; Tasks keeps the complete task document as its approval object.
+- Never generate Design before Requirements approval or Tasks before Design approval; risk level and decision impact do not alter these gates.

@@ -90,7 +90,7 @@ class CodexPlanModeWorkflowContractTests(unittest.TestCase):
             ROOT / "using-lazyspec" / "references" / "approval-policy.md"
         ).read_text()
         self.assertIn(
-            "Draft toward combined review at every risk level under approval-policy.md",
+            "Create one normal-phase document at a time and request its approval before advancing",
             ROUTER,
         )
         self.assertIn(

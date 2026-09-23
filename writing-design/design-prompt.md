@@ -1,6 +1,6 @@
 ### 2. Create Feature Design Document
 
-From complete Requirements with no unresolved blocking material decision, create the minimum sufficient implementation-ready design. Refer to requirement IDs instead of restating them, record only decisions that affect implementation, and research only unresolved facts that materially change those decisions.
+From explicitly approved Requirements with no unresolved blocking decision, create the minimum sufficient implementation-ready design. Refer to requirement IDs instead of restating them, record only decisions that affect implementation, and research only unresolved facts that change those decisions.
 
 Use the core and conditional sections defined by `design-templete.md` and the soft length target in `SKILL.md`. Testing Strategy identifies observable acceptance outcomes, integration/failure coverage, and risk-specific or human checks needed by downstream Feature Verification; do not substitute process checks for behavior.
 

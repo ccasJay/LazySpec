@@ -53,14 +53,13 @@ class BrainstormingPlainLanguageContractTests(unittest.TestCase):
 
     def test_approach_comparison_is_user_visible_and_decision_relevant(self):
         text = self.brainstorming
-        self.assertIn("Compare viable approaches only when their trade-offs materially affect the user's choice", text)
+        self.assertIn("Compare viable requirements directions when their observable outcomes or scope differ", text)
         self.assertIn("do not manufacture alternatives", text)
         for heading in ("用户会得到什么", "主要限制或风险", "适用条件"):
             with self.subTest(heading=heading):
                 self.assertIn(f"`{heading}`", text)
         self.assertIn("user-visible result rather than its implementation pattern", text)
-        self.assertIn("technical details only when they materially affect the selection", text)
-        self.assertIn("leave them to Design", text)
+        self.assertIn("leave implementation design decisions to Design", text)
 
     def test_plain_language_adapts_without_omitting_substance(self):
         text = self.brainstorming
@@ -73,7 +72,7 @@ class BrainstormingPlainLanguageContractTests(unittest.TestCase):
 
     def test_final_context_headings_map_to_unchanged_schema(self):
         text = self.brainstorming
-        headings = ("目标", "包含", "不包含", "必须遵守", "完成表现", "选定方案")
+        headings = ("目标", "包含", "不包含", "必须遵守", "完成表现", "需求方向")
         positions = [text.index(f"     {heading}\n") for heading in headings]
         self.assertEqual(sorted(positions), positions)
         mappings = {
@@ -81,7 +80,7 @@ class BrainstormingPlainLanguageContractTests(unittest.TestCase):
             "`包含` and `不包含` → `scope`",
             "`必须遵守` → `constraints`",
             "`完成表现` → `successCriteria`",
-            "`选定方案` → `selectedApproach`",
+            "`需求方向` → `selectedApproach`",
         }
         for mapping in mappings:
             with self.subTest(mapping=mapping):
@@ -95,7 +94,7 @@ class BrainstormingPlainLanguageContractTests(unittest.TestCase):
         self.assertIn("ask a separate approval question", text)
         self.assertIn("是否批准以上需求方向并进入 Requirements？", text)
         self.assertIn("修改内容", text)
-        self.assertIn("重新比较方案", text)
+        self.assertIn("重新比较需求方向", text)
         self.assertIn("Only option 1 or an unambiguous affirmative answer", text)
         self.assertIn("Do not set `approved: true`", text)
 

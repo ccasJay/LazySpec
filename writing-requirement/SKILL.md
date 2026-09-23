@@ -1,6 +1,6 @@
 ---
 name: writing-requirement
-description: Create or revise EARS requirements from approved brainstorming or native planning input. Draft toward combined review, asking earlier only for unresolved material decisions or user-requested phase gates.
+description: Create or revise EARS requirements from approved brainstorming or native planning input. Request explicit Requirements approval before LazySpec enters Design.
 ---
 
 # Writing Requirements
@@ -15,7 +15,7 @@ Read [risk-policy.md](../using-lazyspec/references/risk-policy.md), [approval-po
 - Write all user-visible prose in generated `requirements.md` content in Chinese, including the title, headings, introduction, user stories, and acceptance criteria.
 - Preserve project-specific names, code identifiers, filenames, Markdown syntax, and HTML anchor IDs when necessary.
 
-For a new feature, require one explicitly approved input from the current session before creating `requirements.md`: either a complete `BrainstormingContext` or a non-empty, explicitly approved `CodexPlanArtifact` received from the `using-lazyspec` Codex Plan Mode adapter. A standard `BrainstormingContext` must contain the confirmed objective, scope, constraints, success criteria, and selected approach. A `CodexPlanArtifact` is valid only with `source: "codex-plan-mode"`, a non-empty `content`, and `approved: true`; it does not need those five fields, fixed sections, or an extra header. If the selected input is missing, incomplete, unapproved, invalid, or lost, do not create or update `requirements.md`; return to the router for the appropriate clarification or standard `brainstorming` path. Never infer or restore either input from disk.
+For a new feature, require one explicitly approved input from the current session before creating `requirements.md`: either a complete `BrainstormingContext` or a non-empty, explicitly approved `CodexPlanArtifact` received from the `using-lazyspec` Codex Plan Mode adapter. A standard `BrainstormingContext` must contain the confirmed objective, scope, constraints, success criteria, and selected approach. Its selected approach is a requirements direction, not an approved implementation design. A `CodexPlanArtifact` is valid only with `source: "codex-plan-mode"`, a non-empty `content`, and `approved: true`; it does not need those five fields, fixed sections, or an extra header. If the selected input is missing, incomplete, unapproved, invalid, or lost, do not create or update `requirements.md`; return to the router for the appropriate clarification or standard `brainstorming` path. Never infer or restore either input from disk.
 
 When the input is a `CodexPlanArtifact`, use its complete `content` as the Requirements context. Preserve the original Markdown, line breaks, and long text exactly while passing it through the session; do not summarize, rewrite, normalize, truncate, or require a schema before deriving observable requirements. Plan approval is not Requirements approval. If the plan leaves a material gap, remain in Requirements and ask a targeted clarification question before drafting or advancing.
 
@@ -30,12 +30,12 @@ Prefix every numbered acceptance criterion with exactly one HTML anchor on the s
 - Put `## 审批摘要` immediately after the document title and before `## 引言`, with the Chinese subsections `目标`, `范围`, `核心行为`, and `风险与待确认`.
 - Treat this summary as the user-facing approval contract under approval-policy.md. The detailed user stories and EARS criteria may elaborate it, but MUST NOT add, omit, broaden, narrow, or contradict a material behavior, boundary, or risk.
 - Cover every materially distinct acceptance outcome in the summary. Group multiple criteria only when one concise statement preserves the same approval intent; keep HTML anchors and traceability links out of the summary.
-- Resolve every material open question before requesting approval. Use `风险与待确认` to state known risks and explicitly record that no material decision remains unresolved.
+- Resolve open requirements questions before requesting approval. Use `风险与待确认` to state known risks and explicitly record that no requirements decision remains unresolved.
 - For a legacy Requirements document without `审批摘要`, add the summary only when that document is next revised. Do not rewrite already approved legacy Requirements merely because a downstream phase reads it.
 
 ## Approval
 
-Finish the Requirements draft and continue toward combined review unless an unresolved material decision or user-requested phase gate requires approval here. Reuse explicit decisions already supplied by the user. When approval is needed, follow approval-policy.md's asking protocol and ask: "审批摘要是否准确覆盖了需求的目标、范围、核心行为与风险？" For any non-approval response, remain in Requirements; apply approval-policy.md's explicit-approval, revision-delta, and invalidation semantics.
+Finish the Requirements draft, present its `审批摘要` and body for review, and request explicit Requirements approval before creating any Design document. Reuse explicit decisions already supplied by the user. Follow approval-policy.md's asking protocol and ask: "审批摘要是否准确覆盖了需求的目标、范围、核心行为与风险？" For any non-approval response, remain in Requirements; apply approval-policy.md's explicit-approval, revision-delta, and invalidation semantics.
 
 ## Content Boundaries and Size
 
@@ -56,12 +56,12 @@ Finish the Requirements draft and continue toward combined review unless an unre
   - A user story written in Chinese using the role-goal-benefit structure
   - A numbered list of acceptance criteria in EARS format (Easy Approach to Requirements Syntax)
 - The model SHOULD include an edge case, user-experience constraint, technical constraint, or success criterion only when it creates a distinct observable and verifiable outcome
-- Continue drafting Design when no unresolved material decision or user-requested phase gate blocks it; never mark an unapproved draft approved
+- Do not create or draft Design until the current Requirements has explicit approval; never mark an unapproved draft approved
 - The model MUST continue the feedback-revision cycle until explicit approval is received
-- The model SHOULD identify only gaps that would materially change observable behavior; it MUST NOT suggest speculative expansion by default
+- The model SHOULD identify unanswered requirements questions; it MUST NOT suggest speculative expansion by default
 - The model MAY ask targeted questions about specific aspects of the requirements that need clarification
 - The model MAY suggest options when the user is unsure about a particular aspect
-- The model MUST proceed to the design phase after the user accepts the requirements
+- After explicit Requirements approval, the model MAY proceed to Design only when the user's existing request covers further planning; otherwise wait for a request to continue
 
 ## Troubleshooting
 

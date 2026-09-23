@@ -1,6 +1,6 @@
 ---
 name: writing-design
-description: Create or revise a LazySpec design.md from complete Requirements. Choose implementation details autonomously within the success contract and surface material decisions for review.
+description: Create or revise a LazySpec design.md from complete Requirements. Collect Design-stage user decisions, choose routine implementation details within the success contract, and surface material decisions for review.
 ---
 
 # Writing Design
@@ -16,7 +16,15 @@ Read [risk-policy.md](../using-lazyspec/references/risk-policy.md), [approval-po
 - Keep `Overview`, `Key Design Decisions`, `Testing Strategy`, and any selected conditional section names in English as structural keywords.
 - Preserve project-specific names, technical terms, code identifiers, filenames, URLs, Markdown syntax, and diagram syntax when necessary.
 
-Before starting, read the complete `specs/{feature_name}/requirements.md`, then read `design-prompt.md` and `design-templete.md`. Resolve the Prompt and Template relative to the directory containing this `SKILL.md`, never relative to the process working directory or repository root. Resolve the upstream Spec and the new `design.md` against `ACTIVE_PROJECT_ROOT`, defined by `using-lazyspec` as the user's project working directory at session start. Never use this Skill's directory, its repository, or a Plugin cache as the project root. If invoked directly and the session working directory is unavailable or ambiguous, ask for the project root before reading or writing Specs. These rules apply unchanged in a Plugin cache and an Agent Skills installation. Use the current Requirements draft without marking it approved. Stop only for unresolved material choices or explicit user phase gates. Re-evaluate risk before drafting under risk-policy.md.
+Before starting, read the complete `specs/{feature_name}/requirements.md`, then read `design-prompt.md` and `design-templete.md`. Resolve the Prompt and Template relative to the directory containing this `SKILL.md`, never relative to the process working directory or repository root. Resolve the upstream Spec and the new `design.md` against `ACTIVE_PROJECT_ROOT`, defined by `using-lazyspec` as the user's project working directory at session start. Never use this Skill's directory, its repository, or a Plugin cache as the project root. If invoked directly and the session working directory is unavailable or ambiguous, ask for the project root before reading or writing Specs. These rules apply unchanged in a Plugin cache and an Agent Skills installation. Require explicit approval of the current Requirements before collecting Design decisions or creating `design.md`; do not infer approval from file existence. Re-evaluate risk before drafting under risk-policy.md.
+
+## Design Decision Collection
+
+Before creating a new Design, inspect Requirements and relevant project code, then hold a separate Design-stage user-question exchange. Do not treat Brainstorming's requirements direction or approval as a choice of architecture, interfaces, data model, dependencies, compatibility strategy, security controls, or recovery behavior.
+
+- Identify design choices on public contracts, data, compatibility, external effects, security, and recovery that need the user's input. Present a recommended choice and its relevant trade-offs in user-facing terms, then ask one focused question at a time using the current environment's applicable user-question tool under approval-policy.md. For a new Design, ask at least one design-focused question even if no competing choice is apparent: invite additional design constraints or preferences and allow an explicit answer of none. Wait for the answer before drafting the new Design.
+- Record the user's explicit design decisions and constraints for the Design draft. Do not infer a design choice from the Brainstorming approval. If a proposed design choice changes observable behavior or scope, return to Requirements for that decision before fixing it in Design.
+- Resolve choices reserved for the user before drafting their affected sections. Choose routine internal techniques autonomously; do not manufacture alternatives or repeat an already explicit decision. Design decision collection is distinct from approval of the completed Design document.
 
 ## Human-First Review Summary
 
@@ -25,13 +33,13 @@ Before starting, read the complete `specs/{feature_name}/requirements.md`, then 
 - Include every material choice involving public behavior or interfaces, data, dependencies, compatibility or migration, security or privacy, external or irreversible effects, failure and recovery behavior, or material risk. Keep internal file layout, helpers, test organization, and equivalent implementation refinements out of the summary.
 - Render `关键决策` as a compact table with the columns `决策`, `选择与理由`, and `影响`. Reuse each summary decision's exact short title in its corresponding `Key Design Decisions` subsection so the relationship is unambiguous without adding traceability noise.
 - Adapt summary length to cognitive complexity rather than a fixed numerical budget, following approval-policy.md's one-screen and splitting rules.
-- Resolve every material open decision before requesting approval. Use `风险与待确认` to state known risks and explicitly record that no material decision remains unresolved.
+- Resolve open design decisions before requesting approval. Use `风险与待确认` to state known risks and explicitly record that no design decision remains unresolved.
 - Before approval, verify that the body contains no material decision missing from or conflicting with the summary; a missing material decision or a summary/body conflict blocks approval under approval-policy.md.
 - For a legacy Design document without `审批摘要`, add the summary only when that document is next revised. Creating Design from an approved legacy Requirements document does not require rewriting Requirements.
 
 ## Approval
 
-Finish the Design draft and continue toward combined review unless an unresolved material decision or explicit user phase gate requires approval here. Internal implementation details remain the model's choice within the contract. When approval is needed, follow approval-policy.md's asking protocol and ask: "审批摘要是否准确覆盖了设计方案、关键决策及风险？" For any non-approval response, remain in Design; apply approval-policy.md's explicit-approval, revision-delta, and invalidation semantics.
+Finish the Design draft, present its `审批摘要` and body for review, and request explicit Design approval before creating any Tasks document. Internal implementation details remain the model's choice within the contract. Follow approval-policy.md's asking protocol and ask: "审批摘要是否准确覆盖了设计方案、关键决策及风险？" For any non-approval response, remain in Design; apply approval-policy.md's explicit-approval, revision-delta, and invalidation semantics.
 
 **Constraints:**
 
@@ -47,10 +55,10 @@ Finish the Design draft and continue toward combined review unless an unresolved
 - The model SHOULD choose the smallest representation that makes the design unambiguous: ASCII diagrams for topology, ownership, lifecycle, state transitions, and multi-participant sequences; tables for repeated mappings; TypeScript for data contracts; and prose for rationale, invariants, failure semantics, and compatibility guarantees
 - The model MUST NOT repeat requirements, repository facts, obvious framework behavior, or implementation detail that does not help a coding agent make a decision
 - Excluding the Human-First `审批摘要`, the model SHOULD target 100–180 lines for a typical detailed design body. A simple design may be shorter; never add content to reach the lower bound. This is a soft limit: consolidate repetition or recommend splitting an oversized Spec before exceeding it, but retain details needed to avoid implementation ambiguity
-- The model MAY ask the user for input on specific technical decisions during the design process
+- The model MUST collect Design-stage input as specified in Design Decision Collection before creating a new Design; ask again on revision only when a new material or user-reserved design choice arises
 - Modify the design summary and body when the user requests changes; silence or an explanation neither approves nor automatically requires edits
 - Apply risk-policy.md after material edits; verified non-material refinements preserve approval
-- Continue drafting Tasks when no unresolved material decision or user-requested phase gate blocks it; never mark an unapproved draft approved
+- Do not create or draft Tasks until the current Design has explicit approval; never mark an unapproved draft approved
 - The model MUST continue the feedback-revision cycle until explicit approval is received
 - The model MUST incorporate all user feedback into the design document before proceeding
 - The model MUST offer to return to feature requirements clarification if gaps are identified during design
