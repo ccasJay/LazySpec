@@ -66,9 +66,9 @@ class OrchestrationBoundaryTests(unittest.TestCase):
     def test_orchestration_does_not_govern_intra_spec_task_execution(self):
         for required in (
             "MUST NOT specify how tasks inside any individual Spec are executed",
-            "remain governed by that Spec's approved `tasks.md` and delivery-loop.md",
+            "remain governed by that Spec's approved `tasks.md` and executing-task/SKILL.md",
             "The orchestration decides only when a Spec's turn arrives, on which branch, and alongside which other Specs",
-            "each Spec's internal task execution remains fully governed by that Spec's `tasks.md` and delivery-loop.md",
+            "each Spec's internal task execution remains fully governed by that Spec's `tasks.md` and executing-task/SKILL.md",
         ):
             with self.subTest(required=required):
                 self.assertIn(required, SKILL)
@@ -94,7 +94,7 @@ class OrchestrationBoundaryTests(unittest.TestCase):
 
     def test_specs_remain_their_own_source_of_truth(self):
         self.assertIn(
-            "Execute each Spec through its own approved Requirements, Design, and Tasks as the source of truth via delivery-loop.md",
+            "Execute each Spec through its own approved Requirements, Design, and Tasks as the source of truth via executing-task/SKILL.md",
             SKILL,
         )
         self.assertIn(
@@ -133,8 +133,8 @@ class OrchestrationApprovalAndBranchTests(unittest.TestCase):
                 self.assertIn(required, SKILL)
         self.assertIn("堆叠分支", TEMPLATE)
         self.assertIn(
-            "cross-Spec branch stacking, sequencing, and coordination constraints, which override the default single-Spec branch rule",
-            DELIVERY_LOOP,
+            "An approved `specs/orchestration.md` supplies the cross-Spec branch and sequencing constraints instead",
+            (ROOT / "executing-task" / "SKILL.md").read_text(),
         )
 
     def test_document_covers_required_contents(self):

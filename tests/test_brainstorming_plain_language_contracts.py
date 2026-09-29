@@ -51,6 +51,29 @@ class BrainstormingPlainLanguageContractTests(unittest.TestCase):
         self.assertIn("（推荐）", text)
         self.assertIn("4. 其他", text)
 
+    def test_decision_probe_skips_complete_context_and_follows_ambiguous_answers(self):
+        text = self.brainstorming
+        probe = text.index("Before asking, check the user's statements")
+        ask = text.index("Ask only one question at a time")
+        self.assertLess(probe, ask)
+        for expected in (
+            "included and excluded scope",
+            "observable behavior, constraints, risks, and success criteria",
+            "Research project facts that can be discovered",
+            "whose answer could change the requirements direction",
+            "do not add a question to meet a quota",
+            "check whether it resolves the current choice",
+            "clarify that choice before moving on",
+            "instead of following a fixed questionnaire",
+            "does not resolve a separate material choice",
+        ):
+            with self.subTest(expected=expected):
+                self.assertIn(expected, text)
+        self.assertLess(
+            text.index("no unanswered requirements question remains"),
+            text.index("3. Compare requirements directions"),
+        )
+
     def test_approach_comparison_is_user_visible_and_decision_relevant(self):
         text = self.brainstorming
         self.assertIn("Compare viable requirements directions when their observable outcomes or scope differ", text)

@@ -14,7 +14,7 @@ ROUTE_TO_SKILL = {
     "requirements": "writing-requirement",
     "design": "writing-design",
     "tasks": "writing-task",
-    "execute": "using-lazyspec",
+    "execute": "executing-task",
     "fast": "fast",
     "orchestration": "orchestrating-specs",
     "memory-recall": "using-lazyspec",

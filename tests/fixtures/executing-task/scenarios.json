@@ -1,0 +1,50 @@
+[
+  {
+    "id": "full-execution",
+    "section": "Normal execution",
+    "facts": "用户已批准三份当前 Spec，要求执行 tasks.md 全部 TODO；其中包含跨文件的完整行为。",
+    "expected": "建立特性分支和本地进度文件，逐项沿验收链接找上下文并验证；只勾选复选框，最后执行完整 Feature Verification。"
+  },
+  {
+    "id": "single-todo",
+    "section": "Normal execution",
+    "facts": "用户只指定 TODO 2，其他 TODO 仍未完成。",
+    "expected": "只执行 TODO 2 及其子项；报告局部完成，保留进度文件，不把整个功能标为 passed。"
+  },
+  {
+    "id": "cross-session-resume",
+    "section": "Temporary execution progress",
+    "facts": "上次在 TODO 2 验证后中断；本地进度文件存在。",
+    "expected": "先与已批准 Spec、当前代码和测试证据核对，再决定能否复用结果；继续未完成范围。"
+  },
+  {
+    "id": "branch-or-contract-changed",
+    "section": "Temporary execution progress",
+    "facts": "进度文件声称 TODO 1 已验证，但当前分支、HEAD 或契约指纹改变，代码与记录也不一致。",
+    "expected": "重建记录并重新核实受影响的 TODO 和验收；不得凭临时文件勾选或声称通过。"
+  },
+  {
+    "id": "verification-failed",
+    "section": "Temporary execution progress",
+    "facts": "全部 TODO 已勾选，但 Feature Verification 有失败项。",
+    "expected": "保留进度文件和失败证据，按共享失败路由诊断；不得删除或报告 passed。"
+  },
+  {
+    "id": "pending-human",
+    "section": "Temporary execution progress",
+    "facts": "自动检查通过，但必需的人工验收仍为 pending-human。",
+    "expected": "保留进度文件，报告待验收状态；不得删除或报告 passed。"
+  },
+  {
+    "id": "verification-only",
+    "section": "Scope and shared rules",
+    "facts": "用户只要求复验，且没有现存进度文件。",
+    "expected": "执行并更新 Feature Verification，不修代码、不新建进度文件；失败时报告问题。"
+  },
+  {
+    "id": "final-cleanup",
+    "section": "Temporary execution progress",
+    "facts": "全部 TODO 已勾选，当前代码与契约有可归属证据，Feature Verification 为 passed/current。",
+    "expected": "删除该 Spec 的本地进度文件，保留 tasks.md 中持久验收结果和 TODO 原文。"
+  }
+]

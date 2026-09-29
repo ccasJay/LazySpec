@@ -37,6 +37,8 @@ Apply these rules only to the user-facing Brainstorming conversation. They do no
 2. Clarify the idea.
    - Establish the objective, scope, constraints, and success criteria.
    - Propose the initial risk level and reason using risk-policy.md. Include it in constraints without changing BrainstormingContext or adding an approval gate.
+   - Before asking, check the user's statements and relevant project evidence for decisions still missing or ambiguous about the objective, included and excluded scope, observable behavior, constraints, risks, and success criteria. Research project facts that can be discovered; ask the user only about an unresolved choice whose answer could change the requirements direction. Keep this check in the conversation, not a new artifact or Context field.
+   - Prioritize the most consequential unresolved choice. If the user already supplied a complete requirements direction, do not add a question to meet a quota; proceed to comparing directions and the complete Context approval view.
    - Ask only one question at a time when information is missing or ambiguous.
    - Ask for the information needed to define the requirements direction, scope, user-visible constraints, risks, and success criteria. Leave architecture, data models, APIs, dependencies, and other implementation choices for Design unless the user has already stated a binding technical constraint. Supply only meaningful mutually exclusive options when useful; do not pad the list. The following is an optional example, not a required option count:
 
@@ -52,6 +54,7 @@ Apply these rules only to the user-facing Brainstorming conversation. They do no
    - Put the recommended option first and explain the recommendation concisely.
    - Prefer an applicable question-and-answer tool when available, using its supported option count and free-form handling. A focused free-text question is sufficient when choices would be artificial.
    - Accept either an option number or the user's free-form answer.
+   - After each answer, check whether it resolves the current choice. If it remains ambiguous or exposes a dependent choice that could change the requirements direction, clarify that choice before moving on; update the remaining questions instead of following a fixed questionnaire. An answer of “none” to optional preferences does not resolve a separate material choice.
    - Continue until the required requirements context is complete and no unanswered requirements question remains.
 
 3. Compare requirements directions.

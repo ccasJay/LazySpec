@@ -28,9 +28,10 @@ Approval ends planning and MUST NOT start implementation. If the user already ex
 
 - Format every task line as `- [ ] //TODO <number>. <task text>` in a numbered checkbox list with at most two hierarchy levels. Use top-level epics only when they clarify grouping; number sub-tasks with decimal notation.
 - Keep the `//TODO` marker and its task text exactly as shown in the template. Completing a task changes only the checkbox token from `[ ]` to `[x]`; never remove, replace, or rewrite `//TODO` or any text after it.
-- Prefer a flat, minimal sequence of discrete coding steps that build incrementally and validate core behavior early.
+- Use the fewest TODOs that cover the approved acceptance criteria. Make each TODO one complete, independently verifiable behavior slice; include its implementation, entry-point integration, and automated tests in the same TODO even when they span files or components. A feature with one behavior slice may have one TODO. Do not split solely by file, architectural layer, or test type, and do not target a fixed number of TODOs.
+- Keep the success, validation, and failure paths of one behavior in the same TODO. Split a slice only when its parts can be delivered and verified independently, or when separate behavior has distinct dependencies, risks, or observable outcomes. Keep every TODO integrated and usable, and validate core behavior early.
 - Give each task a concrete implementation objective, scenario/input with observable success criteria, and discovered command or specific test entry point. Label new tests as to-be-implemented. Normally use no more than 3 descriptive bullets, excluding the Requirements link line. An exit code or “tests pass” alone is not a success criterion.
-- Link only the acceptance criteria directly implemented by the task, normally no more than 5. Split an oversized task when that creates meaningful independent work rather than using a long reference list.
+- Link every acceptance criterion directly implemented by the TODO, with no fixed per-TODO link limit. A long link list alone is not a reason to split a coherent behavior slice.
 - Ensure every acceptance criterion is linked by at least one task across the complete plan. Perform this task-link coverage check internally; do not add a second traceability matrix. Feature Verification separately maps acceptance outcomes to checks and actual evidence.
 - Assume Requirements and Design remain available during implementation. Do not repeat their behavior, rationale, interfaces, or step-by-step details in Tasks.
 - Include only work a coding agent can complete by writing, modifying, or testing code in the coding TODO list. Exclude user testing, deployment, metrics gathering, running manual end-to-end flows, training, documentation, business-process changes, and communication work; automated end-to-end tests are allowed.
@@ -38,6 +39,7 @@ Approval ends planning and MUST NOT start implementation. If the user already ex
 - If a requirement or design gap prevents an actionable task, route to the earliest affected phase under delivery-loop.md rather than padding the task with assumptions.
 - Append Feature Verification with approved Planned Checks and an initially unexecuted Latest Result, following delivery-loop.md. Cover all acceptance outcomes, composed flows, risk requirements, and necessary human checks outside the coding TODO list. Add Learning Candidates only when execution yields useful evidence.
 - Modify the tasks plan when the user requests changes; a non-approval response alone does not require speculative edits.
+- Apply this grouping default to newly created `tasks.md` files and user-requested revisions; do not rewrite an existing approved TODO solely to adopt the new grouping.
 - Request approval for material changes or user-reserved decisions, not internal plan refinements, execution evidence, or candidate updates.
 - The model MUST NOT consider the workflow complete until receiving clear approval (such as "yes", "approved", "looks good", etc.).
 - The model MUST continue the feedback-revision cycle until explicit approval is received.
@@ -45,6 +47,6 @@ Approval ends planning and MUST NOT start implementation. If the user already ex
 
 **This workflow is ONLY for creating design and planning artifacts. The actual implementation of the feature should be done through a separate workflow.**
 
-- This skill authors the plan; use the execution workflow for any already authorized implementation
+- This skill authors the plan; route already authorized ordinary `tasks.md` implementation to `executing-task`
 - The model MUST clearly communicate to the user that this workflow is complete once the design and planning artifacts are created
 - The model MUST inform the user that they can begin executing tasks by opening the tasks.md file, or by asking to execute a specific task from tasks.md (e.g. "start task 1.1" / "execute next task").

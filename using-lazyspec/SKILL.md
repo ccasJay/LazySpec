@@ -32,14 +32,14 @@ Rules:
 - A routed Skill may load its own prompt/template/resources.
 - Resolve every reference from this Skill's `references/` directory; if a resource is unavailable, report the missing resource rather than inventing a policy.
 
-[approval-policy.md](references/approval-policy.md) is the single source of approval semantics (explicit approval, materiality, invalidation, the Human-First `审批摘要` contract, and the approval-asking protocol); [risk-policy.md](references/risk-policy.md) defines risk classification and verification depth; [delivery-loop.md](references/delivery-loop.md) defines execution, Feature Verification, repair, and learning candidates; [doc-policy.md](references/doc-policy.md) defines minimum-sufficient documentation; [memory-recall.md](references/memory-recall.md) and [codex-plan-mode.md](references/codex-plan-mode.md) are loaded only by their own routes above.
+[approval-policy.md](references/approval-policy.md) is the single source of approval semantics (explicit approval, materiality, invalidation, the Human-First `审批摘要` contract, and the approval-asking protocol); [risk-policy.md](references/risk-policy.md) defines risk classification and verification depth; [delivery-loop.md](references/delivery-loop.md) defines shared Feature Verification, repair, and learning candidates; `executing-task` owns normal task execution; [doc-policy.md](references/doc-policy.md) defines minimum-sufficient documentation; [memory-recall.md](references/memory-recall.md) and [codex-plan-mode.md](references/codex-plan-mode.md) are loaded only by their own routes above.
 
 ## Approval Contract
 
 The approval contract for Requirements and Design documents — the Chinese `审批摘要` as the user-facing approval object, materiality classification, summary/body consistency, invalidation and revision deltas, and legacy migration — is defined exclusively in approval-policy.md. Routing and phase scoping keep only these rules:
 
 - Normal Specs approve Requirements, Design, and Tasks separately in that order; fast approves its plan; Brainstorming keeps its Context approval; Memory approves its exact write preview; multi-Spec orchestration approves its complete `orchestration.md`.
-- Every downstream phase MUST treat an approved `审批摘要` as the upper-level material contract while continuing to read the complete Spec body for implementation detail.
+- Every downstream phase MUST treat an approved `审批摘要` as the upper-level material contract; use approval-policy.md and the routed Skill to determine detail-reading depth.
 
 ## Brainstorming Human-First Conversation Contract
 
@@ -52,7 +52,7 @@ Before inspecting or writing any Spec artifact, bind `ACTIVE_PROJECT_ROOT` to th
 
 Resolve every routed Skill with this platform-neutral protocol:
 
-1. Prefer the current environment's registered Skill invocation mechanism. Use the logical names `brainstorming`, `writing-requirement`, `writing-design`, `writing-task`, `distill-spec-memory`, `fast`, and `orchestrating-specs`; a Claude Code Plugin may expose them as `lazyspec:<logical-name>`, while an Agent Skills installation may expose the unnamespaced logical name.
+1. Prefer the current environment's registered Skill invocation mechanism. Use the logical names `brainstorming`, `writing-requirement`, `writing-design`, `writing-task`, `executing-task`, `distill-spec-memory`, `fast`, and `orchestrating-specs`; a Claude Code Plugin may expose them as `lazyspec:<logical-name>`, while an Agent Skills installation may expose the unnamespaced logical name.
 2. If no registered Skill invocation mechanism is available, or the logical Skill is not registered, read its sibling `SKILL.md` using the fallback mapping below. Resolve the path relative to this `using-lazyspec/SKILL.md`, never relative to the process working directory or repository root.
 3. After resolving the target, follow that Skill's instructions and resolve its supporting files by the target Skill's own resource rules.
 
@@ -62,6 +62,7 @@ Resolve every routed Skill with this platform-neutral protocol:
 | `writing-requirement` | `lazyspec:writing-requirement` | `../writing-requirement/SKILL.md` |
 | `writing-design` | `lazyspec:writing-design` | `../writing-design/SKILL.md` |
 | `writing-task` | `lazyspec:writing-task` | `../writing-task/SKILL.md` |
+| `executing-task` | `lazyspec:executing-task` | `../executing-task/SKILL.md` |
 | `distill-spec-memory` | `lazyspec:distill-spec-memory` | `../distill-spec-memory/SKILL.md` |
 | `fast` | `lazyspec:fast` | `../fast/SKILL.md` |
 | `orchestrating-specs` | `lazyspec:orchestrating-specs` | `../orchestrating-specs/SKILL.md` |
@@ -115,7 +116,7 @@ Codex Plan Mode 只作为新功能创建前的 Brainstorming 输入来源，不�
 
 3. Route to `writing-design` only after explicit approval of the current Requirements, and to `writing-task` only after explicit approval of the current Design. Create one normal-phase document at a time and request its approval before advancing, at every risk level. Approval of a prior phase never approves the next one.
 
-4. For questions about existing Spec tasks or requests to execute or verify an existing task plan, apply the task instructions below and delivery-loop.md. Verification-only requests do not authorize implementation repairs. Answer task questions without starting work; when execution is explicitly requested, follow the full TODO scope stated by the user.
+4. For ordinary `tasks.md` execution, resume, or verification-only requests, route to `executing-task` and the shared delivery-loop.md. Verification-only requests do not authorize implementation repairs. Answer task-status questions read-only without starting work; when execution is explicitly requested, pass the full TODO scope stated by the user to `executing-task`.
 
 ## Workflow Diagram
 
@@ -172,8 +173,8 @@ stateDiagram-v2
 
 ## Task Instructions
 
-- These executing instructions apply to normal tasks.md plans; route fast plan.md execution to fast and the shared delivery loop. The complete execution contract — reading the full Spec contract before executing, confirming approvals, batch TODO execution, feature-branch creation, checkbox token semantics, verification, handoff Memory impact candidates, and stale Feature Verification completion — is defined in [delivery-loop.md](references/delivery-loop.md). Follow it exactly.
-- Answer task-information requests without modifying code, Spec files, or checkbox state. For example, if the user asks what the next task is, provide the information without starting any task.
+- Route normal `tasks.md` execution and verification-only requests to `executing-task`, which owns progressive per-TODO context, approved scope, branch, checkbox, commits, handoff, and temporary progress. Route fast `plan.md` execution to `fast`. Both use the shared [delivery-loop.md](references/delivery-loop.md) for Feature Verification, repair, and Learning Candidates.
+- Answer task-information requests without modifying code, Spec files, checkbox state, or the temporary progress record. For example, if the user asks what the next task is, provide the information without starting any task.
 
 ## Approval Protocol
 Apply approval-policy.md as the single source of approval semantics: create and approve Requirements, Design, and Tasks one at a time at every risk level, using approval-policy.md's asking protocol at each gate. Routing adds only these rules:

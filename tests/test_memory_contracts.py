@@ -251,10 +251,12 @@ class MemorySkillContractTests(unittest.TestCase):
                 self.assertIn(required, recall)
 
     def test_final_task_reports_memory_impact_without_writing(self):
-        text = (ROUTER_ROOT / "references" / "delivery-loop.md").read_text()
-        self.assertIn("When all requested TODOs are complete", text)
-        self.assertIn("Report likely impact candidates", text)
-        self.assertIn("do not create, edit, or re-status Memory", text)
+        text = (ROOT / "executing-task" / "SKILL.md").read_text()
+        self.assertIn("After all feature TODOs are checked", text)
+        self.assertIn("inspect only `project-memory/index.md` for Capsules", text)
+        shared = (ROUTER_ROOT / "references" / "delivery-loop.md").read_text()
+        self.assertIn("Continue reporting likely existing Memory impact candidates", shared)
+        self.assertIn("Collection alone never writes under project-memory/", shared)
 
     def test_recall_fixture_has_more_than_three_active_matches_and_history(self):
         rows = index_rows(FIXTURE_ROOT / "retrieval-index.md")

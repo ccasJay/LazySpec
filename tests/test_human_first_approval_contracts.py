@@ -149,6 +149,37 @@ class HumanFirstApprovalContractTests(unittest.TestCase):
         self.assertIn("Design decision collection is distinct from approval", DESIGN_SKILL)
         self.assertIn("return to Requirements", DESIGN_SKILL)
 
+    def test_design_questions_resolve_user_choices_before_drafting(self):
+        decision_section = DESIGN_SKILL.split("## Design Decision Collection", 1)[1].split(
+            "## Human-First Review Summary", 1
+        )[0]
+        for expected in (
+            "approved Requirements, relevant code, and explicit prior decisions",
+            "architecture, public interfaces, data, dependencies, compatibility, external effects, security, and recovery",
+            "Research discoverable project facts",
+            "Distinguish material or user-reserved choices from routine internal techniques",
+            "recommend a viable option with a concise reason",
+            "main consequences or trade-offs",
+            "Ask one focused question at a time",
+            "Do not ask for a choice already made explicitly",
+            "Clarify an ambiguous answer before moving on",
+            "does not close an unresolved material choice",
+            "Do not draft affected Design sections",
+            "ask at least one design-focused question",
+            "return to Requirements",
+        ):
+            with self.subTest(expected=expected):
+                self.assertIn(expected, decision_section)
+        self.assertLess(
+            decision_section.index("Before asking, examine"),
+            decision_section.index("For each choice requiring the user's decision"),
+        )
+        self.assertLess(
+            decision_section.index("Clarify an ambiguous answer"),
+            decision_section.index("For a new Design with no competing choice"),
+        )
+        self.assertIn("complete the Design-stage decision exchange", DESIGN_PROMPT)
+
     def test_policy_asking_adapts_to_available_tool(self):
         self.assertIn("Whenever a LazySpec workflow needs an answer", APPROVAL_POLICY)
         self.assertIn("user-question tool exposed by the current agent environment", APPROVAL_POLICY)

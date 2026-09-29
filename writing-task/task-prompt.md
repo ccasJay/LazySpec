@@ -13,5 +13,5 @@ Read the shared risk-policy.md and delivery-loop.md through this Skill. Add Feat
 - The model MUST use the following specific instructions when creating the implementation plan:
 
 ```
-Convert the design into incremental coding tasks with scenario-based observable success criteria and executable verification entry points. Each task must leave the code integrated and usable, with no orphaned work. Focus only on writing, modifying, or testing code.
+Convert the design into the fewest TODOs needed to cover the approved acceptance criteria. Each TODO delivers one complete, independently verifiable behavior, including implementation, entry-point integration, automated tests, and its success, validation, and failure paths even across files or components. Split only for independently deliverable behavior or separate behavior with distinct dependencies, risks, or observable outcomes; never split solely by file, architectural layer, or test type. Give each TODO scenario-based observable success criteria and an executable verification entry point, and leave the code integrated and usable with no orphaned work. Focus only on writing, modifying, or testing code.
 ```

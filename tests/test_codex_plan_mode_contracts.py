@@ -104,12 +104,9 @@ class CodexPlanModeWorkflowContractTests(unittest.TestCase):
         )
         self.assertIn("never mark an unapproved draft approved", DESIGN_SKILL)
         self.assertIn("Approval ends planning and MUST NOT start implementation", TASK_SKILL)
-        delivery = (
-            ROOT / "using-lazyspec" / "references" / "delivery-loop.md"
-        ).read_text()
-        self.assertIn("complete `requirements.md`, `design.md`, and `tasks.md`", delivery)
-        self.assertIn("all currently unchecked TODOs", delivery)
-        self.assertIn("After each TODO passes its verification", delivery)
+        execution = (ROOT / "executing-task" / "SKILL.md").read_text()
+        self.assertIn("all currently unchecked TODOs", execution)
+        self.assertIn("Only after the TODO passes", execution)
         self.assertIn("`//TODO`", TASK_SKILL)
 
     def test_adapter_has_no_persistent_intermediate_artifact_or_new_stage(self):

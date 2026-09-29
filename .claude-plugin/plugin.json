@@ -12,6 +12,7 @@
     "./writing-requirement",
     "./writing-design",
     "./writing-task",
+    "./executing-task",
     "./distill-spec-memory",
     "./fast",
     "./orchestrating-specs"

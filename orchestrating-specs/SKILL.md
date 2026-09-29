@@ -12,7 +12,7 @@ Coordinate the joint execution of several Specs that each completed planning and
 
 ## Shared policies
 
-Read [risk-policy.md](../using-lazyspec/references/risk-policy.md), [approval-policy.md](../using-lazyspec/references/approval-policy.md), and [delivery-loop.md](../using-lazyspec/references/delivery-loop.md) before this workflow; resolve them relative to this Skill directory. risk-policy.md separates risk-based verification from decision-based approval; approval-policy.md is the single source of explicit-approval, materiality, invalidation, and approval-asking semantics; delivery-loop.md governs each Spec's internal task execution, Feature Verification, repair, and Learning Candidates.
+Read [risk-policy.md](../using-lazyspec/references/risk-policy.md), [approval-policy.md](../using-lazyspec/references/approval-policy.md), and [delivery-loop.md](../using-lazyspec/references/delivery-loop.md) before this workflow; resolve them relative to this Skill directory. risk-policy.md separates risk-based verification from decision-based approval; approval-policy.md is the single source of explicit-approval, materiality, invalidation, and approval-asking semantics; delivery-loop.md governs shared Feature Verification, repair, and Learning Candidates. Each normal Spec's internal task execution is governed by [executing-task/SKILL.md](../executing-task/SKILL.md).
 
 ## Project Root
 
@@ -41,7 +41,7 @@ Write exactly one artifact: `specs/orchestration.md` under `ACTIVE_PROJECT_ROOT`
 Boundaries — `orchestration.md` describes Spec-level execution strategy only:
 
 - It MUST NOT define new user behavior, interface requirements, or business scope, and it is not a new Requirements, Design, or Tasks layer.
-- It MUST NOT specify how tasks inside any individual Spec are executed: task-level ordering, execution details, verification methods, and repair routing remain governed by that Spec's approved `tasks.md` and delivery-loop.md. The orchestration decides only when a Spec's turn arrives, on which branch, and alongside which other Specs.
+- It MUST NOT specify how tasks inside any individual Spec are executed: task-level ordering, execution details, and verification methods remain governed by that Spec's approved `tasks.md` and executing-task/SKILL.md; shared repair routing remains in delivery-loop.md. The orchestration decides only when a Spec's turn arrives, on which branch, and alongside which other Specs.
 - 堆叠分支策略：按逻辑依赖排序的 Spec 依序堆叠建分支（如 A→B→C：B 基于 A 的分支创建，C 基于 B 的分支创建），最后按相同顺序依次 merge；可并行的 Spec 从共同基础分支独立建分支，跨 Spec 集成验证通过后合并。
 
 ## Approval
@@ -56,8 +56,8 @@ When orchestration planning or execution reveals a requirement, interface, archi
 
 Only after orchestration approval:
 
-- Execute each Spec through its own approved Requirements, Design, and Tasks as the source of truth via delivery-loop.md. The orchestration only coordinates — it MUST NOT override or modify any Spec's approved content.
-- The orchestration decides Spec-level sequencing, branch stacking, and merge order; each Spec's internal task execution remains fully governed by that Spec's `tasks.md` and delivery-loop.md.
+- Execute each Spec through its own approved Requirements, Design, and Tasks as the source of truth via executing-task/SKILL.md. The orchestration only coordinates — it MUST NOT override or modify any Spec's approved content.
+- The orchestration decides Spec-level sequencing, branch stacking, and merge order; each Spec's internal task execution remains fully governed by that Spec's `tasks.md` and executing-task/SKILL.md, with shared verification and repair in delivery-loop.md.
 - Branch and merge strategy follows the approved orchestration (overriding the default single-Spec `codex/<feature-name>` branch rule); without an orchestration, single-Spec defaults are unchanged.
 - Record per-Spec progress in `orchestration.md`'s lifecycle status as each Spec completes; a Spec counts as complete only when its Feature Verification passes.
 

@@ -44,7 +44,7 @@ Apply this contract to generated or revised Requirements and Design documents:
 - Before requesting approval, verify internally that every material body item is represented directly or by one unambiguous group in `审批摘要`. A missing material item or any summary/body conflict blocks approval.
 - Adapt the summary to the feature's cognitive complexity instead of enforcing a fixed item or character count. Aim for a complete one-screen review. If that is impossible without hiding material information, pause approval and recommend splitting the Spec; expand the summary only after the user explicitly chooses to keep one Spec.
 - After a material revision, update the complete summary in the document and present a concise conversation delta covering additions, changes, removals, and risk changes before asking for approval again.
-- Every downstream phase MUST treat an approved `审批摘要` as the upper-level material contract while continuing to read the complete Spec body for implementation detail.
+- Every downstream phase MUST treat an approved `审批摘要` as the upper-level material contract. Planning Skills continue to read the complete upstream Spec body as their instructions require. During normal task execution, `executing-task` reads body sections relevant to each TODO, expands uncertain or cross-task context, and checks complete feature-contract coverage before claiming verification passed.
 
 ## Legacy artifacts
 

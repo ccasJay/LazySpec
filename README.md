@@ -11,7 +11,7 @@ fast 链路：讨论 → plan.md → 一次审批 → 连续执行 → 功能验
 经验学习：自动提取候选 → 确认完整写入预览 → Project Memory
 ```
 
-- Brainstorming 只确认需求方向及目标、范围、约束和成功标准；进入 Design 后另行提问，收集设计层面的决策与约束。
+- Brainstorming 只确认需求方向及目标、范围、约束和成功标准；会先核对已知信息并追问会改变需求方向的未决事项，信息完整时不凑问题。进入 Design 后另行检查实现取舍，逐项询问需由用户决定的关键选择；新建 Design 至少提供一次补充设计约束或偏好的机会。
 - Brainstorming 默认用白话中文、先讲用户能获得的结果，再说明影响需求的取舍；每次只请用户做一个决定。用户主动使用术语或要求深入时，表达会随之提高专业程度，但仍保持简洁且不会省略范围、约束、风险和成功标准。
 - Requirements、Design、Tasks 分别生成 `requirements.md`、`design.md`、`tasks.md`。
 - 所有风险等级均逐阶段生成并审批 Requirements、Design、Tasks；上一阶段未获明确批准前不得生成下一阶段文档。草稿存在不代表批准。
@@ -25,7 +25,7 @@ fast 链路：讨论 → plan.md → 一次审批 → 连续执行 → 功能验
 npx skills add ccasJay/LazySpec --skill '*' -g
 ```
 
-按提示选择目标代理。安装完成后，确认七个 Skill 均可发现；日常使用从
+按提示选择目标代理。安装完成后，确认九个 Skill 均可发现；日常使用从
 `using-lazyspec` 进入。
 
 ### Claude Code Plugin
@@ -45,7 +45,7 @@ claude --plugin-dir /absolute/path/to/LazySpec
 /lazyspec:using-lazyspec
 ```
 
-七个可显式调用的 Skill 为：
+九个可显式调用的 Skill 为：
 
 ```text
 /lazyspec:using-lazyspec
@@ -53,15 +53,17 @@ claude --plugin-dir /absolute/path/to/LazySpec
 /lazyspec:writing-requirement
 /lazyspec:writing-design
 /lazyspec:writing-task
+/lazyspec:executing-task
 /lazyspec:distill-spec-memory
 /lazyspec:fast
+/lazyspec:orchestrating-specs
 ```
 
 Plugin 或 Skill 未出现时，按以下顺序排查：
 
 1. 确认 `claude --version` 不低于兼容性基线，并重新运行
    `claude plugin validate .`。
-2. 确认 Manifest 位于仓库根目录的 `.claude-plugin/plugin.json`，其中七个
+2. 确认 Manifest 位于仓库根目录的 `.claude-plugin/plugin.json`，其中九个
    `skills` 相对路径均指向包含 `SKILL.md` 的现有目录。
 3. 在会话中运行 `/reload-plugins`，然后用 `/help` 再次检查；仍未加载时，
    退出并用正确的绝对路径重新执行 `claude --plugin-dir ...`。
@@ -95,8 +97,10 @@ Plugin 或 Skill 未出现时，按以下顺序排查：
 ```
 
 新功能会先进入 Brainstorming（显式请求 fast 模式时除外）；修改已有
-`requirements.md` 时默认直接进入 Requirements。执行任务前会读取该功能的全部
-Spec。用户明确要求执行 `tasks.md` 时，默认创建 `codex/<feature-name>` 特性分支，按顺序完成全部未完成 TODO，并在每个 TODO 验证通过后单独提交，中途不等待逐项确认；只有用户明确指定某个 TODO 编号时才限制为单项执行。fast 模式审批后则连续执行 plan 中的全部任务。
+`requirements.md` 时默认直接进入 Requirements。普通 Spec 的执行和仅验证请求由
+`executing-task` 处理：先核对审批摘要、任务清单和预定验收，再按 TODO 定位关联需求、设计、代码及测试；遇到跨任务影响或契约不明时扩展读取。明确要求执行 `tasks.md` 时，默认创建 `codex/<feature-name>` 特性分支并连续完成全部未完成 TODO；只指定编号时限制为该 TODO。每项通过聚焦验证后才勾选，相关工作可合并为可审阅的提交。fast 模式仍按其 plan 连续执行。
+
+普通 Spec 执行期间，`specs/<feature-name>/.execution-progress.md` 保存本地恢复点并被 Git 忽略。它只记录当前范围、上下文线索、验证和下一步；恢复时以当前 Spec、代码和证据核对。部分完成或验收未通过时保留；全部 TODO 完成且 Feature Verification 对当前状态为 `passed` 后删除。仅验证请求没有现存文件时不创建。
 
 ## Spec 产物
 
@@ -117,7 +121,14 @@ LazySpec 默认生成“最小充分文档”：Requirements 只记录可验证�
 
 - Requirements 默认不超过 8 组、每组 2–5 条验收标准，总数尽量不超过 30 条。
 - Design 的详细正文默认约 100–180 行（不含审批摘要）；架构、接口、数据模型、错误处理、调研结论和图表按需生成。
-- Tasks 每项通常不超过 3 个说明点，只链接直接落实的验收标准。
+- 普通模式的 Tasks 默认以完整、可独立验证的行为为一个 TODO：同一行为的实现、入口接入和自动化测试合并，即使跨文件；只有独立可交付的行为，或依赖、风险、可观察结果不同，才拆成多项。不按文件、代码层或测试类型机械拆分，也不设置固定 TODO 数量或单项验收链接上限。每项通常不超过 3 个说明点，只链接直接落实的验收标准。
+
+例如，创建记录的正常、校验失败及写入失败路径属于同一个行为；按 ID 查询能独立交付和验证，才另起一项。以下仅展示任务边界，实际 `tasks.md` 还需写明成功判据、验证入口、需求链接和 Feature Verification：
+
+```text
+- [ ] //TODO 1. 完成创建记录行为：入口校验、写入、响应及自动化测试
+- [ ] //TODO 2. 完成按 ID 查询行为：查询入口、读取逻辑及自动化测试
+```
 
 以上均为软限制，不会截断必要信息。需要更多上下文时，可以明确要求展开某个相关章节。
 
@@ -138,13 +149,15 @@ LazySpec 默认生成“最小充分文档”：Requirements 只记录可验证�
 
 | Skill | 职责 |
 |---|---|
-| [`using-lazyspec`](./using-lazyspec/SKILL.md) | 统一入口、阶段路由、审批门和任务执行 |
+| [`using-lazyspec`](./using-lazyspec/SKILL.md) | 统一入口、阶段路由和审批门 |
 | [`brainstorming`](./brainstorming/SKILL.md) | 澄清需求方向并生成会话 Context |
 | [`writing-requirement`](./writing-requirement/SKILL.md) | 创建或修改 Requirements |
 | [`writing-design`](./writing-design/SKILL.md) | 单独收集设计决策，基于需求创建设计 |
 | [`writing-task`](./writing-task/SKILL.md) | 将已批准设计转为编码任务 |
+| [`executing-task`](./executing-task/SKILL.md) | 按需查找 TODO 上下文，执行或验证普通 Spec，并维护本地临时恢复点 |
 | [`distill-spec-memory`](./distill-spec-memory/SKILL.md) | 提炼已验证功能、推广经确认的学习候选，并维护两类项目 Memory |
 | [`fast`](./fast/SKILL.md) | 轻量新功能快速通道：讨论生成 plan.md，一次审批后连续执行 |
+| [`orchestrating-specs`](./orchestrating-specs/SKILL.md) | 编排多个已批准 Spec 的执行与跨 Spec 验证 |
 
 ## 约束
 
@@ -164,7 +177,7 @@ LazySpec 默认生成“最小充分文档”：Requirements 只记录可验证�
 
 按最高适用风险判断，不打分；不能证明为 low 时先按 medium，存在未明确的高风险后果时先澄清。fast 各等级均保留单份计划和一次计划审批，同时遵守高风险操作及验收确认。风险升级会调整验证深度；若已批准内容随之变化，按所属阶段重新审批。
 
-每个 TODO 写清实现目标、具体场景下的可观察成功判据、已发现的命令或测试入口。新测试标记为待实现，不能只用“测试通过”作为判据。完成时只修改复选框，保留 TODO 原文；后续修复追加记录，普通模式单独提交。
+每个 TODO 写清实现目标、具体场景下的可观察成功判据、已发现的命令或测试入口。新测试标记为待实现，不能只用“测试通过”作为判据。完成时只修改复选框，保留 TODO 原文；后续修复追加记录并单独提交。
 
 全部 TODO 完成后自动进行 Feature-level Verification；请求执行已勾选计划也会补齐缺失或失效的验收。部分任务完成不代表整个功能通过，状态查询不启动执行。结果直接写入 tasks.md / plan.md 的 Feature Verification：预定验收范围与运行结果分开，记录实际证据、时间、被测提交、相关未提交改动及契约版本。结果区分 passed、failed、blocked、pending-human；相关代码或契约变化后标为 stale。必要人工检查未完成，以及高风险证据未经用户确认时，均不能报告功能通过。
 
@@ -172,6 +185,6 @@ LazySpec 默认生成“最小充分文档”：Requirements 只记录可验证�
 
 有价值的成功或失败经验先进入文末 Learning Candidates，确认完整候选与确切写入预览后才进入 project-memory/learnings/。原有 project-memory/features/ 保留；两类共用六列索引和状态生命周期，合计最多召回三条适用的 active 记忆。失败经验不要求功能全部完成，但必须有可归因证据，未经验证的修复建议不能成为长期指导。不会自动修改 AGENTS.md、技能或权限。
 
-现有 Spec 不批量迁移；下次执行时补充风险与验收结构，涉及实质判据变化时按风险规则审批。共享规则见 [risk-policy](./using-lazyspec/references/risk-policy.md) 和 [delivery-loop](./using-lazyspec/references/delivery-loop.md)。安装时保留七个 Skill 及其相对目录，共享参考文档随 using-lazyspec 分发。
+现有 Spec 不批量迁移；下次执行时补充风险与验收结构，涉及实质判据变化时按风险规则审批。普通执行见 [executing-task](./executing-task/SKILL.md)；共享规则见 [risk-policy](./using-lazyspec/references/risk-policy.md) 和 [delivery-loop](./using-lazyspec/references/delivery-loop.md)。安装时保留九个 Skill 及其相对目录，共享参考文档随 using-lazyspec 分发。
 
 历史工作流示例见 [`specs/lazyspec`](./specs/lazyspec/)；该存量 Spec 创建于 Human-First 审批摘要引入前，不代表当前输出格式。

@@ -54,7 +54,7 @@ def lint_report(report):
 class DeliveryContractTests(unittest.TestCase):
     def test_shared_references_resolve_from_every_installed_skill(self):
         manifest = json.loads((ROOT / ".claude-plugin/plugin.json").read_text())
-        self.assertEqual(8, len(manifest["skills"]))
+        self.assertEqual(9, len(manifest["skills"]))
         risk_readers = [d for d in manifest["skills"] if not d.endswith("distill-spec-memory")]
         for directory in risk_readers:
             skill = ROOT / directory / "SKILL.md"
@@ -68,7 +68,7 @@ class DeliveryContractTests(unittest.TestCase):
         self.assertEqual([], re.findall(r"\]\(([^)]+risk-policy\.md)\)", distill))
         approval, = re.findall(r"\]\(([^)]+approval-policy\.md)\)", distill)
         self.assertEqual((POLICIES / "approval-policy.md").resolve(), (ROOT / "distill-spec-memory" / approval).resolve())
-        for directory in ("using-lazyspec", "fast", "writing-task"):
+        for directory in ("using-lazyspec", "fast", "writing-task", "executing-task"):
             skill = ROOT / directory / "SKILL.md"
             links = re.findall(r"\]\(([^)]+delivery-loop\.md)\)", skill.read_text())
             self.assertGreaterEqual(len(links), 1, skill)

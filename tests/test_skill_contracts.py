@@ -19,6 +19,7 @@ class SkillContractTests(unittest.TestCase):
             "writing-requirement",
             "writing-design",
             "writing-task",
+            "executing-task",
             "distill-spec-memory",
             "fast",
             "orchestrating-specs",
@@ -66,17 +67,18 @@ class SkillContractTests(unittest.TestCase):
         delivery = (
             ROOT / "using-lazyspec" / "references" / "delivery-loop.md"
         ).read_text()
+        execution = (ROOT / "executing-task" / "SKILL.md").read_text()
         planning = (ROOT / "writing-task" / "SKILL.md").read_text()
-        self.assertIn("complete `requirements.md`, `design.md`, and `tasks.md`", delivery)
-        self.assertIn("all currently unchecked TODOs", delivery)
-        self.assertIn("without waiting for per-task approval", delivery)
-        self.assertIn("new feature branch", delivery)
-        self.assertIn("codex/<feature-name>", delivery)
-        self.assertIn("After each TODO passes its verification", delivery)
+        self.assertIn("all currently unchecked TODOs", execution)
+        self.assertIn("without per-TODO confirmation", execution)
+        self.assertIn("feature branch", execution)
+        self.assertIn("codex/<feature-name>", execution)
+        self.assertIn("Only after the TODO passes", execution)
+        self.assertIn("Feature Verification", delivery)
         self.assertNotIn("Only focus on ONE user-selected task", routing)
         self.assertNotIn("If multiple tasks are requested, ask the user to select one", routing)
         self.assertNotIn("execute only one requested task at a time", routing)
-        for text in (delivery, planning):
+        for text in (execution, planning):
             self.assertIn("checkbox token from `[ ]` to `[x]`", text)
             self.assertIn("`//TODO`", text)
 
@@ -156,13 +158,10 @@ class SkillContractTests(unittest.TestCase):
         )
         self.assertIn("never mark an unapproved draft approved", design)
         self.assertIn("Approval ends planning and MUST NOT start implementation", tasks)
-        delivery = (
-            ROOT / "using-lazyspec" / "references" / "delivery-loop.md"
-        ).read_text()
-        self.assertIn("complete `requirements.md`, `design.md`, and `tasks.md`", delivery)
-        self.assertIn("all currently unchecked TODOs", delivery)
-        self.assertIn("After each TODO passes its verification", delivery)
-        self.assertIn("Answer task questions without starting work", routing)
+        execution = (ROOT / "executing-task" / "SKILL.md").read_text()
+        self.assertIn("all currently unchecked TODOs", execution)
+        self.assertIn("Only after the TODO passes", execution)
+        self.assertIn("Answer task-information requests without modifying", routing)
         self.assertIn("`//TODO`", tasks)
         self.assertIn("ask a separate approval question", brainstorming)
 
