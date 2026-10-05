@@ -41,7 +41,7 @@ Before creating a new Design, inspect Requirements and relevant project code, th
 
 ## Approval
 
-Finish the Design draft, present its `审批摘要` and body for review, and request explicit Design approval before creating any Tasks document. Internal implementation details remain the model's choice within the contract. Follow approval-policy.md's asking protocol and ask: "审批摘要是否准确覆盖了设计方案、关键决策及风险？" For any non-approval response, remain in Design; apply approval-policy.md's explicit-approval, revision-delta, and invalidation semantics.
+Finish and check the saved Design file, then link to it and request explicit Design approval before creating any Tasks document. Let the user review its `审批摘要` and body in the file; do not paste either into the conversation. Internal implementation details remain the model's choice within the contract. Follow approval-policy.md's file-backed review and asking protocols and ask: "审批摘要是否准确覆盖了设计方案、关键决策及风险？" For any non-approval response, remain in Design; apply approval-policy.md's explicit-approval, revision-delta, and invalidation semantics.
 
 **Constraints:**
 

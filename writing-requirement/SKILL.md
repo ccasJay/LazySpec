@@ -46,7 +46,7 @@ Prefix every numbered acceptance criterion with exactly one HTML anchor on the s
 
 ## Approval
 
-For a new document or material revision, finish the Requirements draft, present its `审批摘要` and body for review, and request explicit Requirements approval before creating any Design document. Confirming individual requirements or finishing collection does not approve the complete document. Reuse collection answers when preparing the review; do not repeat unchanged decisions. Follow approval-policy.md's asking protocol and ask: "审批摘要是否准确覆盖了需求的目标、范围、核心行为与风险？" For any non-approval response, remain in Requirements; apply approval-policy.md's explicit-approval, revision-delta, and invalidation semantics. Purely editorial revisions preserve any still-valid prior document approval under that policy; never infer approval for an unapproved draft.
+For a new document or material revision, finish and check the saved Requirements file, then link to it and request explicit Requirements approval before creating any Design document. Let the user review its `审批摘要` and body in the file; do not paste either into the conversation. Confirming individual requirements or finishing collection does not approve the complete document. Reuse collection answers when preparing the review; do not repeat unchanged decisions. Follow approval-policy.md's file-backed review and asking protocols and ask: "审批摘要是否准确覆盖了需求的目标、范围、核心行为与风险？" For any non-approval response, remain in Requirements; apply approval-policy.md's explicit-approval, revision-delta, and invalidation semantics. Purely editorial revisions preserve any still-valid prior document approval under that policy; never infer approval for an unapproved draft.
 
 ## Content Boundaries and Size
 

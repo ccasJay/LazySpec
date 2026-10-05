@@ -154,5 +154,5 @@ stateDiagram-v2
 ## Approval Protocol
 Apply approval-policy.md as the single source of approval semantics: create and approve Requirements, Design, and Tasks one at a time at every risk level, using approval-policy.md's asking protocol at each gate. Routing adds only these rules:
 
-- Present only the current phase document for approval. For Requirements and Design, review the Human-First `审批摘要` and its consistency with the detailed body; Tasks keeps the complete task document as its approval object.
+- Save the current phase document and point the user to its file for approval under approval-policy.md's File-backed review rule. Internally check the Human-First `审批摘要` against the Requirements or Design body; Tasks keeps the complete saved task document as its approval object. Do not repeat the draft in the conversation.
 - Never generate Design before Requirements approval or Tasks before Design approval; risk level and decision impact do not alter these gates.

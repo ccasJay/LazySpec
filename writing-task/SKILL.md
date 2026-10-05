@@ -20,7 +20,7 @@ Before requesting Tasks approval, validate every requirement link against `requi
 
 ## Approval
 
-The approval object is the complete Tasks plan, including success criteria and planned feature checks. Present it for separate approval after its upstream Requirements and Design have been approved. Internal decomposition, dependency-preserving ordering, and equivalent verification-method changes do not require reapproval when the approved outcome remains intact. Follow approval-policy.md's asking protocol; for Tasks completion ask: "Do the tasks look good?"
+The approval object is the complete saved Tasks plan, including success criteria and planned feature checks. Finish and check `tasks.md`, then link to the file for separate approval after its upstream Requirements and Design have been approved; do not paste the plan into the conversation. Internal decomposition, dependency-preserving ordering, and equivalent verification-method changes do not require reapproval when the approved outcome remains intact. Follow approval-policy.md's file-backed review and asking protocols; for Tasks completion ask: "请审阅任务文件；是否批准其中的任务与验收范围？"
 
 Approval ends planning and MUST NOT start implementation. If the user already explicitly requested implementation after planning, hand off to execution within that authorization without asking again. For any non-approval response, remain in Tasks; apply approval-policy.md's explicit-approval, revision-delta, and invalidation semantics.
 

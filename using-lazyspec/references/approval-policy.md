@@ -27,6 +27,12 @@ Single source of truth for approval semantics across all LazySpec gates: Require
 - Multi-Spec orchestration retains one approval gate: explicit approval of the complete `orchestration.md` before any participating Spec's execution starts. A material change — participating Spec set, joint objective, dependency/order, parallelism, branch strategy, coordination constraints, or integration verification — requires approval of the complete revised orchestration with its delta. Orchestration approval never approves new Spec content; participating Specs remain governed by their own approvals.
 - A rejected phase remains in that phase: apply feedback and present the revised phase for approval before creating any downstream document.
 
+## File-backed review
+
+When an approval object is a saved Spec or plan file, finish writing and internally checking that file before requesting approval. Give the user a link to the current file (or its exact path if the environment cannot link files), name the phase, and ask them to review the file and approve it or request changes. Keep the approval question short: do not paste the document, its `审批摘要`, or the complete Tasks plan into the conversation or the question tool. The file remains the complete approval object; a link or file write alone does not count as approval.
+
+For a material revision, update the same file first and give a concise delta of material additions, changes, removals, and risk changes alongside its link. If the user explicitly asks to see the text in the conversation, provide the requested excerpt or document. This rule applies to saved Requirements, Design, Tasks, fast plans, and orchestration plans; it does not replace Memory's exact write-preview approval.
+
 ## How to ask
 
 Whenever a LazySpec workflow needs an answer from the user:
