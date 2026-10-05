@@ -10,7 +10,6 @@ ROUTER = ROUTER_PATH.read_text()
 POLICIES = ROOT / "using-lazyspec" / "references"
 
 ROUTE_TO_SKILL = {
-    "brainstorming": "brainstorming",
     "requirements": "writing-requirement",
     "design": "writing-design",
     "tasks": "writing-task",
@@ -19,7 +18,6 @@ ROUTE_TO_SKILL = {
     "orchestration": "orchestrating-specs",
     "memory-recall": "using-lazyspec",
     "memory-distill": "distill-spec-memory",
-    "codex-plan-adapter": "using-lazyspec",
 }
 
 

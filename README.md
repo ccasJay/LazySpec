@@ -5,14 +5,16 @@
 ## 工作流程
 
 ```text
-正常链路：Brainstorming → Requirements → Design → Tasks → 按需执行 → 功能验收
+正常链路：Requirements 逐条收集并审批 → Design 并审批 → Tasks 并审批 → 按需执行 → 功能验收
 fast 链路：讨论 → plan.md → 一次审批 → 连续执行 → 功能验收
 验证失败：诊断 → 范围内修复，或回到 Requirements / Design / Tasks
 经验学习：自动提取候选 → 确认完整写入预览 → Project Memory
 ```
 
-- Brainstorming 只确认需求方向及目标、范围、约束和成功标准；会先核对已知信息并追问会改变需求方向的未决事项，信息完整时不凑问题。进入 Design 后另行检查实现取舍，逐项询问需由用户决定的关键选择；新建 Design 至少提供一次补充设计约束或偏好的机会。
-- Brainstorming 默认用白话中文、先讲用户能获得的结果，再说明影响需求的取舍；每次只请用户做一个决定。用户主动使用术语或要求深入时，表达会随之提高专业程度，但仍保持简洁且不会省略范围、约束、风险和成功标准。
+- Requirements 直接从用户描述开始：Agent 每次提议一条需求，只说明需求是什么和简洁的目标行为，通过当前环境的提问工具请用户确认、修改或拒绝，并等待回答后继续。用户确认收集完成后才一次生成完整需求草稿，Agent 据此整理用户故事和 EARS 验收标准；发现新的行为取舍时返回提问。
+- Requirements 默认用白话中文、先讲用户能获得的结果，每次只请用户做一个决定，不在收集问题中展示详细验收标准。用户主动使用术语或要求深入时，表达会随之提高专业程度，但不会省略范围、约束、风险和成功标准。
+- 修改已有 Requirements 时，只询问新增、实质修改或删除的需求；保留未改变的需求，纯文字整理不重复询问。逐条确认和结束收集均不等于整份需求文档获批。
+- 进入 Design 后另行检查实现取舍，逐项询问需由用户决定的关键选择；新建 Design 至少提供一次补充设计约束或偏好的机会。
 - Requirements、Design、Tasks 分别生成 `requirements.md`、`design.md`、`tasks.md`。
 - 所有风险等级均逐阶段生成并审批 Requirements、Design、Tasks；上一阶段未获明确批准前不得生成下一阶段文档。草稿存在不代表批准。
 - fast 模式面向轻量新功能：交互式讨论后生成单个 `specs/<feature-name>/plan.md`，一次明确批准后连续执行全部任务。仅限首次创建（无 `requirements.md`）；已有 Spec 的功能仍走正常链路。
@@ -25,7 +27,7 @@ fast 链路：讨论 → plan.md → 一次审批 → 连续执行 → 功能验
 npx skills add ccasJay/LazySpec --skill '*' -g
 ```
 
-按提示选择目标代理。安装完成后，确认九个 Skill 均可发现；日常使用从
+按提示选择目标代理。安装完成后，确认八个 Skill 均可发现；日常使用从
 `using-lazyspec` 进入。
 
 ### Claude Code Plugin
@@ -45,11 +47,10 @@ claude --plugin-dir /absolute/path/to/LazySpec
 /lazyspec:using-lazyspec
 ```
 
-九个可显式调用的 Skill 为：
+八个可显式调用的 Skill 为：
 
 ```text
 /lazyspec:using-lazyspec
-/lazyspec:brainstorming
 /lazyspec:writing-requirement
 /lazyspec:writing-design
 /lazyspec:writing-task
@@ -63,7 +64,7 @@ Plugin 或 Skill 未出现时，按以下顺序排查：
 
 1. 确认 `claude --version` 不低于兼容性基线，并重新运行
    `claude plugin validate .`。
-2. 确认 Manifest 位于仓库根目录的 `.claude-plugin/plugin.json`，其中九个
+2. 确认 Manifest 位于仓库根目录的 `.claude-plugin/plugin.json`，其中八个
    `skills` 相对路径均指向包含 `SKILL.md` 的现有目录。
 3. 在会话中运行 `/reload-plugins`，然后用 `/help` 再次检查；仍未加载时，
    退出并用正确的绝对路径重新执行 `claude --plugin-dir ...`。
@@ -72,8 +73,7 @@ Plugin 或 Skill 未出现时，按以下顺序排查：
    选择一种入口：使用 Plugin 时不要再向该项目安装同名 Agent Skills；使用
    Agent Skills 时不要传入 `--plugin-dir`，并停用已持久安装的同名 Plugin。
 
-不同代理的问答工具名称可以不同。LazySpec 会优先使用环境提供的审批问答
-工具；没有适用工具时，会在会话中直接请求明确批准。
+不同代理的问答工具名称和参数可以不同。LazySpec 根据当前环境公开的工具能力、参数定义及使用限制选择工具；有适用且允许使用的提问工具时必须调用，不固定工具名或参数结构。没有适用或允许使用的工具时，会说明限制并改为会话提问，等待明确回复。异步工具的发送成功、超时或预选项都不代表用户已回答。这套规则同时适用于需求收集、设计提问和文档审批。
 
 ## 快速开始
 
@@ -96,8 +96,7 @@ Plugin 或 Skill 未出现时，按以下顺序排查：
 使用 using-lazyspec 以 fast 模式为“导出 CSV”创建 plan 并执行。
 ```
 
-新功能会先进入 Brainstorming（显式请求 fast 模式时除外）；修改已有
-`requirements.md` 时默认直接进入 Requirements。普通 Spec 的执行和仅验证请求由
+新功能和已有需求修订都直接进入 Requirements（显式请求 fast 模式时除外）。用户提供的计划作为普通背景资料，仍须逐条确认需求；LazySpec 不按代理平台或原生规划模式设置专属前置条件，宿主环境的工具与文件写入限制照常遵守。普通 Spec 的执行和仅验证请求由
 `executing-task` 处理：先核对审批摘要、任务清单和预定验收，再按 TODO 定位关联需求、设计、代码及测试；遇到跨任务影响或契约不明时扩展读取。明确要求执行 `tasks.md` 时，默认创建 `codex/<feature-name>` 特性分支并连续完成全部未完成 TODO；只指定编号时限制为该 TODO。每项通过聚焦验证后才勾选，相关工作可合并为可审阅的提交。fast 模式仍按其 plan 连续执行。
 
 普通 Spec 执行期间，`specs/<feature-name>/.execution-progress.md` 保存本地恢复点并被 Git 忽略。它只记录当前范围、上下文线索、验证和下一步；恢复时以当前 Spec、代码和证据核对。部分完成或验收未通过时保留；全部 TODO 完成且 Feature Verification 对当前状态为 `passed` 后删除。仅验证请求没有现存文件时不创建。
@@ -113,7 +112,7 @@ Plugin 或 Skill 未出现时，按以下顺序排查：
 | `tasks.md` | 带成功判据的编码任务、需求链接、Feature Verification 与可选 Learning Candidates |
 | `plan.md` | fast 模式产物：目标、约束、方案、任务、Feature Verification 与可选 Learning Candidates |
 
-Brainstorming Context 不会落盘；若进入 Requirements 前会话丢失，需要重新确认。
+需求收集保留在当前会话中，不创建中间文件或逐条写入草稿。收集结束后才生成完整 `requirements.md`；若收集期间上下文丢失，不得把未确认的候选需求当作已确认结果。
 
 ### 默认精简策略
 
@@ -150,8 +149,7 @@ LazySpec 默认生成“最小充分文档”：Requirements 只记录可验证�
 | Skill | 职责 |
 |---|---|
 | [`using-lazyspec`](./using-lazyspec/SKILL.md) | 统一入口、阶段路由和审批门 |
-| [`brainstorming`](./brainstorming/SKILL.md) | 澄清需求方向并生成会话 Context |
-| [`writing-requirement`](./writing-requirement/SKILL.md) | 创建或修改 Requirements |
+| [`writing-requirement`](./writing-requirement/SKILL.md) | 逐条收集需求后创建或修改 Requirements |
 | [`writing-design`](./writing-design/SKILL.md) | 单独收集设计决策，基于需求创建设计 |
 | [`writing-task`](./writing-task/SKILL.md) | 将已批准设计转为编码任务 |
 | [`executing-task`](./executing-task/SKILL.md) | 按需查找 TODO 上下文，执行或验证普通 Spec，并维护本地临时恢复点 |
@@ -162,7 +160,7 @@ LazySpec 默认生成“最小充分文档”：Requirements 只记录可验证�
 ## 约束
 
 - 文件存在不代表已经批准；审批以当前会话中的明确回复为准。Requirements 和 Design 的审批对象是顶部摘要及其与正文的一致性，Tasks 审批完整任务计划及预定验收范围。三份文档依次单独审批，运行证据和学习候选更新不重新触发计划审批。
-- 手动运行 Brainstorming 不会自动修改已有 Spec。
+- 仅请求分析讨论时保持会话交流，不自动写入 Spec。
 - Tasks 获批只代表规划完成，实际编码需单独发起任务执行请求。
 - fast 模式仅限首次创建（无 `requirements.md`）；`plan.md` 与 requirements/design/tasks 三件套互斥，同一 feature 只保留其中一种产物。
 - `templete` 是项目现有文件名约定，请勿自行改名。
@@ -185,6 +183,6 @@ LazySpec 默认生成“最小充分文档”：Requirements 只记录可验证�
 
 有价值的成功或失败经验先进入文末 Learning Candidates，确认完整候选与确切写入预览后才进入 project-memory/learnings/。原有 project-memory/features/ 保留；两类共用六列索引和状态生命周期，合计最多召回三条适用的 active 记忆。失败经验不要求功能全部完成，但必须有可归因证据，未经验证的修复建议不能成为长期指导。不会自动修改 AGENTS.md、技能或权限。
 
-现有 Spec 不批量迁移；下次执行时补充风险与验收结构，涉及实质判据变化时按风险规则审批。普通执行见 [executing-task](./executing-task/SKILL.md)；共享规则见 [risk-policy](./using-lazyspec/references/risk-policy.md) 和 [delivery-loop](./using-lazyspec/references/delivery-loop.md)。安装时保留九个 Skill 及其相对目录，共享参考文档随 using-lazyspec 分发。
+现有 Spec 不批量迁移；下次执行时补充风险与验收结构，涉及实质判据变化时按风险规则审批。普通执行见 [executing-task](./executing-task/SKILL.md)；共享规则见 [risk-policy](./using-lazyspec/references/risk-policy.md) 和 [delivery-loop](./using-lazyspec/references/delivery-loop.md)。安装时保留八个 Skill 及其相对目录，共享参考文档随 using-lazyspec 分发。
 
 历史工作流示例见 [`specs/lazyspec`](./specs/lazyspec/)；该存量 Spec 创建于 Human-First 审批摘要引入前，不代表当前输出格式。

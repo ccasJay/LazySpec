@@ -1,6 +1,6 @@
 ---
 name: writing-requirement
-description: Create or revise EARS requirements from approved brainstorming or native planning input. Request explicit Requirements approval before LazySpec enters Design.
+description: Collect requirements one at a time with the user, then create or revise an EARS requirements document. Request explicit Requirements approval before LazySpec enters Design.
 ---
 
 # Writing Requirements
@@ -15,13 +15,24 @@ Read [risk-policy.md](../using-lazyspec/references/risk-policy.md), [approval-po
 - Write all user-visible prose in generated `requirements.md` content in Chinese, including the title, headings, introduction, user stories, and acceptance criteria.
 - Preserve project-specific names, code identifiers, filenames, Markdown syntax, and HTML anchor IDs when necessary.
 
-For a new feature, require one explicitly approved input from the current session before creating `requirements.md`: either a complete `BrainstormingContext` or a non-empty, explicitly approved `CodexPlanArtifact` received from the `using-lazyspec` Codex Plan Mode adapter. A standard `BrainstormingContext` must contain the confirmed objective, scope, constraints, success criteria, and selected approach. Its selected approach is a requirements direction, not an approved implementation design. A `CodexPlanArtifact` is valid only with `source: "codex-plan-mode"`, a non-empty `content`, and `approved: true`; it does not need those five fields, fixed sections, or an extra header. If the selected input is missing, incomplete, unapproved, invalid, or lost, do not create or update `requirements.md`; return to the router for the appropriate clarification or standard `brainstorming` path. Never infer or restore either input from disk.
-
-When the input is a `CodexPlanArtifact`, use its complete `content` as the Requirements context. Preserve the original Markdown, line breaks, and long text exactly while passing it through the session; do not summarize, rewrite, normalize, truncate, or require a schema before deriving observable requirements. Plan approval is not Requirements approval. If the plan leaves a material gap, remain in Requirements and ask a targeted clarification question before drafting or advancing.
-
-For an existing `requirements.md`, use the existing document and explicit user feedback. Do not automatically rerun Brainstorming.
+Start directly from the user's request, relevant project facts, and any existing `requirements.md`. User-provided plans are ordinary background material; they do not bypass requirement collection or approve the Requirements document. No separately approved input object or platform-specific planning protocol is required. Respect the host environment's current tool and file-writing restrictions.
 
 Before drafting or revising requirements, read `requirement-prompt.md` and `requirement-templete.md`. Resolve both files relative to the directory containing this `SKILL.md`, never relative to the process working directory or repository root. Resolve `specs/{feature_name}/requirements.md` against `ACTIVE_PROJECT_ROOT`, defined by `using-lazyspec` as the user's project working directory at session start. Never use this Skill's directory, its repository, or a Plugin cache as the project root. If invoked directly and the session working directory is unavailable or ambiguous, ask for the project root before writing. These rules apply unchanged in a Plugin cache and an Agent Skills installation.
+
+## Requirement Collection
+
+Follow approval-policy.md's `How to ask` protocol for every collection, clarification, and completion question. Keep collection in the current conversation; do not create a collection file or another phase approval gate.
+
+For an existing document, collect only additions, material behavior changes, and removals. Confirm a removal's effect before deleting the requirement. Preserve unchanged requirements and their anchors without asking again. For purely editorial revisions, skip this collection workflow and revise only the requested wording under approval-policy.md's materiality and invalidation rules; do not ask a collection-completion question.
+
+1. Inspect the user's request and directly relevant project evidence. Research discoverable facts before asking. Identify the objective, included and excluded scope, observable behavior, binding constraints, risks, and success criteria; clarify missing intent within this Requirements exchange. Assess the initial risk under risk-policy.md.
+2. Propose one candidate requirement at a time. Show only what the requirement is and its concise target behavior. Use plain-language Chinese by default and lead with the user-visible result. Do not show detailed acceptance criteria, formal user stories, requirement IDs, internal fields, or implementation steps in collection questions. Leave architecture, data models, APIs, and other implementation choices to Design unless the user states a binding constraint.
+3. Ask the user to confirm, modify, or reject that candidate, then wait for the actual answer before moving to another requirement. For a new document, every requirement MUST be individually asked and explicitly confirmed before inclusion, even when the initial request or a supplied plan already describes it in detail. Do not batch multiple requirements into one tool call or conversation question, or skip this exchange because the background is complete.
+4. Incorporate explicit modifications into the candidate; a clear replacement supplied by the user settles that behavior. Clarify an ambiguous answer or a new dependent choice before continuing. Exclude rejected requirements. Silence, timeout, default selections, and tool acknowledgments do not confirm a requirement. Update remaining candidates from the answers rather than following a fixed questionnaire, and do not invent speculative requirements to meet a count.
+5. After all candidates are resolved, ask whether the user has additional requirements or wants to finish collection and generate the draft. Wait for explicit confirmation that collection is complete. If the user adds requirements, resume the same one-at-a-time exchange and ask the completion question again when they are resolved.
+6. Only after collection is complete, draft and write the complete `requirements.md` once, within the host's permissions. Do not create or incrementally update it while collection is pending. Derive user stories and EARS criteria only from confirmed behavior. If elaboration introduces a new material behavior, boundary, or choice, return to collection before writing the affected revision and reconfirm completion. Do not present inferred details as user-confirmed decisions.
+
+Keep questions concise and decision-focused. Use meaningful mutually exclusive options when useful, explaining their consequences and marking a recommendation only when justified; use a focused free-text question when choices would be artificial. Match the user's technical depth and briefly explain necessary terms without omitting scope, constraints, risks, or success criteria.
 
 Prefix every numbered acceptance criterion with exactly one HTML anchor on the same line, using `req-<requirement-number>-<criterion-number>` as the unique ID. The numbers MUST match the criterion's requirement and ordinal, every acceptance criterion MUST have an anchor, and each anchor ID MUST occur exactly once in `requirements.md`.
 
@@ -35,7 +46,7 @@ Prefix every numbered acceptance criterion with exactly one HTML anchor on the s
 
 ## Approval
 
-Finish the Requirements draft, present its `审批摘要` and body for review, and request explicit Requirements approval before creating any Design document. Reuse explicit decisions already supplied by the user. Follow approval-policy.md's asking protocol and ask: "审批摘要是否准确覆盖了需求的目标、范围、核心行为与风险？" For any non-approval response, remain in Requirements; apply approval-policy.md's explicit-approval, revision-delta, and invalidation semantics.
+For a new document or material revision, finish the Requirements draft, present its `审批摘要` and body for review, and request explicit Requirements approval before creating any Design document. Confirming individual requirements or finishing collection does not approve the complete document. Reuse collection answers when preparing the review; do not repeat unchanged decisions. Follow approval-policy.md's asking protocol and ask: "审批摘要是否准确覆盖了需求的目标、范围、核心行为与风险？" For any non-approval response, remain in Requirements; apply approval-policy.md's explicit-approval, revision-delta, and invalidation semantics. Purely editorial revisions preserve any still-valid prior document approval under that policy; never infer approval for an unapproved draft.
 
 ## Content Boundaries and Size
 
@@ -47,8 +58,7 @@ Finish the Requirements draft, present its `审批摘要` and body for review, a
 
 **Constraints:**
 
-- The model MUST create a 'specs/{feature_name}/requirements.md' file under the project folder if it doesn't already exist
-- The model MUST generate an initial version of the requirements document based on the user's rough idea WITHOUT asking sequential questions first
+- The model MUST create `specs/{feature_name}/requirements.md` under the project root only after the requirement collection above is complete and file writing is permitted.
 - The model MUST express EARS semantics naturally in Chinese and MUST NOT copy the literal English EARS keywords `WHEN`, `THEN`, or `SHALL` into the generated document.
 - The model MUST format the initial requirements.md document with:
 - A Human-First `审批摘要` before the introduction, followed by a clear introduction section that summarizes the feature
@@ -59,7 +69,7 @@ Finish the Requirements draft, present its `审批摘要` and body for review, a
 - Do not create or draft Design until the current Requirements has explicit approval; never mark an unapproved draft approved
 - The model MUST continue the feedback-revision cycle until explicit approval is received
 - The model SHOULD identify unanswered requirements questions; it MUST NOT suggest speculative expansion by default
-- The model MAY ask targeted questions about specific aspects of the requirements that need clarification
+- The model MUST resolve material requirements choices through the collection exchange before writing them into the document.
 - The model MAY suggest options when the user is unsure about a particular aspect
 - After explicit Requirements approval, the model MAY proceed to Design only when the user's existing request covers further planning; otherwise wait for a request to continue
 

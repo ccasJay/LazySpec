@@ -22,7 +22,7 @@ Resolve every `specs/{feature_name}/...` path against `ACTIVE_PROJECT_ROOT`, the
 
 Before any discussion, inspect the target feature under `ACTIVE_PROJECT_ROOT`:
 
-1. If `specs/{feature_name}/requirements.md` exists, stop. Report in Chinese that this feature already has a Spec and must use the normal LazySpec chain (`brainstorming` / `writing-requirement` and onward); do not create or modify a `plan.md`.
+1. If `specs/{feature_name}/requirements.md` exists, stop. Report in Chinese that this feature already has a Spec and must use the normal LazySpec chain (`writing-requirement` and onward); do not create or modify a `plan.md`.
 2. If `specs/{feature_name}/plan.md` exists, inspect it and the current request. On an explicit execution request, resume the authorized tasks and missing/stale Feature Verification after confirming applicable plan approval from the conversation; never infer approval from checkboxes. On a verification-only request, run and report checks under delivery-loop.md without implementation repairs. For a status question, report read-only. Otherwise ask whether to resume or revise; never silently overwrite the plan.
 3. Only when neither file exists, proceed to discussion.
 

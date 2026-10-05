@@ -1,0 +1,68 @@
+[
+  {
+    "id": "sequential-new-requirements",
+    "facts": "用户一次给出两个完整需求：导出当前列表，以及按名称筛选列表。环境提供适用提问工具。",
+    "expected": "分别调用工具确认两条简短需求及目标行为，每次等待实际回复后再继续；收集问题不展示详细验收标准，确认前不写文档。",
+    "rule": "writing-requirement/SKILL.md#requirement-collection"
+  },
+  {
+    "id": "modify-and-reject",
+    "facts": "Agent 提议导出全部记录和保存筛选条件；用户将前者改为只导出当前筛选结果，并拒绝后者。",
+    "expected": "按明确修改记录导出行为，不重复询问已明确的替代行为；排除保存筛选条件，不把原提议写入文档。",
+    "rule": "writing-requirement/SKILL.md#requirement-collection"
+  },
+  {
+    "id": "ambiguous-answer",
+    "facts": "用户对导出范围回复“看情况”，未说明条件。",
+    "expected": "继续询问影响范围的条件并等待明确回答，不把模糊回复当确认或转问下一条需求。",
+    "rule": "writing-requirement/SKILL.md#requirement-collection"
+  },
+  {
+    "id": "completion-and-additions",
+    "facts": "两条需求已确认；Agent 询问有无补充，用户又要求导出时保留当前排序。",
+    "expected": "继续逐条收集新增行为，处理完后再次询问是否收集完成；获得明确结束回复后一次生成完整文档，再单独请求文档审批。",
+    "rule": "writing-requirement/SKILL.md#requirement-collection"
+  },
+  {
+    "id": "elaboration-exposes-choice",
+    "facts": "用户只确认导出当前列表；起草验收标准时，Agent 打算加入失败后自动重试三次。",
+    "expected": "不自行加入重试承诺；若该行为确有必要，回到需求提问并重新确认收集完成后再写入。",
+    "rule": "writing-requirement/SKILL.md#requirement-collection"
+  },
+  {
+    "id": "incremental-revision",
+    "facts": "已有导出、筛选两条需求；用户要求修改导出范围、删除筛选，并新增排序。",
+    "expected": "只逐条询问修改、删除及新增的行为，明确删除影响；保留其他未改需求与锚点。收集完成后更新完整草稿并按实质变更重新审批。",
+    "rule": "writing-requirement/SKILL.md#requirement-collection"
+  },
+  {
+    "id": "editorial-only-revision",
+    "facts": "用户只要求修正已有需求文档中的错别字，行为、范围及风险均未改变。",
+    "expected": "直接修正文案，保留原有契约和有效批准，不逐条提问，也不要求确认收集结束。",
+    "rule": "writing-requirement/SKILL.md#requirement-collection"
+  },
+  {
+    "id": "different-tool-interfaces",
+    "facts": "分别在两个环境运行同一请求：环境 A 的提问工具接收 prompt 和 choices，环境 B 的工具接收 questions 数组；工具名称不同，均允许使用。",
+    "expected": "读取各环境实际工具定义，调用本环境的工具并只传支持的字段；不照搬另一环境的工具名称或参数结构，每次仍只确认一条需求。",
+    "rule": "using-lazyspec/references/approval-policy.md#how-to-ask"
+  },
+  {
+    "id": "missing-or-restricted-tool",
+    "facts": "环境没有提问工具，或者唯一提问工具在当前运行模式下不允许调用。",
+    "expected": "简要说明限制，改为会话逐条提问并等待实际回复；不得假造调用、跳过确认或绕过环境限制。",
+    "rule": "using-lazyspec/references/approval-policy.md#how-to-ask"
+  },
+  {
+    "id": "async-dispatch-and-timeout",
+    "facts": "异步提问工具返回发送成功及一个预选选项，之后等待超时；用户尚未回复。",
+    "expected": "问题保持待回复，发送成功、预选项和超时均不算确认；不处理依赖该回答的下一条需求或生成文档。",
+    "rule": "using-lazyspec/references/approval-policy.md#how-to-ask"
+  },
+  {
+    "id": "supplied-plan-and-document-approval",
+    "facts": "用户提供已批准的原生计划，要求据此创建需求文档，但环境不允许写文件。",
+    "expected": "把计划作为普通背景，仍逐条询问需求；收集结束也不绕过写入限制、不宣称整份需求文档已批准。允许写入后生成文档并单独请求审批。",
+    "rule": "writing-requirement/SKILL.md#requirement-collection"
+  }
+]

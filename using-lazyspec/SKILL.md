@@ -14,7 +14,6 @@ Load only resources required by the selected route.
 
 | Route | Required resources |
 |---|---|
-| brainstorming | risk-policy, approval-policy |
 | requirements | risk-policy, approval-policy, doc-policy |
 | design | risk-policy, approval-policy, doc-policy |
 | tasks | risk-policy, approval-policy, doc-policy, delivery-loop |
@@ -23,7 +22,6 @@ Load only resources required by the selected route.
 | orchestration | risk-policy, approval-policy, delivery-loop |
 | memory-recall | memory-recall |
 | memory-distill | approval-policy |
-| codex-plan-adapter | codex-plan-mode |
 
 Rules:
 - Load the routed Skill after selecting the route.
@@ -32,18 +30,14 @@ Rules:
 - A routed Skill may load its own prompt/template/resources.
 - Resolve every reference from this Skill's `references/` directory; if a resource is unavailable, report the missing resource rather than inventing a policy.
 
-[approval-policy.md](references/approval-policy.md) is the single source of approval semantics (explicit approval, materiality, invalidation, the Human-First `审批摘要` contract, and the approval-asking protocol); [risk-policy.md](references/risk-policy.md) defines risk classification and verification depth; [delivery-loop.md](references/delivery-loop.md) defines shared Feature Verification, repair, and learning candidates; `executing-task` owns normal task execution; [doc-policy.md](references/doc-policy.md) defines minimum-sufficient documentation; [memory-recall.md](references/memory-recall.md) and [codex-plan-mode.md](references/codex-plan-mode.md) are loaded only by their own routes above.
+[approval-policy.md](references/approval-policy.md) is the single source of approval semantics (explicit approval, materiality, invalidation, the Human-First `审批摘要` contract, and the shared user-question protocol); [risk-policy.md](references/risk-policy.md) defines risk classification and verification depth; [delivery-loop.md](references/delivery-loop.md) defines shared Feature Verification, repair, and learning candidates; `executing-task` owns normal task execution; [doc-policy.md](references/doc-policy.md) defines minimum-sufficient documentation; [memory-recall.md](references/memory-recall.md) is loaded only by its own route above.
 
 ## Approval Contract
 
 The approval contract for Requirements and Design documents — the Chinese `审批摘要` as the user-facing approval object, materiality classification, summary/body consistency, invalidation and revision deltas, and legacy migration — is defined exclusively in approval-policy.md. Routing and phase scoping keep only these rules:
 
-- Normal Specs approve Requirements, Design, and Tasks separately in that order; fast approves its plan; Brainstorming keeps its Context approval; Memory approves its exact write preview; multi-Spec orchestration approves its complete `orchestration.md`.
+- Normal Specs approve Requirements, Design, and Tasks separately in that order; fast approves its plan; Memory approves its exact write preview; multi-Spec orchestration approves its complete `orchestration.md`.
 - Every downstream phase MUST treat an approved `审批摘要` as the upper-level material contract; use approval-policy.md and the routed Skill to determine detail-reading depth.
-
-## Brainstorming Human-First Conversation Contract
-
-The user-facing Brainstorming conversation follows the Human-First Interaction rules defined in `brainstorming/SKILL.md`. Apply them only to that conversation; they do not create a new artifact, change the internal `BrainstormingContext` schema, or alter Requirements, Design, Tasks, fast mode, or Memory behavior.
 
 ## Routing Protocol
 Use this Skill as the single entry point. Route by logical Skill name and read only that Skill's required resources; do not copy a phase's detailed body here.
@@ -52,13 +46,12 @@ Before inspecting or writing any Spec artifact, bind `ACTIVE_PROJECT_ROOT` to th
 
 Resolve every routed Skill with this platform-neutral protocol:
 
-1. Prefer the current environment's registered Skill invocation mechanism. Use the logical names `brainstorming`, `writing-requirement`, `writing-design`, `writing-task`, `executing-task`, `distill-spec-memory`, `fast`, and `orchestrating-specs`; a Claude Code Plugin may expose them as `lazyspec:<logical-name>`, while an Agent Skills installation may expose the unnamespaced logical name.
+1. Prefer the current environment's registered Skill invocation mechanism. Use the logical names `writing-requirement`, `writing-design`, `writing-task`, `executing-task`, `distill-spec-memory`, `fast`, and `orchestrating-specs`; a Claude Code Plugin may expose them as `lazyspec:<logical-name>`, while an Agent Skills installation may expose the unnamespaced logical name.
 2. If no registered Skill invocation mechanism is available, or the logical Skill is not registered, read its sibling `SKILL.md` using the fallback mapping below. Resolve the path relative to this `using-lazyspec/SKILL.md`, never relative to the process working directory or repository root.
 3. After resolving the target, follow that Skill's instructions and resolve its supporting files by the target Skill's own resource rules.
 
 | Logical name | Registered Claude Code name | Relative fallback |
 |---|---|---|
-| `brainstorming` | `lazyspec:brainstorming` | `../brainstorming/SKILL.md` |
 | `writing-requirement` | `lazyspec:writing-requirement` | `../writing-requirement/SKILL.md` |
 | `writing-design` | `lazyspec:writing-design` | `../writing-design/SKILL.md` |
 | `writing-task` | `lazyspec:writing-task` | `../writing-task/SKILL.md` |
@@ -92,27 +85,11 @@ For every ordinary LazySpec request, after binding `ACTIVE_PROJECT_ROOT` and bef
 
 Inspect the requested feature's `specs/{feature_name}/requirements.md`, `design.md`, and `tasks.md` under `ACTIVE_PROJECT_ROOT`, the user's request, and explicit approvals available in the current conversation. Do not infer approval from file existence.
 
-### Codex Plan Mode 适配
-
-Codex Plan Mode 只作为新功能创建前的 Brainstorming 输入来源，不是新的 LazySpec 阶段；完整适配协议见 [codex-plan-mode.md](references/codex-plan-mode.md)。路由决策只保留以下规则：
-
-- 运行时明确报告 Codex Plan Mode 且计划已批准时，有效产物直接路由到 `writing-requirement`，不得调用标准 `brainstorming`；计划批准前不得调用 `writing-requirement`。
-- 已知处于非 Codex 环境或 Codex 非 Plan Mode 时，继续走标准 `brainstorming`；平台或模式无法确认时不得自动选择任一分支，必须停留并要求用户明确切换到标准 Brainstorming 或补充有效的 Codex Plan Mode 计划。
-- 当已有 `requirements.md` 且用户未明确要求重新规划时，继续直接进入 `writing-requirement`，不得因适配自动修改既有 Spec 文件。
-
 ### Phase Chain
 
-1. For the first creation of `requirements.md`, when that file does not exist:
-   - Apply the Codex Plan Mode adapter when the runtime explicitly reports Codex Plan Mode; route an approved non-empty plan directly to `writing-requirement` without invoking standard `brainstorming`.
-   - Otherwise, when the runtime is known to be non-Codex or not in Plan Mode, route to `brainstorming`.
-   - Do not route to `writing-requirement` until the selected input has been explicitly approved. Standard Brainstorming still requires a session context containing objective, scope, constraints, success criteria, and selected approach.
-   - When the runtime platform or mode is unknown, stop and require an explicit route choice instead of guessing.
-   - After the approved context is available, route to `writing-requirement`.
+1. For the first creation of `requirements.md`, route directly to `writing-requirement`. That Skill owns the one-at-a-time collection exchange and writes the complete draft only after the user confirms collection is complete. No separate context approval or platform-specific plan adapter is required. Supplied plans are ordinary background and cannot bypass requirement collection. Respect the host environment's current tool and file-writing restrictions.
 
-2. For a revision of an existing `requirements.md`:
-   - Route directly to `writing-requirement` by default.
-   - Route to `brainstorming` first only when the user explicitly requests it.
-   - Brainstorming updates only conversation context; do not modify a Spec artifact unless separately requested.
+2. For a revision of an existing `requirements.md`, route directly to `writing-requirement`, which collects only additions, material changes, and removals while retaining unchanged requirements. A request for discussion alone stays in the conversation and does not authorize writing a Spec artifact.
 
 3. Route to `writing-design` only after explicit approval of the current Requirements, and to `writing-task` only after explicit approval of the current Design. Create one normal-phase document at a time and request its approval before advancing, at every risk level. Approval of a prior phase never approves the next one.
 
@@ -124,14 +101,12 @@ The phase-review edges below apply to every normal Spec. Each review must receiv
 
 ```mermaid
 stateDiagram-v2
-  [*] --> Brainstorming : Initial Creation (No requirements.md)
+  [*] --> Requirements : Initial Creation (No requirements.md)
 
-  Brainstorming : Brainstorming (Session Only)
-  Requirements : Write Requirements
+  Requirements : Collect Requirements then Write Complete Draft
   Design : Write Design
   Tasks : Write Tasks
 
-  Brainstorming --> Requirements : Explicit Approval (Approved Context)
   Requirements --> ReviewReq : Complete Requirements
   ReviewReq --> Requirements : Feedback/Changes Requested
   ReviewReq --> Design : Explicit Approval

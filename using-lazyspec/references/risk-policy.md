@@ -18,7 +18,7 @@ Use the highest applicable level, not a numerical score:
 | medium | Cross-component behavior, public interfaces, or compatible data changes with bounded impact | The same three phase approvals | Also integration, compatibility, and failure paths |
 | high | Permissions, sensitive data, destructive migrations, irreversible effects, or broad impact | The same three phase approvals; confirm unauthorized critical operations and required human acceptance | Also relevant security, recovery, and impact-boundary checks |
 
-Brainstorming proposes a level; Design re-evaluates it. Keep the existing BrainstormingContext schema: carry the initial assessment in constraints. A native planning input without a risk assessment is assessed when Requirements starts. Default to medium unless low is justified; clarify uncertain high-impact consequences before approving a plan. Do not add irrelevant tests merely to satisfy a level.
+Requirements assesses the initial level during requirement collection; Design re-evaluates it. Default to medium unless low is justified; clarify uncertain high-impact consequences before approving the document. Do not add irrelevant tests merely to satisfy a level.
 
 Record the level, reasons, and named critical operations in Requirements and Design's `风险与待确认`; Design records any assessment change. Tasks links to this assessment instead of duplicating it. Fast records it in Constraints and Approach. Before execution, reconcile discrepancies using the highest applicable level.
 

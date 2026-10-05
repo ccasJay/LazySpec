@@ -139,10 +139,8 @@ class HumanFirstApprovalContractTests(unittest.TestCase):
             "Excluding the Human-First `审批摘要`", DESIGN_SKILL
         )
 
-    def test_design_collects_its_own_decisions_after_brainstorming(self):
-        brainstorming = (ROOT / "brainstorming" / "SKILL.md").read_text()
-        self.assertIn("Collect decisions about observable outcomes here", brainstorming)
-        self.assertIn("`selectedApproach` names the requirements direction", brainstorming)
+    def test_design_collects_its_own_decisions_after_requirements(self):
+        self.assertIn("Do not treat requirement collection or Requirements approval", DESIGN_SKILL)
         self.assertIn("## Design Decision Collection", DESIGN_SKILL)
         self.assertIn("hold a separate Design-stage user-question exchange", DESIGN_SKILL)
         self.assertIn("ask at least one design-focused question", DESIGN_SKILL)
@@ -182,7 +180,7 @@ class HumanFirstApprovalContractTests(unittest.TestCase):
 
     def test_policy_asking_adapts_to_available_tool(self):
         self.assertIn("Whenever a LazySpec workflow needs an answer", APPROVAL_POLICY)
-        self.assertIn("user-question tool exposed by the current agent environment", APPROVAL_POLICY)
+        self.assertIn("tool definitions exposed by the current agent environment", APPROVAL_POLICY)
         self.assertIn("Do not require a particular tool name", APPROVAL_POLICY)
         self.assertIn("only fields supported by the selected tool", APPROVAL_POLICY)
         self.assertIn("one decision", APPROVAL_POLICY)

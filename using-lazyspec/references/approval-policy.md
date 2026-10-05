@@ -1,6 +1,6 @@
 # Approval policy
 
-Single source of truth for approval semantics across all LazySpec gates: Requirements/Design/Tasks review, fast plan approval, Brainstorming context approval, multi-Spec orchestration review, and Memory write previews. It defines what approval means, when to ask, and how to ask; risk levels and verification depth live in [risk-policy.md](risk-policy.md). Resolve this reference from the installed `using-lazyspec` skill, never the user's project directory.
+Single source of truth for approval semantics across all LazySpec gates: Requirements/Design/Tasks review, fast plan approval, multi-Spec orchestration review, and Memory write previews. It also owns the shared asking protocol for requirement collection, design decisions, and approvals. Risk levels and verification depth live in [risk-policy.md](risk-policy.md). Resolve this reference from the installed `using-lazyspec` skill, never the user's project directory.
 
 ## Explicit approval semantics
 
@@ -19,9 +19,9 @@ Single source of truth for approval semantics across all LazySpec gates: Require
 ## Approval timing
 
 - For every normal Spec, create and review one phase at a time: Requirements → explicit Requirements approval → Design → explicit Design approval → Tasks → explicit Tasks approval. Never create a downstream phase document before the current phase is explicitly approved. Risk level and decision impact do not change this order or the three approval gates.
-- Before creating a new Design, collect Design-stage input through the separate question exchange in `writing-design`, after Requirements approval. Brainstorming approval covers the requirements direction only; answering a Design question does not approve the Design draft.
+- Before creating a new Design, collect Design-stage input through the separate question exchange in `writing-design`, after Requirements approval. Requirement collection confirms observable behavior; answering a Design question does not approve the Design draft.
 - Resolve unanswered user decisions within the current phase. Do not advance past an unapproved phase or an unauthorized critical operation. Reuse explicit decisions and authorization already available in the conversation without asking twice for the same phase object.
-- Prior approval of a BrainstormingContext or CodexPlanArtifact remains input approval, not Requirements approval. Approval of one Spec phase never approves a later phase.
+- Confirming an individual requirement or completing collection does not approve the complete Requirements document. Approval of one Spec phase never approves a later phase.
 - Confirm only concrete critical operations not already explicitly authorized at their current scope. General plan approval is not permission for an unnamed destructive operation. Human acceptance is required only when explicitly requested, mandated by binding project rules, or necessary to establish an outcome unavailable to automated evidence; when required, it covers the current implementation, not an old result.
 - Fast retains one plan and one plan approval followed by continuous execution, at every risk level. A material plan change requires approval of the complete revised plan with its delta.
 - Multi-Spec orchestration retains one approval gate: explicit approval of the complete `orchestration.md` before any participating Spec's execution starts. A material change — participating Spec set, joint objective, dependency/order, parallelism, branch strategy, coordination constraints, or integration verification — requires approval of the complete revised orchestration with its delta. Orchestration approval never approves new Spec content; participating Specs remain governed by their own approvals.
@@ -31,8 +31,9 @@ Single source of truth for approval semantics across all LazySpec gates: Require
 
 Whenever a LazySpec workflow needs an answer from the user:
 
-1. Discover and use an applicable user-question tool exposed by the current agent environment when available and permitted. Do not require a particular tool name or copy another agent's input schema. Supply only fields supported by the selected tool.
-2. If no applicable tool is available, ask the user directly in the conversation and stop while awaiting the answer.
+1. Inspect the tool definitions exposed by the current agent environment, using its capability-discovery mechanism if needed and available. Select an applicable user-question tool by its documented ability to collect the user's answer, its current mode restrictions, and permission to use it. Do not require a particular tool name, infer capability from a name alone, or copy another agent's input schema. Supply only fields supported by the selected tool and adapt choices and free-form handling to its actual interface. If an applicable tool is available and permitted, it MUST be called; a conversation question cannot substitute for that call.
+2. If no applicable tool is available or permitted, explain the limitation briefly, ask the user directly in the conversation, and stop while awaiting the answer. An unusable interface or documented tool unavailability may use this fallback; do not invent a tool call or silently skip the question.
+3. Wait for the actual user answer before dependent work. For asynchronous tools, successful dispatch or a tool acknowledgment is not an answer; keep the question pending until the reply arrives. Silence, timeout, or a preselected option does not resolve the question. Clarify ambiguous replies under the current phase's rules.
 
 At a necessary approval gate, ask the phase's approval question as one decision. When the tool supports choices, offer mutually exclusive `Approve` and `Request changes` meanings as a single-choice question; adapt labels, descriptions, and free-form handling to its actual interface. An explicit affirmative free-form reply also counts under the approval semantics above.
 
