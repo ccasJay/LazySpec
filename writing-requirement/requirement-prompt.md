@@ -22,10 +22,11 @@ For a new document or material revision, complete SKILL.md's Requirement Collect
 3. Prefix every numbered acceptance criterion with exactly one HTML anchor on the same line, using `req-<requirement-number>-<criterion-number>` as the unique ID.
 4. Elaborate only confirmed behavior. A supplied plan is ordinary background, not confirmation of individual requirements or approval of the document. If drafting exposes a new material behavior, boundary, or choice, return to SKILL.md's collection exchange before writing and reconfirm collection completion.
 5. Include edge cases, user-experience constraints, technical constraints, or success criteria only when they create a distinct observable and verifiable outcome.
+6. Use the shared document body: a short introduction, numbered requirements, and a standalone risk section. Do not add an approval summary or repeat the objective and scope in separate summaries.
 ```
 
 ## Usage Notes
 
 - Always read `requirement-templete.md` before generating requirements.
-- Ensure all acceptance criteria have unique HTML anchors, and keep anchors out of `审批摘要`.
+- Ensure all acceptance criteria have unique HTML anchors.
 - Write all generated requirements prose in Chinese; translate EARS semantics naturally instead of copying English keywords.

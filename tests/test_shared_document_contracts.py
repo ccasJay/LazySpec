@@ -1,3 +1,6 @@
+"""Static document/Skill contracts; these do not simulate Agent behavior."""
+
+import json
 import re
 import unittest
 from pathlib import Path
@@ -20,30 +23,27 @@ DESIGN_PROMPT = (ROOT / "writing-design" / "design-prompt.md").read_text()
 DESIGN_TEMPLATE = (ROOT / "writing-design" / "design-templete.md").read_text()
 
 
-class HumanFirstApprovalContractTests(unittest.TestCase):
-    def test_policy_defines_summary_authority_and_materiality(self):
+class SharedDocumentContractTests(unittest.TestCase):
+    def test_policy_defines_complete_file_authority_and_materiality(self):
         for required in (
-            "## Human-First approval summary",
-            "user-facing approval contract",
-            "Agent-facing elaboration",
+            "Requirements, Design, and Tasks each use the complete saved phase document as their approval object",
+            "Users and Agents share one body",
             "public interfaces or data changes",
             "security or privacy",
             "When uncertain, classify a change as material",
-            "missing material item",
-            "summary/body conflict blocks approval",
+            "contains no conflicting contract items",
+            "no unresolved material user decision",
         ):
             with self.subTest(required=required):
                 self.assertIn(required, APPROVAL_POLICY)
 
-    def test_policy_defines_summary_size_and_revision_behavior(self):
+    def test_policy_preserves_revision_and_evidence_boundaries(self):
         for required in (
-            "cognitive complexity instead of enforcing a fixed item or character count",
-            "complete one-screen review",
-            "recommend splitting the Spec",
-            "explicitly chooses to keep one Spec",
             "A material change invalidates the prior approval",
-            "non-material body-only refinement",
+            "non-material refinement",
             "additions, changes, removals, and risk changes",
+            "equally strong verification methods",
+            "not unrelated completed work",
         ):
             with self.subTest(required=required):
                 self.assertIn(required, APPROVAL_POLICY)
@@ -59,85 +59,100 @@ class HumanFirstApprovalContractTests(unittest.TestCase):
         ):
             with self.subTest(required=required):
                 self.assertIn(required, APPROVAL_POLICY)
-        self.assertIn("bounded Human-First `审批摘要` projection", DOC_POLICY)
+        self.assertIn("Record each decision, rationale, constraint, or procedure once", DOC_POLICY)
         self.assertIn("Risk level and decision impact do not change this order", APPROVAL_POLICY)
         self.assertNotIn("combined approval object", APPROVAL_POLICY)
 
-    def test_legacy_specs_migrate_only_when_revised(self):
-        self.assertIn("Do not bulk-migrate existing Specs", APPROVAL_POLICY)
-        self.assertIn("next created or revised", APPROVAL_POLICY)
-        self.assertIn("approved legacy Requirements", APPROVAL_POLICY)
+    def test_legacy_specs_remain_readable_without_format_migration(self):
+        self.assertIn("Do not migrate existing Specs solely to adopt this format", APPROVAL_POLICY)
+        self.assertIn("without rewriting or adding a summary", APPROVAL_POLICY)
+        self.assertIn("not a separate higher-authority contract", APPROVAL_POLICY)
+        self.assertIn("If its sections conflict, resolve the affected contract", APPROVAL_POLICY)
+        self.assertIn("retain unchanged behavior, anchors, TODO text, and valid evidence", APPROVAL_POLICY)
         self.assertIn("legacy Requirements document", REQUIREMENT_SKILL)
         self.assertIn("legacy Design document", DESIGN_SKILL)
 
-    def test_requirements_template_starts_with_human_review_summary(self):
-        for heading in (
-            "## 审批摘要",
-            "### 目标",
-            "### 范围",
-            "### 核心行为",
-            "### 风险与待确认",
-        ):
-            with self.subTest(heading=heading):
-                self.assertIn(heading, REQUIREMENT_TEMPLATE)
-        self.assertLess(
-            REQUIREMENT_TEMPLATE.index("## 审批摘要"),
-            REQUIREMENT_TEMPLATE.index("## 引言"),
+    def test_requirements_template_has_one_body_with_stories_anchors_and_risk(self):
+        body = REQUIREMENT_TEMPLATE.split("```markdown\n", 1)[1].split("```", 1)[0]
+        self.assertEqual(
+            ["引言", "需求", "风险与待确认"],
+            re.findall(r"^## (.+)$", body, re.M),
         )
-        self.assertLess(
-            REQUIREMENT_TEMPLATE.index("## 引言"),
-            REQUIREMENT_TEMPLATE.index('<a id="req-1-1"></a>'),
-        )
-        self.assertIn(
-            "Keep HTML anchors and traceability syntax out of `审批摘要`",
-            REQUIREMENT_TEMPLATE,
-        )
+        requirements = re.findall(r"^### 需求 (\d+)：[^\n]*\n(.*?)(?=^### |^## |\Z)", body, re.M | re.S)
+        self.assertEqual(2, len(requirements))
+        all_anchors = []
+        for number, section in requirements:
+            with self.subTest(requirement=number):
+                self.assertEqual(1, section.count("**用户故事：**"))
+                self.assertIn("#### 验收标准", section)
+                criteria = re.findall(r'^(\d+)\. <a id="([^"]+)"></a> .+$', section, re.M)
+                self.assertTrue(criteria)
+                for ordinal, anchor in criteria:
+                    self.assertEqual(f"req-{number}-{ordinal}", anchor)
+                    all_anchors.append(anchor)
+        self.assertEqual(len(all_anchors), len(set(all_anchors)))
+        self.assertNotIn("审批摘要", body)
 
-    def test_requirements_skill_enforces_complete_material_coverage(self):
+    def test_risk_is_standalone_and_task_link_remains_valid(self):
+        task_template = (ROOT / "writing-task/task-templete.md").read_text()
+        for template in (REQUIREMENT_TEMPLATE, DESIGN_TEMPLATE):
+            body = template.split("```markdown\n", 1)[1].split("```", 1)[0]
+            with self.subTest(template=template[:40]):
+                self.assertEqual(1, len(re.findall(r"^## 风险与待确认$", body, re.M)))
+                for field in ("风险等级", "理由", "关键操作", "风险", "待确认"):
+                    self.assertIn(f"{field}：", body)
+        self.assertIn("(./design.md#风险与待确认)", task_template)
+
+    def test_active_resources_do_not_require_the_retired_two_layer_contract(self):
+        manifest = json.loads((ROOT / ".claude-plugin/plugin.json").read_text())
+        paths = [ROOT / "README.md"]
+        for directory in manifest["skills"]:
+            paths.extend((ROOT / directory).rglob("*.md"))
+        for path in paths:
+            text = path.read_text()
+            for retired in ("Human-First", "summary/body", "one-screen", "upper-level material contract", "100–180", "summary-contract"):
+                with self.subTest(path=path, retired=retired):
+                    self.assertNotIn(retired, text)
+
+    def test_requirements_skill_enforces_shared_material_contract(self):
         for required in (
-            "Human-First `审批摘要`",
-            "user-facing approval contract",
-            "every materially distinct acceptance outcome",
-            "one unambiguous group",
-            "HTML anchors and traceability",
+            "one body for user review and Agent execution",
+            "confirmed observable outcomes",
+            "user stories and EARS criteria",
             "Resolve open requirements questions",
-            "conversation delta",
+            "standalone `## 风险与待确认`",
         ):
             with self.subTest(required=required):
-                self.assertTrue(
-                    required in REQUIREMENT_SKILL or required in APPROVAL_POLICY
-                )
+                self.assertIn(required, REQUIREMENT_SKILL)
+        self.assertIn("Do not add an approval summary", REQUIREMENT_PROMPT)
 
-    def test_design_template_starts_with_decision_summary(self):
-        for required in (
-            "## 审批摘要",
-            "### 方案",
-            "### 关键决策",
-            "| 决策 | 选择与理由 | 影响 |",
-            "### 风险与待确认",
-        ):
-            with self.subTest(required=required):
-                self.assertIn(required, DESIGN_TEMPLATE)
-        self.assertLess(
-            DESIGN_TEMPLATE.index("## 审批摘要"),
-            DESIGN_TEMPLATE.index("- Overview"),
+    def test_design_template_has_one_decision_section_and_conditional_details(self):
+        body = DESIGN_TEMPLATE.split("```markdown\n", 1)[1].split("```", 1)[0]
+        self.assertEqual(
+            ["Overview", "Key Design Decisions", "风险与待确认", "Testing Strategy"],
+            re.findall(r"^## (.+)$", body, re.M),
         )
-        self.assertIn("Reuse each summary decision", DESIGN_SKILL)
+        self.assertNotIn("审批摘要", body)
+        for section in ("Architecture", "Components and Interfaces", "Data Models", "Error Handling", "Research Findings"):
+            with self.subTest(section=section):
+                self.assertNotIn(f"## {section}", body)
+                self.assertIn(f"- {section}", DESIGN_TEMPLATE)
+        self.assertIn("Omit an inapplicable section entirely", DESIGN_TEMPLATE)
 
-    def test_design_skill_separates_material_and_internal_details(self):
+    def test_design_skill_records_material_decisions_once_without_padding(self):
         for required in (
             "public behavior or interfaces",
             "compatibility or migration",
             "external or irreversible effects",
-            "Keep internal file layout, helpers, test organization",
-            "exact short title",
-            "summary/body conflict blocks approval",
+            "Record each key choice, rationale, and impact once",
+            "Reference those decisions from technical sections",
+            "complete design document within 180 lines",
+            "no minimum length",
+            "retain details needed to avoid implementation ambiguity",
         ):
             with self.subTest(required=required):
                 self.assertIn(required, DESIGN_SKILL)
-        self.assertIn(
-            "Excluding the Human-First `审批摘要`", DESIGN_SKILL
-        )
+        self.assertIn("Tasks owns the concrete Planned Checks and running evidence", DESIGN_PROMPT)
 
     def test_design_collects_its_own_decisions_after_requirements(self):
         self.assertIn("Do not treat requirement collection or Requirements approval", DESIGN_SKILL)
@@ -149,7 +164,7 @@ class HumanFirstApprovalContractTests(unittest.TestCase):
 
     def test_design_questions_resolve_user_choices_before_drafting(self):
         decision_section = DESIGN_SKILL.split("## Design Decision Collection", 1)[1].split(
-            "## Human-First Review Summary", 1
+            "## Document Contract", 1
         )[0]
         for expected in (
             "approved Requirements, relevant code, and explicit prior decisions",
@@ -195,13 +210,13 @@ class HumanFirstApprovalContractTests(unittest.TestCase):
                     0, len(re.findall(r"```json\n", text))
                 )
 
-    def test_approval_questions_target_the_summary(self):
+    def test_approval_questions_target_the_current_file(self):
         self.assertIn(
-            "审批摘要是否准确覆盖了需求的目标、范围、核心行为与风险？",
+            "请审阅需求文件；是否批准其中的目标、范围、验收标准与风险？",
             REQUIREMENT_SKILL,
         )
         self.assertIn(
-            "审批摘要是否准确覆盖了设计方案、关键决策及风险？", DESIGN_SKILL
+            "请审阅设计文件；是否批准其中的方案、关键决策、风险与测试策略？", DESIGN_SKILL
         )
         for text in (REQUIREMENT_SKILL, DESIGN_SKILL):
             with self.subTest(document=text[:40]):
@@ -213,7 +228,7 @@ class HumanFirstApprovalContractTests(unittest.TestCase):
         self.assertNotIn("审批摘要", task_skill)
         self.assertNotIn("审批摘要", task_template)
         self.assertIn(
-            "Tasks keeps the complete task document as its approval object", ROUTER
+            "Requirements, Design, and Tasks each use the complete saved phase document as their approval object", ROUTER
         )
 
 

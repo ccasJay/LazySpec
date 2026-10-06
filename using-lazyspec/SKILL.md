@@ -30,14 +30,14 @@ Rules:
 - A routed Skill may load its own prompt/template/resources.
 - Resolve every reference from this Skill's `references/` directory; if a resource is unavailable, report the missing resource rather than inventing a policy.
 
-[approval-policy.md](references/approval-policy.md) is the single source of approval semantics (explicit approval, materiality, invalidation, the Human-First `审批摘要` contract, and the shared user-question protocol); [risk-policy.md](references/risk-policy.md) defines risk classification and verification depth; [delivery-loop.md](references/delivery-loop.md) defines shared Feature Verification, repair, and learning candidates; `executing-task` owns normal task execution; [doc-policy.md](references/doc-policy.md) defines minimum-sufficient documentation; [memory-recall.md](references/memory-recall.md) is loaded only by its own route above.
+[approval-policy.md](references/approval-policy.md) is the single source of approval semantics (explicit approval, materiality, invalidation, complete-file review, and the shared user-question protocol); [risk-policy.md](references/risk-policy.md) defines risk classification and verification depth; [delivery-loop.md](references/delivery-loop.md) defines shared Feature Verification, repair, and learning candidates; `executing-task` owns normal task execution; [doc-policy.md](references/doc-policy.md) defines minimum-sufficient documentation; [memory-recall.md](references/memory-recall.md) is loaded only by its own route above.
 
 ## Approval Contract
 
-The approval contract for Requirements and Design documents — the Chinese `审批摘要` as the user-facing approval object, materiality classification, summary/body consistency, invalidation and revision deltas, and legacy migration — is defined exclusively in approval-policy.md. Routing and phase scoping keep only these rules:
+The complete-file approval contract, materiality classification, invalidation, revision deltas, and legacy compatibility are defined exclusively in approval-policy.md. Routing and phase scoping keep only these rules:
 
 - Normal Specs approve Requirements, Design, and Tasks separately in that order; fast approves its plan; Memory approves its exact write preview; multi-Spec orchestration approves its complete `orchestration.md`.
-- Every downstream phase MUST treat an approved `审批摘要` as the upper-level material contract; use approval-policy.md and the routed Skill to determine detail-reading depth.
+- Every downstream phase MUST use the approved upstream document's material content as its contract; use approval-policy.md and the routed Skill to determine detail-reading depth.
 
 ## Routing Protocol
 Use this Skill as the single entry point. Route by logical Skill name and read only that Skill's required resources; do not copy a phase's detailed body here.
@@ -154,5 +154,5 @@ stateDiagram-v2
 ## Approval Protocol
 Apply approval-policy.md as the single source of approval semantics: create and approve Requirements, Design, and Tasks one at a time at every risk level, using approval-policy.md's asking protocol at each gate. Routing adds only these rules:
 
-- Save the current phase document and point the user to its file for approval under approval-policy.md's File-backed review rule. Internally check the Human-First `审批摘要` against the Requirements or Design body; Tasks keeps the complete saved task document as its approval object. Do not repeat the draft in the conversation.
+- Save and internally check the complete current phase document, then point the user to its file for approval under approval-policy.md's File-backed review rule. Requirements, Design, and Tasks each use the complete saved phase document as their approval object. Do not repeat the draft in the conversation.
 - Never generate Design before Requirements approval or Tasks before Design approval; risk level and decision impact do not alter these gates.

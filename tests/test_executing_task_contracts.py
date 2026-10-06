@@ -24,7 +24,9 @@ class ExecutingTaskContractTests(unittest.TestCase):
     def test_progressive_context_preserves_approval_and_full_coverage(self):
         for rule in (
             "Require explicit approval of the current Requirements, Design, and Tasks",
-            "`审批摘要`",
+            "Read complete Requirements, Design's `Overview`, `Key Design Decisions`, and `风险与待确认`",
+            "without requiring every Design technical section up front",
+            "without rewriting them or giving a summary separate authority",
             "complete `tasks.md` checklist and Planned Checks",
             "follow every linked acceptance criterion",
             "find the Design decisions and sections",

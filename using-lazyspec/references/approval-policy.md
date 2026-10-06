@@ -6,13 +6,13 @@ Single source of truth for approval semantics across all LazySpec gates: Require
 
 - Only an explicit approval in the current conversation — a clear "yes", "approved", "looks good", selecting `Approve`, or an equivalent affirmative response — records approval of the current approval object. File existence, timeout, silence, explanations, ambiguous replies, and requested changes do not imply approval.
 - For any non-approval response, remain in the current phase; apply requested changes when provided and request approval again.
-- Approval covers the current approval object's material intent, decisions, and risks, plus its detailed body's consistency with it. It does not mean the user approved every non-material implementation detail, and it never claims that unseen content was approved.
+- Approval covers the current approval object's material intent, decisions, and risks. It does not mean the user approved every non-material implementation detail, and it never claims that unseen content was approved.
 - Approval of Requirements permits the Design phase; approval of Design permits the Tasks phase; approval of Tasks ends planning. Execution requires a separate explicit request, which may already have been supplied earlier. An existing request to plan and implement authorizes handoff after all three phase approvals; do not ask again merely because the phase changed.
 
 ## Materiality
 
 - Treat observable behavior, scope and exclusions, public interfaces or data changes, compatibility, external side effects, security or privacy, failure and recovery behavior, key technical choices, and their risks as material. Treat filenames, internal helpers, code organization, test layout, and equivalent implementation refinements as non-material only when they do not alter any material item. When uncertain, classify a change as material.
-- A material change invalidates the prior approval and downstream evidence, not unrelated completed work. A verified non-material body-only refinement that leaves the approved contract true and complete does not require reapproval.
+- A material change invalidates the prior approval and downstream evidence, not unrelated completed work. A verified non-material refinement that leaves the approved contract true and complete does not require reapproval.
 - Task decomposition, dependency-preserving reordering, equivalent implementation choices, and equally strong verification methods are non-material refinements: update their records and continue without approval. Ask only when they alter the approved outcome, scope, constraints, material risk, or a choice explicitly reserved for the user.
 - Escalation updates reasons, effects, and verification needs, but does not by itself create phase approvals. Pause only work requiring a new material decision or an unauthorized operation; continue independent authorized preparation. Do not downgrade to evade a confirmation already triggered.
 
@@ -29,7 +29,7 @@ Single source of truth for approval semantics across all LazySpec gates: Require
 
 ## File-backed review
 
-When an approval object is a saved Spec or plan file, finish writing and internally checking that file before requesting approval. Give the user a link to the current file (or its exact path if the environment cannot link files), name the phase, and ask them to review the file and approve it or request changes. Keep the approval question short: do not paste the document, its `审批摘要`, or the complete Tasks plan into the conversation or the question tool. The file remains the complete approval object; a link or file write alone does not count as approval.
+When an approval object is a saved Spec or plan file, finish writing and internally checking that file before requesting approval. Give the user a link to the current file (or its exact path if the environment cannot link files), name the phase, and ask them to review the file and approve it or request changes. Keep the approval question short: do not paste the complete document into the conversation or the question tool. The file remains the complete approval object; a link or file write alone does not count as approval.
 
 For a material revision, update the same file first and give a concise delta of material additions, changes, removals, and risk changes alongside its link. If the user explicitly asks to see the text in the conversation, provide the requested excerpt or document. This rule applies to saved Requirements, Design, Tasks, fast plans, and orchestration plans; it does not replace Memory's exact write-preview approval.
 
@@ -43,16 +43,13 @@ Whenever a LazySpec workflow needs an answer from the user:
 
 At a necessary approval gate, ask the phase's approval question as one decision. When the tool supports choices, offer mutually exclusive `Approve` and `Request changes` meanings as a single-choice question; adapt labels, descriptions, and free-form handling to its actual interface. An explicit affirmative free-form reply also counts under the approval semantics above.
 
-## Human-First approval summary
+## Complete-file approval contract
 
-Apply this contract to generated or revised Requirements and Design documents:
+Requirements, Design, and Tasks each use the complete saved phase document as their approval object. Users and Agents share one body; do not generate a separate approval summary or divide the document by audience.
 
-- Put a Chinese `审批摘要` at the top of each Requirements and Design document. It is the user-facing approval contract; the detailed body is the Agent-facing elaboration and MUST remain consistent with, and bounded by, the approved summary. Tasks keeps the complete task document as its approval object. Only explicit approval in the current conversation records approval of the current `审批摘要` and its consistency with the detailed body.
-- Before requesting approval, verify internally that every material body item is represented directly or by one unambiguous group in `审批摘要`. A missing material item or any summary/body conflict blocks approval.
-- Adapt the summary to the feature's cognitive complexity instead of enforcing a fixed item or character count. Aim for a complete one-screen review. If that is impossible without hiding material information, pause approval and recommend splitting the Spec; expand the summary only after the user explicitly chooses to keep one Spec.
-- After a material revision, update the complete summary in the document and present a concise conversation delta covering additions, changes, removals, and risk changes before asking for approval again.
-- Every downstream phase MUST treat an approved `审批摘要` as the upper-level material contract. Planning Skills continue to read the complete upstream Spec body as their instructions require. During normal task execution, `executing-task` reads body sections relevant to each TODO, expands uncertain or cross-task context, and checks complete feature-contract coverage before claiming verification passed.
+- Before requesting approval, verify that the file captures all confirmed material behavior, boundaries, decisions, and risks, contains no conflicting contract items, and has no unresolved material user decision. Do not require a second projection of the same information.
+- Every downstream phase MUST use the approved upstream document's material content as its contract. Planning Skills continue to read complete upstream Specs as their instructions require. During normal task execution, `executing-task` reads complete Requirements and Design's overview, key decisions, and risk sections, then technical sections relevant to each TODO; it checks complete feature-contract coverage before claiming verification passed.
 
 ## Legacy artifacts
 
-Do not bulk-migrate existing Specs. Add `审批摘要` when a Requirements or Design document is next created or revised; an already approved legacy Requirements document may still be used to create Design without being rewritten.
+Do not migrate existing Specs solely to adopt this format. An already approved legacy document remains usable without rewriting or adding a summary. Read its material content wherever it is recorded; any existing summary is part of that document, not a separate higher-authority contract. If its sections conflict, resolve the affected contract under the materiality rules before dependent work. User-requested revisions retain unchanged behavior, anchors, TODO text, and valid evidence; do not reformat unrelated sections.

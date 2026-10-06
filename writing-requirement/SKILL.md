@@ -7,7 +7,7 @@ description: Collect requirements one at a time with the user, then create or re
 
 ## Shared policies
 
-Read [risk-policy.md](../using-lazyspec/references/risk-policy.md), [approval-policy.md](../using-lazyspec/references/approval-policy.md), and [doc-policy.md](../using-lazyspec/references/doc-policy.md) before this workflow; resolve them relative to this Skill directory. risk-policy.md separates risk-based verification from decision-based approval and defines model autonomy within the user's scope; approval-policy.md is the single source of explicit-approval, materiality, invalidation, summary-contract, and approval-asking semantics; doc-policy.md keeps the document minimum-sufficient.
+Read [risk-policy.md](../using-lazyspec/references/risk-policy.md), [approval-policy.md](../using-lazyspec/references/approval-policy.md), and [doc-policy.md](../using-lazyspec/references/doc-policy.md) before this workflow; resolve them relative to this Skill directory. risk-policy.md separates risk-based verification from decision-based approval and defines model autonomy within the user's scope; approval-policy.md is the single source of explicit-approval, materiality, invalidation, complete-file review, and approval-asking semantics; doc-policy.md keeps the document minimum-sufficient.
 
 ## Language
 
@@ -36,17 +36,16 @@ Keep questions concise and decision-focused. Use meaningful mutually exclusive o
 
 Prefix every numbered acceptance criterion with exactly one HTML anchor on the same line, using `req-<requirement-number>-<criterion-number>` as the unique ID. The numbers MUST match the criterion's requirement and ordinal, every acceptance criterion MUST have an anchor, and each anchor ID MUST occur exactly once in `requirements.md`.
 
-## Human-First Review Summary
+## Document Contract
 
-- Put `## 审批摘要` immediately after the document title and before `## 引言`, with the Chinese subsections `目标`, `范围`, `核心行为`, and `风险与待确认`.
-- Treat this summary as the user-facing approval contract under approval-policy.md. The detailed user stories and EARS criteria may elaborate it, but MUST NOT add, omit, broaden, narrow, or contradict a material behavior, boundary, or risk.
-- Cover every materially distinct acceptance outcome in the summary. Group multiple criteria only when one concise statement preserves the same approval intent; keep HTML anchors and traceability links out of the summary.
-- Resolve open requirements questions before requesting approval. Use `风险与待确认` to state known risks and explicitly record that no requirements decision remains unresolved.
-- For a legacy Requirements document without `审批摘要`, add the summary only when that document is next revised. Do not rewrite already approved legacy Requirements merely because a downstream phase reads it.
+- Use one body for user review and Agent execution, following approval-policy.md's complete-file contract. Do not add an approval summary.
+- Put the objective and scope in a short `引言`, confirmed observable outcomes in numbered requirements with user stories and EARS criteria, and the risk assessment in a standalone `## 风险与待确认` after the requirements.
+- Resolve open requirements questions before requesting approval. State known risks and explicitly record that no requirements decision remains unresolved.
+- Read a legacy Requirements document as it stands; do not migrate it solely to adopt this format or because a downstream phase reads it.
 
 ## Approval
 
-For a new document or material revision, finish and check the saved Requirements file, then link to it and request explicit Requirements approval before creating any Design document. Let the user review its `审批摘要` and body in the file; do not paste either into the conversation. Confirming individual requirements or finishing collection does not approve the complete document. Reuse collection answers when preparing the review; do not repeat unchanged decisions. Follow approval-policy.md's file-backed review and asking protocols and ask: "审批摘要是否准确覆盖了需求的目标、范围、核心行为与风险？" For any non-approval response, remain in Requirements; apply approval-policy.md's explicit-approval, revision-delta, and invalidation semantics. Purely editorial revisions preserve any still-valid prior document approval under that policy; never infer approval for an unapproved draft.
+For a new document or material revision, finish and check the saved Requirements file, then link to it and request explicit Requirements approval before creating any Design document. Let the user review the complete file; do not paste it into the conversation. Confirming individual requirements or finishing collection does not approve the complete document. Reuse collection answers when preparing the review; do not repeat unchanged decisions. Follow approval-policy.md's file-backed review and asking protocols and ask: "请审阅需求文件；是否批准其中的目标、范围、验收标准与风险？" For any non-approval response, remain in Requirements; apply approval-policy.md's explicit-approval, revision-delta, and invalidation semantics. Purely editorial revisions preserve any still-valid prior document approval under that policy; never infer approval for an unapproved draft.
 
 ## Content Boundaries and Size
 
@@ -54,17 +53,18 @@ For a new document or material revision, finish and check the saved Requirements
 - Consolidate overlapping behavior into one requirement instead of creating separate requirements for normal flow, edge cases, user experience, technical constraints, and success criteria when they describe the same outcome.
 - Target at most 8 requirements, 2–5 acceptance criteria per requirement, and 30 acceptance criteria in total.
 - Treat these targets as soft limits. Exceed them only when merging would lose distinct approved behavior; first consider narrowing or splitting the Spec, and explain any necessary exception in the conversation rather than the document.
-- Keep the introduction to one short paragraph. Other than the required `审批摘要`, do not add summaries, glossaries, traceability tables, or repeated context unless the user explicitly needs them.
+- Keep the introduction to one short paragraph. Do not add summaries, glossaries, traceability tables, or repeated context unless the user explicitly needs them.
 
 **Constraints:**
 
 - The model MUST create `specs/{feature_name}/requirements.md` under the project root only after the requirement collection above is complete and file writing is permitted.
 - The model MUST express EARS semantics naturally in Chinese and MUST NOT copy the literal English EARS keywords `WHEN`, `THEN`, or `SHALL` into the generated document.
 - The model MUST format the initial requirements.md document with:
-- A Human-First `审批摘要` before the introduction, followed by a clear introduction section that summarizes the feature
+- A short Chinese introduction explaining the objective and scope
 - A hierarchical numbered list of requirements where each contains:
   - A user story written in Chinese using the role-goal-benefit structure
   - A numbered list of acceptance criteria in EARS format (Easy Approach to Requirements Syntax)
+- A standalone `## 风险与待确认` section recording risk level, reasons, named critical operations, known risks, and resolved requirements decisions
 - The model SHOULD include an edge case, user-experience constraint, technical constraint, or success criterion only when it creates a distinct observable and verifiable outcome
 - Do not create or draft Design until the current Requirements has explicit approval; never mark an unapproved draft approved
 - The model MUST continue the feedback-revision cycle until explicit approval is received

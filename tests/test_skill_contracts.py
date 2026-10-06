@@ -104,7 +104,7 @@ class SkillContractTests(unittest.TestCase):
             "A material change invalidates the prior approval", policy
         )
         self.assertIn(
-            "Only explicit approval in the current conversation records approval of the current `审批摘要`",
+            "Requirements, Design, and Tasks each use the complete saved phase document as their approval object",
             policy,
         )
         self.assertIn(

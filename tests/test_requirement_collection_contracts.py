@@ -16,7 +16,7 @@ SKILL = (ROOT / "writing-requirement/SKILL.md").read_text()
 PROMPT = (ROOT / "writing-requirement/requirement-prompt.md").read_text()
 POLICY = (ROOT / "using-lazyspec/references/approval-policy.md").read_text()
 COLLECTION = SKILL.split("## Requirement Collection", 1)[1].split(
-    "## Human-First Review Summary", 1
+    "## Document Contract", 1
 )[0]
 
 

@@ -7,7 +7,7 @@ description: Create or revise a LazySpec design.md from complete Requirements. C
 
 ## Shared policies
 
-Read [risk-policy.md](../using-lazyspec/references/risk-policy.md), [approval-policy.md](../using-lazyspec/references/approval-policy.md), and [doc-policy.md](../using-lazyspec/references/doc-policy.md) before this workflow; resolve them relative to this Skill directory. risk-policy.md separates risk-based verification from decision-based approval and defines model autonomy within the user's scope; approval-policy.md is the single source of explicit-approval, materiality, invalidation, summary-contract, and approval-asking semantics; doc-policy.md keeps the document minimum-sufficient.
+Read [risk-policy.md](../using-lazyspec/references/risk-policy.md), [approval-policy.md](../using-lazyspec/references/approval-policy.md), and [doc-policy.md](../using-lazyspec/references/doc-policy.md) before this workflow; resolve them relative to this Skill directory. risk-policy.md separates risk-based verification from decision-based approval and defines model autonomy within the user's scope; approval-policy.md is the single source of explicit-approval, materiality, invalidation, complete-file review, and approval-asking semantics; doc-policy.md keeps the document minimum-sufficient.
 
 ## Language
 
@@ -28,27 +28,22 @@ Before creating a new Design, inspect Requirements and relevant project code, th
 - Record the user's explicit design decisions and constraints for the Design draft. Do not infer a design choice from Requirements approval. If a proposed design choice changes observable behavior or scope, return to Requirements for that decision before fixing it in Design.
 - Resolve choices reserved for the user before drafting their affected sections. Choose routine internal techniques autonomously; do not manufacture alternatives or repeat an already explicit decision. Design decision collection is distinct from approval of the completed Design document.
 
-## Human-First Review Summary
+## Document Contract
 
-- Put `## 审批摘要` immediately after the document title and before `## Overview`, with the Chinese subsections `方案`, `关键决策`, and `风险与待确认`.
-- Treat this summary as the user-facing approval contract under approval-policy.md. The detailed design may elaborate Agent-facing implementation mechanics, but MUST remain consistent with and bounded by the approved summary.
-- Include every material choice involving public behavior or interfaces, data, dependencies, compatibility or migration, security or privacy, external or irreversible effects, failure and recovery behavior, or material risk. Keep internal file layout, helpers, test organization, and equivalent implementation refinements out of the summary.
-- Render `关键决策` as a compact table with the columns `决策`, `选择与理由`, and `影响`. Reuse each summary decision's exact short title in its corresponding `Key Design Decisions` subsection so the relationship is unambiguous without adding traceability noise.
-- Adapt summary length to cognitive complexity rather than a fixed numerical budget, following approval-policy.md's one-screen and splitting rules.
-- Resolve open design decisions before requesting approval. Use `风险与待确认` to state known risks and explicitly record that no design decision remains unresolved.
-- Before approval, verify that the body contains no material decision missing from or conflicting with the summary; a missing material decision or a summary/body conflict blocks approval under approval-policy.md.
-- For a legacy Design document without `审批摘要`, add the summary only when that document is next revised. Creating Design from an approved legacy Requirements document does not require rewriting Requirements.
+- Use one body for user review and Agent execution, following approval-policy.md's complete-file contract. Do not add an approval summary.
+- Record each key choice, rationale, and impact once in `Key Design Decisions`, including material choices about public behavior or interfaces, data, dependencies, compatibility or migration, security or privacy, external or irreversible effects, failure and recovery behavior, and risk. Reference those decisions from technical sections instead of repeating them.
+- Put the risk assessment in a standalone `## 风险与待确认` after `Key Design Decisions`. Resolve open design decisions before requesting approval, state known risks, and explicitly record that no design decision remains unresolved.
+- Read a legacy Design document as it stands; do not migrate it solely to adopt this format. Creating Design from approved legacy Requirements does not require rewriting Requirements.
 
 ## Approval
 
-Finish and check the saved Design file, then link to it and request explicit Design approval before creating any Tasks document. Let the user review its `审批摘要` and body in the file; do not paste either into the conversation. Internal implementation details remain the model's choice within the contract. Follow approval-policy.md's file-backed review and asking protocols and ask: "审批摘要是否准确覆盖了设计方案、关键决策及风险？" For any non-approval response, remain in Design; apply approval-policy.md's explicit-approval, revision-delta, and invalidation semantics.
+Finish and check the saved Design file, then link to it and request explicit Design approval before creating any Tasks document. Let the user review the complete file; do not paste it into the conversation. Internal implementation details remain the model's choice within the contract. Follow approval-policy.md's file-backed review and asking protocols and ask: "请审阅设计文件；是否批准其中的方案、关键决策、风险与测试策略？" For any non-approval response, remain in Design; apply approval-policy.md's explicit-approval, revision-delta, and invalidation semantics.
 
 **Constraints:**
 
 - The model MUST create a 'specs/{feature_name}/design.md' file if it doesn't already exist
 - The model MUST create the minimum sufficient implementation-ready design at 'specs/{feature_name}/design.md'
-- The document MUST put the Human-First `审批摘要` before `Overview` and keep the detailed design consistent with and bounded by that summary
-- The document MUST include the English structural sections `Overview`, `Key Design Decisions`, and `Testing Strategy`; all prose within them MUST be Chinese
+- The document MUST include `Overview`, `Key Design Decisions`, the standalone Chinese `风险与待确认`, and `Testing Strategy` in that order; all prose within them MUST be Chinese
 - `Architecture`, `Components and Interfaces`, `Data Models`, `Error Handling`, `Research Findings`, and diagrams are conditional sections; keep any selected section name in English, include it only when it materially affects implementation, and omit inapplicable sections entirely
 - The model MUST identify unresolved external or project-specific facts that materially affect the design and research only those facts; skip research when the approved Requirements and repository already settle the design
 - The model SHOULD NOT create separate research files; cite relevant sources in the conversation and incorporate only decision-relevant findings into the design
@@ -56,9 +51,9 @@ Finish and check the saved Design file, then link to it and request explicit Des
 - The model SHOULD record a decision and rationale only when a meaningful implementation choice or trade-off exists
 - The model SHOULD choose the smallest representation that makes the design unambiguous: ASCII diagrams for topology, ownership, lifecycle, state transitions, and multi-participant sequences; tables for repeated mappings; TypeScript for data contracts; and prose for rationale, invariants, failure semantics, and compatibility guarantees
 - The model MUST NOT repeat requirements, repository facts, obvious framework behavior, or implementation detail that does not help a coding agent make a decision
-- Excluding the Human-First `审批摘要`, the model SHOULD target 100–180 lines for a typical detailed design body. A simple design may be shorter; never add content to reach the lower bound. This is a soft limit: consolidate repetition or recommend splitting an oversized Spec before exceeding it, but retain details needed to avoid implementation ambiguity
+- The model SHOULD keep the complete design document within 180 lines where practical, with no minimum length. This is a soft upper limit: remove repetition or recommend splitting an oversized Spec before exceeding it, but retain details needed to avoid implementation ambiguity; never pad a simple design
 - The model MUST collect Design-stage input as specified in Design Decision Collection before creating a new Design; ask again on revision only when a new material or user-reserved design choice arises
-- Modify the design summary and body when the user requests changes; silence or an explanation neither approves nor automatically requires edits
+- Modify the design document when the user requests changes; silence or an explanation neither approves nor automatically requires edits
 - Apply risk-policy.md after material edits; verified non-material refinements preserve approval
 - Do not create or draft Tasks until the current Design has explicit approval; never mark an unapproved draft approved
 - The model MUST continue the feedback-revision cycle until explicit approval is received
