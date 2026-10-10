@@ -28,7 +28,22 @@ Related implementation or acceptance-contract changes make previous evidence sta
 - An execution request for an already checked plan still completes missing or stale verification. A status/question request is read-only and does not run checks or mutate records. Explicit verification-only requests run checks and report issues without authorizing implementation repairs.
 - Human acceptance explicitly required by the user, binding project rules, or an outcome that available evidence cannot establish remains pending-human until confirmed. Risk alone does not mandate an extra sign-off. Record any confirmation against the tested state.
 - Handoff separately reports TODO completion, feature status/freshness, evidence and remaining work. A checked task list alone is not a verified feature.
+- Automatic Delivery Finalization: Once Feature Verification is evaluated as `passed` with no pending items, the executing skill automatically finalizes delivery:
+  1. Updates the `spec.md` YAML frontmatter status to `status: delivered` and records `delivered_at: YYYY-MM-DD`.
+  2. In-place cleanses proposal/hypothetical phrasing (e.g., "should", "proposed", "planned") in `spec.md` into current-tense factual decisions (Decision).
+  3. Archives/checks off completed `plan.md`.
+  4. Bidirectional Supersession Sync: If the current Spec declares `supersedes: [specs/<old-feature>/]`, it automatically updates the superseded Spec's frontmatter to `status: superseded` with `superseded_by: specs/<current>/` and inserts a `[!WARNING]` redirection block at the top of the superseded document.
 - Follow explicit user/project commit requirements. Mode-specific commit rules live in the executing Skill. Commit later repairs without rewriting history or including unrelated changes; fast does not acquire a new mandatory commit policy.
+
+## Lifecycle states and negative guardrails
+
+LazySpec defines formal lifecycle states for Specs:
+- `proposed`: Active proposal or work-in-progress.
+- `delivered`: Fully implemented, verified, and living truth of current system capabilities.
+- `archived`: Mature, battle-tested, foundation truth moved to `specs/archived/` and frozen as read-only snapshots.
+- `superseded`: Overturned by a newer Spec; retains bidirectional links and redirect warnings.
+- `obsolete`: Discontinued or disproven mechanism. **MUST NEVER be deleted.** Relocated to `specs/retired/` with a prominent `[!CAUTION]` block detailing the rationale for deprecation and prohibition against restoration, serving as an active negative guardrail to prevent future agents from repeating past mistakes.
+
 
 ## Mode-specific execution
 
