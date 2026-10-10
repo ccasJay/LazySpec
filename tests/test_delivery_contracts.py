@@ -54,11 +54,11 @@ def lint_report(report):
 class DeliveryContractTests(unittest.TestCase):
     def test_shared_references_resolve_from_every_installed_skill(self):
         manifest = json.loads((ROOT / ".claude-plugin/plugin.json").read_text())
-        self.assertEqual(14, len(manifest["skills"]))
+        self.assertEqual(9, len(manifest["skills"]))
         risk_readers = [
             d for d in manifest["skills"]
             if not any(d.endswith(suffix) for suffix in (
-                "distill-spec-memory", "distill-feature", "distill-learning", "maintain-memory"
+                "distill-feature", "distill-learning", "maintain-memory"
             ))
         ]
         for directory in risk_readers:
@@ -69,12 +69,13 @@ class DeliveryContractTests(unittest.TestCase):
             approval = re.findall(r"\]\(([^)]+approval-policy\.md)\)", skill.read_text())
             self.assertEqual(1, len(approval), skill)
             self.assertEqual((POLICIES / "approval-policy.md").resolve(), (skill.parent / approval[0]).resolve())
-        for distill_name in ("distill-spec-memory", "distill-feature", "distill-learning"):
+        for distill_name in ("distill-feature", "distill-learning", "maintain-memory"):
             distill = (ROOT / distill_name / "SKILL.md").read_text()
             self.assertEqual([], re.findall(r"\]\(([^)]+risk-policy\.md)\)", distill))
-            approval, = re.findall(r"\]\(([^)]+approval-policy\.md)\)", distill)
-            self.assertEqual((POLICIES / "approval-policy.md").resolve(), (ROOT / distill_name / approval).resolve())
-        for directory in ("using-lazyspec", "fast", "writing-task", "executing-task", "writing-plan", "executing-plan"):
+            approval_links = re.findall(r"\]\(([^)]+approval-policy\.md)\)", distill)
+            if approval_links:
+                self.assertEqual((POLICIES / "approval-policy.md").resolve(), (ROOT / distill_name / approval_links[0]).resolve())
+        for directory in ("using-lazyspec", "fast", "writing-plan", "executing-plan", "orchestrating-specs"):
             skill = ROOT / directory / "SKILL.md"
             links = re.findall(r"\]\(([^)]+delivery-loop\.md)\)", skill.read_text())
             self.assertGreaterEqual(len(links), 1, skill)
@@ -90,7 +91,7 @@ class DeliveryContractTests(unittest.TestCase):
         delivery = (POLICIES / "delivery-loop.md").read_text()
         rows = [line.split("|")[1:-1] for line in delivery.splitlines() if line.startswith("| ")][1:]
         self.assertEqual(
-            ["Current execution task", "Tasks", "Design", "Requirements", "Current stage"],
+            ["Current execution task", "Plan (`plan.md`)", "Spec (`spec.md`)", "Current stage"],
             [row[1].strip() for row in rows],
         )
 

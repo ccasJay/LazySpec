@@ -16,11 +16,12 @@ description: Execute, resume, or verify approved LazySpec plan.md files, and aut
 
 1. **Verify Authorization**: Confirm `spec.md` and `plan.md` are explicitly approved under approval-policy.md.
 2. **Context Discovery**: Read complete `spec.md` (goal, EARS criteria, architecture decisions, invariants) and the `plan.md` checklist with Planned Checks.
-3. **Branch Setup**: Create or switch to feature branch `codex/<feature-name>` unless another name is requested. Maintain `.execution-progress.md` for local recovery.
+3. **Branch Setup**: Create or switch to feature branch `codex/<feature-name>` unless another name is requested. An approved `specs/orchestration.md` supplies cross-Spec branch and sequencing constraints instead. Maintain `.execution-progress.md` for local recovery.
 4. **Behavioral TDD Execution**:
+   - Execute all currently unchecked TODOs continuously without per-TODO confirmation.
    - For each TODO, identify the verification entry point (failing test or command probe) before editing code.
    - Implement the minimal code to satisfy the scenario and make the verification pass.
-   - Upon verification success, check off the task token: `- [ ] //TODO` -> `- [x] //TODO`.
+   - Only after the TODO passes, change its checkbox token from `[ ]` to `[x]`. Preserve `//TODO` and every character after it.
 5. **Feature Verification**: Run the end-to-end Planned Checks defined in `plan.md`. Record actual observations, timestamps, and commit/worktree fingerprints in Latest Result.
 
 ## Automatic Delivery Finalization
@@ -33,11 +34,11 @@ Once all TODOs are checked and Feature Verification is evaluated as `passed` wit
      status: delivered
      delivered_at: YYYY-MM-DD
      ```
-2. **In-place Phrasing Cleansing (dsh Style)**:
-   - Rewrite any proposal or future-tense phrasing (e.g. "拟议", "计划", "should", "proposed") in `spec.md` into current-tense factual architectural decisions.
+2. **In-place Phrasing Cleansing**:
+   - Cleanses proposal/hypothetical phrasing (e.g. "拟议", "计划", "should", "proposed") in `spec.md` into current-tense factual architectural decisions (Decision).
 3. **Bidirectional Supersession Sync**:
    - If `spec.md` lists `supersedes: [specs/<old-feature>/]`:
-     - Open `specs/<old-feature>/spec.md` (or legacy `design.md`);
+     - Open `specs/<old-feature>/spec.md`;
      - Update its frontmatter to `status: superseded` with `superseded_by: specs/{feature_name}/`;
      - Prepend a warning callout at the top of the superseded file:
        `> [!WARNING]`

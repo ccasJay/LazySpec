@@ -10,14 +10,13 @@ ROUTER = ROUTER_PATH.read_text()
 POLICIES = ROOT / "using-lazyspec" / "references"
 
 ROUTE_TO_SKILL = {
-    "requirements": "writing-requirement",
-    "design": "writing-design",
-    "tasks": "writing-task",
-    "execute": "executing-task",
+    "spec": "writing-spec",
+    "plan": "writing-plan",
+    "execute": "executing-plan",
     "fast": "fast",
     "orchestration": "orchestrating-specs",
     "memory-recall": "using-lazyspec",
-    "memory-distill": "distill-spec-memory",
+    "memory-distill": "distill-learning",
 }
 
 
@@ -47,7 +46,7 @@ class ResourceLoadingContractTests(unittest.TestCase):
     def test_routed_skills_declare_their_matrix_resources(self):
         matrix = parse_matrix()
         for route, skill in ROUTE_TO_SKILL.items():
-            if skill == "using-lazyspec":
+            if skill in ("using-lazyspec", "distill-learning"):
                 continue
             text = (ROOT / skill / "SKILL.md").read_text()
             declared = set(re.findall(r"\]\(([^)]+)\)", text))
@@ -57,12 +56,10 @@ class ResourceLoadingContractTests(unittest.TestCase):
                     f"{skill}/SKILL.md does not link {resource}.md",
                 )
 
-    def test_distill_memory_declares_only_its_matrix_policy(self):
-        text = (ROOT / "distill-spec-memory" / "SKILL.md").read_text()
-        self.assertEqual([], re.findall(r"\]\(([^)]+risk-policy\.md)\)", text))
-        self.assertEqual(
-            1, len(re.findall(r"\]\(([^)]+approval-policy\.md)\)", text))
-        )
+    def test_distill_memory_skills_declare_only_approval_policy(self):
+        for distill_name in ("distill-feature", "distill-learning", "maintain-memory"):
+            text = (ROOT / distill_name / "SKILL.md").read_text()
+            self.assertEqual([], re.findall(r"\]\(([^)]+risk-policy\.md)\)", text))
 
     def test_every_relative_link_in_skills_resolves(self):
         manifest = json.loads((ROOT / ".claude-plugin/plugin.json").read_text())
@@ -77,14 +74,11 @@ class ResourceLoadingContractTests(unittest.TestCase):
 
     def test_prompt_and_template_files_stay_skill_relative(self):
         for directory, resources in (
-            ("writing-requirement", ("requirement-prompt.md", "requirement-templete.md")),
-            ("writing-design", ("design-prompt.md", "design-templete.md")),
-            ("writing-task", ("task-prompt.md", "task-templete.md")),
+            ("writing-spec", ("spec-prompt.md", "spec-template.md")),
+            ("writing-plan", ("plan-prompt.md", "plan-template.md")),
         ):
             skill = (ROOT / directory / "SKILL.md").read_text()
-            self.assertIn(
-                "relative to the directory containing this `SKILL.md`", skill
-            )
+            self.assertIn("relative to the directory containing this `SKILL.md`", skill)
             for resource in resources:
                 self.assertIn(resource, skill)
 

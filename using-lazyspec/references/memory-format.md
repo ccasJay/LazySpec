@@ -13,13 +13,9 @@ project-memory/
     └── <learning-id>.md
 ```
 
-Keep one current decision Capsule per completed Feature and one owner per durable learning conclusion. Do not add Topic aggregation, sessions, draft Memory under project-memory/, copied Specs, or a JSON index. Candidates belong in source tasks.md/plan.md and are never default-retrievable.
+Keep one current decision Capsule per completed Feature and one owner per durable learning conclusion. Do not add Topic aggregation, sessions, draft Memory under project-memory/, copied Specs, or a JSON index. Candidates belong in source plan.md and are never default-retrievable.
 
 ## Feature Capsule format
-
-Existing Capsules without `kind` remain Feature Capsules. Optional `kind: feature` is accepted, not required; no bulk migration. A verified fast feature may use approved plan.md sections as Spec sources.
-
-## Capsule format
 
 Use this required metadata and section order:
 
@@ -55,8 +51,8 @@ authorities: [<current-architecture-or-source-path>]
 
 ## Sources
 
-- S1: `specs/<feature-name>/requirements.md#req-N-N`
-- S2: `specs/<feature-name>/design.md`
+- S1: `specs/<feature-name>/spec.md`
+- S2: `specs/<feature-name>/plan.md`
 - S3: `<project-root-relative-implementation-path>`
 - S4: `<project-root-relative-test-path>`
 ```

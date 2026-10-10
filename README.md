@@ -1,22 +1,24 @@
 # LazySpec
 
-一套面向编码代理的 Spec 驱动开发 Skills，将功能想法转化为可审阅、可执行、可验证的交付，并沉淀有证据的项目经验。
+一套面向编码代理的 Spec 驱动开发 Skills，以二元架构将功能想法转化为高密度、可审阅、可执行、可验证的交付闭环，并实现自动化交付收口与三权分立的项目经验治理。
 
 ## 工作流程
 
 ```text
 v2 二元链路：/grill-me 决策探针 → spec.md 审批 → plan.md (TDD) 审批 → 连续执行 → 自动交付收口
-生命周期演进：delivered (生效事实) / archived (成熟封存) / superseded (显式废黜) / obsolete (负向警示护栏)
+生命周期演进：proposed (立项提议) → delivered (交付生效) → archived (成熟封存) → superseded (显式废黜) / obsolete (负向警示护栏)
 经验治理流：distill-feature (特性契约) / distill-learning (随时踩坑提炼) / maintain-memory (治理与索引自愈)
 fast 链路：讨论 → plan.md → 一次审批 → 连续执行 → 功能验收
-legacy 兼容：Requirements 逐条收集 → Design 审批 → Tasks 审批 → 按需执行
 ```
 
-- **Spec 制定**：通过 `/grill-me` 风格结构化决策探针，针对范围、架构边界与关键技术分歧快速收敛，一次性生成 `specs/<feature-name>/spec.md`（包含业务目标、EARS 验收标准、架构决策与强制的“曾考虑的备选方案”）。
-- **Plan 制定**：基于已批准的 `spec.md` 生成 `specs/<feature-name>/plan.md`，按完整行为单元拆解任务，内置测试先行（TDD）验证契约与 `## Feature Verification` 端到端集成检查。
-- **自动交付收口**：验收通过后自动将 `spec.md` 状态置为 `delivered`，原位清洗计划假设语态为现态事实决策；若声明废黜关系，自动双向回写旧 Spec 的 `superseded` 状态与重定向警示。
+- **Spec 制定 (`writing-spec`)**：通过 `/grill-me` 风格结构化决策探针，针对业务目标、范围、架构边界与关键技术分歧快速收敛，一次性生成 `specs/<feature-name>/spec.md`（包含业务目标、EARS 验收标准、架构决策、强制的“曾考虑的备选方案”与否定性保证）。
+- **Plan 制定 (`writing-plan`)**：基于已批准的 `spec.md` 生成 `specs/<feature-name>/plan.md`，按完整行为单元（Behavioral Unit）拆解任务，内置测试先行（TDD）验证入口与 `## Feature Verification` 端到端集成检查。
+- **自动交付收口 (`executing-plan`)**：连续执行并运行 Feature Verification，验收通过后自动将 `spec.md` 状态置为 `delivered`，原位清洗计划假设语态为现态事实决策；若声明废黜关系，自动双向回写旧 Spec 的 `superseded` 状态与重定向警示。
 - **负向警示护栏**：对于证伪或废弃的规范（`obsolete`），移入 `specs/retired/` 并打上 `[!CAUTION]`，在立项时主动探测拦截，坚决防止未来 Agent 重蹈覆辙。
-- **记忆三权分立**：`distill-feature` 沉淀系统能力契约；`distill-learning` 随时沉淀避坑经验；`maintain-memory` 负责归档、废黜与索引自愈。
+- **记忆三权分立**：
+  - `distill-feature`：提炼交付特性的系统能力契约（Feature Capsule）。
+  - `distill-learning`：随时提炼工程教训、修复经验与负向护栏（Learning Capsule）。
+  - `maintain-memory`：负责归档、废黜维护、失效清理与索引自愈。
 
 ## 安装与接入
 
@@ -26,7 +28,7 @@ legacy 兼容：Requirements 逐条收集 → Design 审批 → Tasks 审批 →
 npx skills add ccasJay/LazySpec --skill '*' -g
 ```
 
-按提示选择目标代理。安装完成后，日常使用从 `using-lazyspec` 进入。
+安装完成后，日常统一从 `using-lazyspec` 进入。
 
 ### Claude Code Plugin
 
@@ -44,144 +46,69 @@ claude --plugin-dir /absolute/path/to/LazySpec
 /lazyspec:using-lazyspec
 ```
 
-核心技能列表（含向后兼容别名）：
+核心技能列表（9 个精简专属技能）：
 
 ```text
-/lazyspec:using-lazyspec
-/lazyspec:writing-spec       # [v2] 制定规范 (需求 + 设计 + 备选)
-/lazyspec:writing-plan       # [v2] 制定计划 (TDD 行为任务与验收)
-/lazyspec:executing-plan     # [v2] 执行计划并自动交付收口
-/lazyspec:distill-feature    # [v2] 特性记忆沉淀 (Feature Capsule)
-/lazyspec:distill-learning   # [v2] 随时提炼工程经验教训
-/lazyspec:maintain-memory    # [v2] 记忆库与规范全生命周期治理
-/lazyspec:fast               # 快速单文件轻量模式
-/lazyspec:orchestrating-specs# 多 Spec 编排
-/lazyspec:writing-requirement# [兼容别名] 路由至 writing-spec
-/lazyspec:writing-design     # [兼容别名] 路由至 writing-spec
-/lazyspec:writing-task       # [兼容别名] 路由至 writing-plan
-/lazyspec:executing-task     # [兼容别名] 路由至 executing-plan
-/lazyspec:distill-spec-memory# [兼容别名] 路由至 distill-feature/learning
+/lazyspec:using-lazyspec     # 统一入口路由与生命周期护栏检查
+/lazyspec:writing-spec       # 制定规范 (需求 + 架构决策 + 备选方案)
+/lazyspec:writing-plan       # 制定计划 (TDD 行为任务与验收标准)
+/lazyspec:executing-plan     # 连续执行任务并自动交付收口
+/lazyspec:distill-feature    # 特性记忆沉淀 (Feature Capsule)
+/lazyspec:distill-learning   # 随时提炼工程经验教训 (Learning Capsule)
+/lazyspec:maintain-memory    # 规范全生命周期治理与记忆库自愈
+/lazyspec:fast               # 单文件轻量快速通道
+/lazyspec:orchestrating-specs# 多 Spec 联合执行编排
 ```
 
-
-Plugin 或 Skill 未出现时，按以下顺序排查：
-
-1. 确认 `claude --version` 不低于兼容性基线，并重新运行
-   `claude plugin validate .`。
-2. 确认 Manifest 位于仓库根目录的 `.claude-plugin/plugin.json`，其中八个
-   `skills` 相对路径均指向包含 `SKILL.md` 的现有目录。
-3. 在会话中运行 `/reload-plugins`，然后用 `/help` 再次检查；仍未加载时，
-   退出并用正确的绝对路径重新执行 `claude --plugin-dir ...`。
-4. 若同一个 Skill 出现两次，运行 `npx skills list -a claude-code --json` 和
-   `claude plugin list` 检查是否同时启用了 Agent Skills 与 Plugin。同一会话只
-   选择一种入口：使用 Plugin 时不要再向该项目安装同名 Agent Skills；使用
-   Agent Skills 时不要传入 `--plugin-dir`，并停用已持久安装的同名 Plugin。
-
-不同代理的问答工具名称和参数可以不同。LazySpec 根据当前环境公开的工具能力、参数定义及使用限制选择工具；有适用且允许使用的提问工具时必须调用，不固定工具名或参数结构。没有适用或允许使用的工具时，会说明限制并改为会话提问，等待明确回复。异步工具的发送成功、超时或预选项都不代表用户已回答。这套规则同时适用于需求收集、设计提问和文档审批。
-
 ## 快速开始
-
-以下是自然语言调用示例，请替换为所用代理支持的 Skill 调用方式：
 
 ```text
 # 创建 Spec
 使用 using-lazyspec 为“用户认证”创建一个 Spec。
 
-# 修改已有需求
-使用 using-lazyspec 修改 specs/user-authentication/requirements.md，新增账户锁定要求。
+# 制定执行计划
+使用 using-lazyspec 为 specs/user-authentication/ 制定执行计划。
 
-# 执行全部任务
-使用 using-lazyspec 执行 specs/user-authentication/tasks.md 中的全部 TODO。
-
-# 只执行指定 TODO
-使用 using-lazyspec 执行 specs/user-authentication/tasks.md 中的 TODO 2.1。
+# 执行计划并完成交付
+使用 using-lazyspec 执行 specs/user-authentication/plan.md 中的全部任务。
 
 # fast 模式创建轻量新功能
 使用 using-lazyspec 以 fast 模式为“导出 CSV”创建 plan 并执行。
+
+# 沉淀特性记忆或踩坑经验
+使用 distill-feature 沉淀已交付的 specs/user-authentication/。
+使用 distill-learning 沉淀本次排查连接泄漏的工程教训。
 ```
 
-新功能和已有需求修订都直接进入 Requirements（显式请求 fast 模式时除外）。用户提供的计划作为普通背景资料，仍须逐条确认需求；LazySpec 不按代理平台或原生规划模式设置专属前置条件，宿主环境的工具与文件写入限制照常遵守。普通 Spec 的执行和仅验证请求由
-`executing-task` 处理：先读取完整 Requirements、Design 的概述、关键决策和风险章节，以及任务清单和预定验收，再按 TODO 定位相关技术章节、代码及测试；遇到跨任务影响或契约不明时扩展读取，最终验证覆盖完整契约。明确要求执行 `tasks.md` 时，默认创建 `codex/<feature-name>` 特性分支并连续完成全部未完成 TODO；只指定编号时限制为该 TODO。每项通过聚焦验证后才勾选，相关工作可合并为可审阅的提交。fast 模式仍按其 plan 连续执行。
-
-普通 Spec 执行期间，`specs/<feature-name>/.execution-progress.md` 保存本地恢复点并被 Git 忽略。它只记录当前范围、上下文线索、验证和下一步；恢复时以当前 Spec、代码和证据核对。部分完成或验收未通过时保留；全部 TODO 完成且 Feature Verification 对当前状态为 `passed` 后删除。仅验证请求没有现存文件时不创建。
-
-## Spec 产物
+## 产物与结构
 
 产物保存在 `specs/<feature-name>/`：
 
-| 文件 | 内容 |
+| 文件 | 内容与职责 |
 |---|---|
-| `requirements.md` | 说明目标与范围的简短引言、用户故事、带稳定锚点的 EARS 验收标准、独立的风险章节 |
-| `design.md` | 概述、关键实现决策、独立的风险章节、测试策略及必要的技术章节 |
-| `tasks.md` | 带成功判据的编码任务、需求链接、Feature Verification 与可选 Learning Candidates |
-| `plan.md` | fast 模式产物：目标、约束、方案、任务、Feature Verification 与可选 Learning Candidates |
+| `spec.md` | YAML 元数据（生命周期状态）、业务目标与范围、EARS 验收标准、架构核心决策、曾考虑的备选方案、风险与否定性保证 |
+| `plan.md` | 行为单元编码任务（TDD 测试先行）、Feature Verification 端到端检查与运行结果、可选的 Learning Candidates |
 
-需求收集保留在当前会话中，不创建中间文件或逐条写入草稿。收集结束后才生成完整 `requirements.md`；若收集期间上下文丢失，不得把未确认的候选需求当作已确认结果。
+### 生命周期状态机
 
-### 默认精简策略
+`spec.md` 包含标准化的状态机元数据：
 
-LazySpec 默认生成“最小充分文档”：Requirements 只记录可验证行为，Design 只记录影响实现的决策，Tasks 的任务清单只记录编码动作、成功判据和验证入口；文末分别保留功能验收与可选学习候选。下游文档通过需求编号引用上游内容，不重复转述。
+- `proposed`：立项草案，处于决策探针或评审中。
+- `delivered`：验证通过并已合入主干的现态系统能力事实。
+- `archived`：成熟稳定的基石规范，归档至 `specs/archived/`。
+- `superseded`：被新规范推翻废黜，保留双向链接与警示重定向。
+- `obsolete`：证伪废弃的负向警示护栏，归档至 `specs/retired/`，永久阻止未来 Agent 重复犯错。
 
-- Requirements 默认不超过 8 组、每组 2–5 条验收标准，总数尽量不超过 30 条。
-- Design 全文尽量不超过 180 行，不设最低篇幅；架构、接口、数据模型、错误处理、调研结论和图表按需生成，必要信息优先。
-- 普通模式的 Tasks 默认以完整、可独立验证的行为为一个 TODO：同一行为的实现、入口接入和自动化测试合并，即使跨文件；只有独立可交付的行为，或依赖、风险、可观察结果不同，才拆成多项。不按文件、代码层或测试类型机械拆分，也不设置固定 TODO 数量或单项验收链接上限。每项通常不超过 3 个说明点，只链接直接落实的验收标准。
+## Skill 职责一览
 
-例如，创建记录的正常、校验失败及写入失败路径属于同一个行为；按 ID 查询能独立交付和验证，才另起一项。以下仅展示任务边界，实际 `tasks.md` 还需写明成功判据、验证入口、需求链接和 Feature Verification：
-
-```text
-- [ ] //TODO 1. 完成创建记录行为：入口校验、写入、响应及自动化测试
-- [ ] //TODO 2. 完成按 ID 查询行为：查询入口、读取逻辑及自动化测试
-```
-
-以上均为软限制，不会截断必要信息。需要更多上下文时，可以明确要求展开某个相关章节。
-
-### 共同正文与文件审批
-
-未来 Spec 由用户与 Agent 阅读同一份正文，不再生成独立审批摘要，也不按读者划分上下两层。Requirements 的目标与范围写在引言中，每条需求继续保留用户故事和 EARS 验收标准；Design 的每项关键选择、理由和影响只记录一次。两者均保留独立的 `风险与待确认` 章节。
-
-三阶段分别审批当前完整文件的实质内容，包括目标、范围、行为、关键决策和风险；无需逐行批准内部实现细节。实质变更需要重新审批，等价内部细化和运行证据更新不使批准失效。
-
-已有 Spec 保持可读，不因新格式自动迁移或补充摘要。已有摘要是文档的一部分，不具有独立的上层契约地位；如与正文冲突，先澄清受影响契约。已批准的旧 Requirements 可继续用于创建新的 Design。
-
-## Skill 职责
-
-| Skill | 职责 |
+| Skill | 职责说明 |
 |---|---|
-| [`using-lazyspec`](./using-lazyspec/SKILL.md) | 统一入口、阶段路由和审批门 |
-| [`writing-requirement`](./writing-requirement/SKILL.md) | 逐条收集需求后创建或修改 Requirements |
-| [`writing-design`](./writing-design/SKILL.md) | 单独收集设计决策，基于需求创建设计 |
-| [`writing-task`](./writing-task/SKILL.md) | 将已批准设计转为编码任务 |
-| [`executing-task`](./executing-task/SKILL.md) | 按需查找 TODO 上下文，执行或验证普通 Spec，并维护本地临时恢复点 |
-| [`distill-spec-memory`](./distill-spec-memory/SKILL.md) | 提炼已验证功能、推广经确认的学习候选，并维护两类项目 Memory |
-| [`fast`](./fast/SKILL.md) | 轻量新功能快速通道：讨论生成 plan.md，一次审批后连续执行 |
-| [`orchestrating-specs`](./orchestrating-specs/SKILL.md) | 编排多个已批准 Spec 的执行与跨 Spec 验证 |
-
-## 约束
-
-- 文件存在不代表已经批准；审批以当前会话中的明确回复为准。Requirements、Design、Tasks 均审批当前完整文件的实质内容，Tasks 包括完整任务计划及预定验收范围。三份文档依次单独审批，运行证据和学习候选更新不重新触发计划审批。
-- 仅请求分析讨论时保持会话交流，不自动写入 Spec。
-- Tasks 获批只代表规划完成，实际编码需单独发起任务执行请求。
-- fast 模式仅限首次创建（无 `requirements.md`）；`plan.md` 与 requirements/design/tasks 三件套互斥，同一 feature 只保留其中一种产物。
-- `templete` 是项目现有文件名约定，请勿自行改名。
-
-## 风险、验收与学习
-
-| 风险 | 典型影响 | 审批与验证 |
-|---|---|---|
-| low | 局部可撤销，无公共接口、持久化数据、权限变化 | 三阶段分别审批；验收标准覆盖与直接回归 |
-| medium | 跨组件、公共接口、兼容数据变化 | 三阶段分别审批；增加集成、兼容、异常路径 |
-| high | 权限、敏感数据、破坏性迁移或不可逆影响 | 三阶段分别审批；确认尚未授权的关键操作与最终验收证据，增加相关安全和恢复验证 |
-
-按最高适用风险判断，不打分；不能证明为 low 时先按 medium，存在未明确的高风险后果时先澄清。fast 各等级均保留单份计划和一次计划审批，同时遵守高风险操作及验收确认。风险升级会调整验证深度；若已批准内容随之变化，按所属阶段重新审批。
-
-每个 TODO 写清实现目标、具体场景下的可观察成功判据、已发现的命令或测试入口。新测试标记为待实现，不能只用“测试通过”作为判据。完成时只修改复选框，保留 TODO 原文；后续修复追加记录并单独提交。
-
-全部 TODO 完成后自动进行 Feature-level Verification；请求执行已勾选计划也会补齐缺失或失效的验收。部分任务完成不代表整个功能通过，状态查询不启动执行。结果直接写入 tasks.md / plan.md 的 Feature Verification：预定验收范围与运行结果分开，记录实际证据、时间、被测提交、相关未提交改动及契约版本。结果区分 passed、failed、blocked、pending-human；相关代码或契约变化后标为 stale。必要人工检查未完成，以及高风险证据未经用户确认时，均不能报告功能通过。
-
-实现错误在授权范围内持续修复；同一问题连续两轮没有新证据或改善时暂停。任务遗漏回 Tasks，设计假设失效回 Design，行为或验收标准有误回 Requirements；环境和权限缺失只标 blocked。fast 在同一 plan 内回到目标、方案或任务，实质修订重新审批。不得删减成功判据来掩盖失败。
-
-有价值的成功或失败经验先进入文末 Learning Candidates，确认完整候选与确切写入预览后才进入 project-memory/learnings/。原有 project-memory/features/ 保留；两类共用六列索引和状态生命周期，合计最多召回三条适用的 active 记忆。失败经验不要求功能全部完成，但必须有可归因证据，未经验证的修复建议不能成为长期指导。不会自动修改 AGENTS.md、技能或权限。
-
-现有 Spec 不批量迁移；下次执行时补充风险与验收结构，涉及实质判据变化时按风险规则审批。普通执行见 [executing-task](./executing-task/SKILL.md)；共享规则见 [risk-policy](./using-lazyspec/references/risk-policy.md) 和 [delivery-loop](./using-lazyspec/references/delivery-loop.md)。安装时保留八个 Skill 及其相对目录，共享参考文档随 using-lazyspec 分发。
-
-历史工作流示例见 [`specs/lazyspec`](./specs/lazyspec/)；存量 Spec 保持原样，不代表当前输出格式。
+| [`using-lazyspec`](./using-lazyspec/SKILL.md) | 统一路由门面、负向警示护栏探测、阶段流转控制 |
+| [`writing-spec`](./writing-spec/SKILL.md) | /grill-me 结构化决策探针，生成合并版 `spec.md` |
+| [`writing-plan`](./writing-plan/SKILL.md) | 拆解行为单元任务（测试先行），生成 `plan.md` |
+| [`executing-plan`](./executing-plan/SKILL.md) | 连续执行、端到端功能验收、自动原位转正与废黜指针同步 |
+| [`distill-feature`](./distill-feature/SKILL.md) | 沉淀已交付特性的系统能力契约 (Feature Capsule) |
+| [`distill-learning`](./distill-learning/SKILL.md) | 随时沉淀经验教训与负向护栏 (Learning Capsule) |
+| [`maintain-memory`](./maintain-memory/SKILL.md) | 生命周期演进、归档治理、废黜维护与索引自愈 |
+| [`fast`](./fast/SKILL.md) | 单文件极简通道，轻量讨论并一次性执行 plan.md |
+| [`orchestrating-specs`](./orchestrating-specs/SKILL.md) | 多 Spec 依赖编排、堆叠分支与跨 Spec 集成验证 |

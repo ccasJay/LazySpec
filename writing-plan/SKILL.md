@@ -13,7 +13,7 @@ Read [risk-policy.md](../using-lazyspec/references/risk-policy.md), [approval-po
 
 - Output all user-facing text and generated `plan.md` content in Chinese, preserving project code keywords, command names, and Markdown/HTML anchors.
 - Resolve supporting resources (`plan-prompt.md`, `plan-template.md`) relative to the directory containing this `SKILL.md`.
-- Resolve upstream `specs/{feature_name}/spec.md` and the target `specs/{feature_name}/plan.md` against `ACTIVE_PROJECT_ROOT`.
+- Resolve upstream `specs/{feature_name}/spec.md` and the target `specs/{feature_name}/plan.md` against `ACTIVE_PROJECT_ROOT`, defined by `using-lazyspec` as the user's project working directory at session start. Never use this Skill's directory, its repository, or a Plugin cache as the project root.
 - Require explicit approval of `spec.md` before creating `plan.md`. Never infer approval from file existence.
 
 ## Plan Structure and Engineering Discipline

@@ -1,9 +1,0 @@
-### 2. Create Feature Design Document
-
-From explicitly approved Requirements with no unresolved blocking decision, complete the Design-stage decision exchange in `SKILL.md` before drafting affected sections, then create the minimum sufficient implementation-ready design. Refer to requirement IDs instead of restating them, record only decisions that affect implementation, and research only unresolved facts that change those decisions.
-
-Use the shared body with core and conditional sections defined by `design-templete.md` and the whole-document soft upper limit in `SKILL.md`; do not add an approval summary. Record each key choice, rationale, and impact once, and refer to it from technical sections. Testing Strategy identifies methods for observable acceptance outcomes, integration/failure coverage, and risk-specific or human checks needed by downstream Feature Verification; refer to requirement IDs rather than restating their acceptance criteria. Tasks owns the concrete Planned Checks and running evidence; do not duplicate that checklist here or substitute process checks for behavior.
-
-Write all user-visible prose in the generated `design.md` in Chinese, including the overview, design decisions, research findings, testing strategy, and explanatory text under each section. Keep the English structural keywords exactly as listed in `design-templete.md`, and the standalone risk heading in Chinese. Preserve project-specific names, technical terms, code identifiers, filenames, URLs, Markdown syntax, and diagram syntax when necessary.
-
-Apply the Diagram Policy in `SKILL.md`. Prefer compact ASCII diagrams for implementation-relevant topology, ownership, lifecycle, state transitions, and multi-participant sequences. Keep mandatory constraints, invariants, failure behavior, and compatibility guarantees in adjacent prose or contracts rather than encoding them only through diagram geometry.

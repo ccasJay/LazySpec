@@ -33,11 +33,10 @@ class OrchestrationTriggerTests(unittest.TestCase):
             ROUTER,
         )
 
-    def test_participating_specs_need_approved_three_documents(self):
+    def test_participating_specs_need_approved_spec_and_plan(self):
         for required in (
-            "user-approved `specs/{feature_name}/requirements.md`, `design.md`, and `tasks.md`",
+            "user-approved `specs/{feature_name}/spec.md` and `plan.md`",
             "never infer it from file existence",
-            "only a fast `plan.md`",
             "do not create `orchestration.md`",
         ):
             with self.subTest(required=required):
@@ -57,7 +56,7 @@ class OrchestrationTriggerTests(unittest.TestCase):
 class OrchestrationBoundaryTests(unittest.TestCase):
     def test_orchestration_is_not_a_new_planning_layer(self):
         for required in (
-            "not a new Requirements, Design, or Tasks layer",
+            "not a new Spec or Plan layer",
             "MUST NOT define new user behavior, interface requirements, or business scope",
         ):
             with self.subTest(required=required):
@@ -66,9 +65,9 @@ class OrchestrationBoundaryTests(unittest.TestCase):
     def test_orchestration_does_not_govern_intra_spec_task_execution(self):
         for required in (
             "MUST NOT specify how tasks inside any individual Spec are executed",
-            "remain governed by that Spec's approved `tasks.md` and executing-task/SKILL.md",
+            "remain governed by that Spec's approved `plan.md` and executing-plan/SKILL.md",
             "The orchestration decides only when a Spec's turn arrives, on which branch, and alongside which other Specs",
-            "each Spec's internal task execution remains fully governed by that Spec's `tasks.md` and executing-task/SKILL.md",
+            "each Spec's internal task execution remains fully governed by that Spec's `plan.md` and executing-plan/SKILL.md",
         ):
             with self.subTest(required=required):
                 self.assertIn(required, SKILL)
@@ -82,19 +81,19 @@ class OrchestrationBoundaryTests(unittest.TestCase):
 
     def test_gaps_route_back_to_spec_revisions(self):
         for required in (
-            "route it back to the affected Spec's Requirements, Design, or Tasks revision under delivery-loop.md's failure routing",
+            "route it back to the affected Spec's `spec.md` or `plan.md` revision under delivery-loop.md's failure routing",
             "MUST NOT fill the gap inside `orchestration.md` and execute it",
         ):
             with self.subTest(required=required):
                 self.assertIn(required, SKILL)
         self.assertIn(
-            "gaps between Specs route back to the affected Spec's Requirements/Design/Tasks revision",
+            "gaps between Specs route back to the affected Spec's revision",
             ROUTER,
         )
 
     def test_specs_remain_their_own_source_of_truth(self):
         self.assertIn(
-            "Execute each Spec through its own approved Requirements, Design, and Tasks as the source of truth via executing-task/SKILL.md",
+            "Execute each Spec through its own approved `spec.md` and `plan.md` as the source of truth via executing-plan/SKILL.md",
             SKILL,
         )
         self.assertIn(
@@ -127,14 +126,13 @@ class OrchestrationApprovalAndBranchTests(unittest.TestCase):
             "堆叠分支策略",
             "B 基于 A 的分支创建",
             "最后按相同顺序依次 merge",
-            "overriding the default single-Spec `codex/<feature-name>` branch rule",
         ):
             with self.subTest(required=required):
                 self.assertIn(required, SKILL)
         self.assertIn("堆叠分支", TEMPLATE)
         self.assertIn(
-            "An approved `specs/orchestration.md` supplies the cross-Spec branch and sequencing constraints instead",
-            (ROOT / "executing-task" / "SKILL.md").read_text(),
+            "specs/orchestration.md",
+            (ROOT / "executing-plan" / "SKILL.md").read_text(),
         )
 
     def test_document_covers_required_contents(self):
@@ -161,7 +159,7 @@ class OrchestrationLifecycleTests(unittest.TestCase):
         for required in (
             "## Memory Distillation Gate",
             "MUST proactively initiate the distillation step",
-            "distill-spec-memory",
+            "distill-feature",
             "MUST NOT bypass that boundary or write Memory directly",
             "neither may be silently skipped",
         ):
@@ -171,10 +169,10 @@ class OrchestrationLifecycleTests(unittest.TestCase):
 
     def test_deletion_only_after_full_group_completion(self):
         for required in (
-            "Never delete `orchestration.md` because a single Spec's Tasks finished",
+            "Never delete `orchestration.md` because a single Spec's tasks finished",
             "delete only after the whole group's execution, verification, distillation, and final user confirmation are all complete",
             "delete only `specs/orchestration.md` itself",
-            "MUST NOT delete any Spec's Requirements, Design, Tasks, or Feature Verification evidence",
+            "MUST NOT delete any Spec's `spec.md`, `plan.md`, or Feature Verification evidence",
         ):
             with self.subTest(required=required):
                 self.assertIn(required, SKILL)

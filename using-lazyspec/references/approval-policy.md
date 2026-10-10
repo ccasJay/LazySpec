@@ -18,10 +18,10 @@ Single source of truth for approval semantics across all LazySpec gates: Require
 
 ## Approval timing
 
-- For every normal v2 Spec, create and review one phase at a time: Spec → explicit Spec approval → Plan → explicit Plan approval. Legacy Specs retain their three approval gates: Requirements → explicit Requirements approval → Design → explicit Design approval → Tasks → explicit Tasks approval. Never create a downstream phase document before the current phase is explicitly approved. Risk level and decision impact do not change this order or the approval gates.
-- Before creating a new Plan, ensure the current `spec.md` is explicitly approved. In legacy Specs, before creating a new Design, collect Design-stage input through the separate question exchange in `writing-design`, after Requirements approval. Answering a clarifying question does not approve the document draft.
+- For every normal Spec, create and review one phase at a time: Spec → explicit Spec approval → Plan → explicit Plan approval. Never create a downstream phase document before the current phase is explicitly approved. Risk level and decision impact do not change this order or the approval gates.
+- Before creating a new Plan, ensure the current `spec.md` is explicitly approved.
 - Resolve unanswered user decisions within the current phase. Do not advance past an unapproved phase or an unauthorized critical operation. Reuse explicit decisions and authorization already available in the conversation without asking twice for the same phase object.
-- Confirming an individual requirement or completing collection does not approve the complete Requirements document. Approval of one Spec phase never approves a later phase.
+- Approval of one Spec phase never approves a later phase.
 - Confirm only concrete critical operations not already explicitly authorized at their current scope. General plan approval is not permission for an unnamed destructive operation. Human acceptance is required only when explicitly requested, mandated by binding project rules, or necessary to establish an outcome unavailable to automated evidence; when required, it covers the current implementation, not an old result.
 - Fast retains one plan and one plan approval followed by continuous execution, at every risk level. A material plan change requires approval of the complete revised plan with its delta.
 - Multi-Spec orchestration retains one approval gate: explicit approval of the complete `orchestration.md` before any participating Spec's execution starts. A material change — participating Spec set, joint objective, dependency/order, parallelism, branch strategy, coordination constraints, or integration verification — requires approval of the complete revised orchestration with its delta. Orchestration approval never approves new Spec content; participating Specs remain governed by their own approvals.
@@ -31,7 +31,7 @@ Single source of truth for approval semantics across all LazySpec gates: Require
 
 When an approval object is a saved Spec or plan file, finish writing and internally checking that file before requesting approval. Give the user a link to the current file (or its exact path if the environment cannot link files), name the phase, and ask them to review the file and approve it or request changes. Keep the approval question short: do not paste the complete document into the conversation or the question tool. The file remains the complete approval object; a link or file write alone does not count as approval.
 
-For a material revision, update the same file first and give a concise delta of material additions, changes, removals, and risk changes alongside its link. If the user explicitly asks to see the text in the conversation, provide the requested excerpt or document. This rule applies to saved Requirements, Design, Tasks, fast plans, and orchestration plans; it does not replace Memory's exact write-preview approval.
+For a material revision, update the same file first and give a concise delta of material additions, changes, removals, and risk changes alongside its link. If the user explicitly asks to see the text in the conversation, provide the requested excerpt or document. This rule applies to saved `spec.md`, `plan.md`, fast plans, and orchestration plans; it does not replace Memory's exact write-preview approval.
 
 ## How to ask
 
@@ -45,13 +45,8 @@ At a necessary approval gate, ask the phase's approval question as one decision.
 
 ## Complete-file approval contract
 
-In v2 binary architecture, `spec.md` and `plan.md` each use the complete saved phase document as their approval object (legacy: Requirements, Design, and Tasks each use the complete saved phase document as their approval object). Users and Agents share one body; do not generate a separate approval summary or divide the document by audience.
+In v2 binary architecture, `spec.md` and `plan.md` each use the complete saved phase document as their approval object. Users and Agents share one body; do not generate a separate approval summary or divide the document by audience.
 
 - Frontmatter metadata contract: `spec.md` MUST include standardized YAML frontmatter tracking `status` (`proposed`, `delivered`, `archived`, `superseded`, `obsolete`), `created_at`, optional `delivered_at`, optional `supersedes: []`, and optional `superseded_by`.
 - Before requesting approval, verify that the file captures all confirmed material behavior, boundaries, decisions, and risks, contains no conflicting contract items, and has no unresolved material user decision. Do not require a second projection of the same information.
-- Every downstream phase MUST use the approved upstream document's material content as its contract. Planning Skills continue to read complete upstream Specs as their instructions require. During normal task execution, `executing-plan` (and legacy `executing-task`) reads complete `spec.md` (or legacy Requirements and Design's overview, key decisions, and risk sections), then technical sections relevant to each TODO; it checks complete feature-contract coverage before claiming verification passed.
-
-
-## Legacy artifacts
-
-Do not migrate existing Specs solely to adopt this format. An already approved legacy document remains usable without rewriting or adding a summary. Read its material content wherever it is recorded; any existing summary is part of that document, not a separate higher-authority contract. If its sections conflict, resolve the affected contract under the materiality rules before dependent work. User-requested revisions retain unchanged behavior, anchors, TODO text, and valid evidence; do not reformat unrelated sections.
+- Every downstream phase MUST use the approved upstream document's material content as its contract. Planning Skills continue to read complete upstream Specs as their instructions require. During normal task execution, `executing-plan` reads complete `spec.md` overview, key decisions, and risk sections, then technical sections relevant to each TODO; it checks complete feature-contract coverage before claiming verification passed.

@@ -1,6 +1,6 @@
 # Shared feature verification, repair, and learning
 
-Read for task planning and for execution in both normal and fast modes, after `risk-policy.md`. This is a shared workflow contract, not a runtime or permission grant. Normal `tasks.md` execution is owned by `executing-task/SKILL.md`; fast `plan.md` execution is owned by `fast/SKILL.md`.
+Read for task planning and for execution in both normal and fast modes, after `risk-policy.md`. This is a shared workflow contract, not a runtime or permission grant. Normal `plan.md` execution is owned by `executing-plan/SKILL.md`; fast `plan.md` execution is owned by `fast/SKILL.md`.
 
 ## Executable success criteria
 
@@ -8,7 +8,7 @@ Each executable TODO has a concrete implementation objective, a scenario/input w
 
 ## Feature Verification artifact
 
-Append `## Feature Verification` to `tasks.md` (normal) or `plan.md` (fast). This is not a TODO and is excluded from checkbox counts. Do not create a separate verification file. Separate the approved **Planned Checks** from the mutable **Latest Result** so recording evidence does not revise the plan.
+Append `## Feature Verification` to `plan.md`. This is not a TODO and is excluded from checkbox counts. Do not create a separate verification file. Separate the approved **Planned Checks** from the mutable **Latest Result** so recording evidence does not revise the plan.
 
 Planned Checks maps every acceptance outcome to a scenario, expected result, and check/evidence method. Link normal-mode requirement anchors; fast references Objective, Constraints, and task criteria. Include composed user flows and risk-specific checks. Group outcomes only when their individual coverage remains explicit. Put required manual experience checks here, not in coding TODOs.
 
@@ -47,7 +47,7 @@ LazySpec defines formal lifecycle states for Specs:
 
 ## Mode-specific execution
 
-Use `executing-task/SKILL.md` for the normal `tasks.md` execution strategy, including approvals, progressive context discovery, TODO scope, branch, verification, checkbox, commit, handoff, and temporary progress rules. Use `fast/SKILL.md` for fast `plan.md` execution. Both modes follow the shared Feature Verification, failure routing, and Learning Candidates rules in this reference. Multi-Spec orchestration controls cross-Spec sequencing and branches only; it does not govern intra-Spec task execution or grant delegation authority.
+Use `executing-plan/SKILL.md` for the normal `plan.md` execution strategy, including approvals, progressive context discovery, TODO scope, branch, verification, checkbox, commit, handoff, and temporary progress rules. Use `fast/SKILL.md` for fast `plan.md` execution. Both modes follow the shared Feature Verification, failure routing, and Learning Candidates rules in this reference. Multi-Spec orchestration controls cross-Spec sequencing and branches only; it does not govern intra-Spec task execution or grant delegation authority.
 
 ## Failure routing and repair
 
@@ -55,13 +55,12 @@ Diagnose before changing artifacts. Route to the earliest contract that must cha
 
 | Cause | Destination | Action |
 |---|---|---|
-| Code violates valid requirements and design | Current execution task | Repair and retest within authorized scope, without reapproval |
-| Missing task, wrong ordering, or inadequate verification steps; upstream contracts valid | Tasks | Update non-material execution details and continue; ask only if the success contract or reserved decision changes |
-| Invalid architecture, interface, or data-design assumption | Design | Revise Design and inspect affected Tasks; approve material choices, continue equivalent internal refinements |
-| Missing, conflicting, or incorrect behavior, scope, or acceptance criterion | Requirements | Revise Requirements and inspect affected Design/Tasks; approve affected contracts |
+| Code violates valid spec and design decisions | Current execution task | Repair and retest within authorized scope, without reapproval |
+| Missing task, wrong ordering, or inadequate verification steps; upstream contracts valid | Plan (`plan.md`) | Update non-material execution details and continue; ask only if the success contract or reserved decision changes |
+| Invalid architecture, interface, behavior, scope, or acceptance criterion | Spec (`spec.md`) | Revise Spec and inspect affected Plan; approve material choices |
 | Unavailable environment, permission, or dependency | Current stage | Mark blocked and report the missing condition; do not change product requirements |
 
-Never weaken approved success criteria, remove a required check, or relabel a failure just to pass. In fast, route the same causes to Objective/Constraints, Approach, or Tasks inside plan.md. A material revision requires approval of the complete revised plan with a delta; do not create Requirements/Design/Tasks files.
+Never weaken approved success criteria, remove a required check, or relabel a failure just to pass. In fast, route the same causes to Objective/Constraints, Approach, or Tasks inside plan.md. A material revision requires approval of the complete revised plan with a delta.
 
 During an authorized implementation run, continue repairs while progressing. For the same issue, after two consecutive rounds without new evidence or improvement, reassess the hypothesis and method. Continue only with a concrete new diagnostic approach within the authorized budget; otherwise stop and report. Report attempts, evidence, and the unresolved decision. Rewording an explanation, renaming an issue, or repeating the same failed approach is not a new diagnostic approach. Honor explicit attempt/time/cost limits. Stop immediately for working-tree conflicts, missing authority, or a necessary user decision.
 
@@ -69,8 +68,8 @@ Only affected approvals and evidence become invalid. Preserve completed TODO tex
 
 ## Learning Candidates
 
-After verification or a valuable blocked/failed attempt, inspect the run for reusable, project-specific evidence. If none exists, add nothing. Otherwise append `## Learning Candidates` to the same task/plan document. Each candidate records applicability, observed problem, evidenced explanation, validated practice (or explicitly unverified proposal), sources, limits, and revisit conditions.
+After verification or a valuable blocked/failed attempt, inspect the run for reusable, project-specific evidence. If none exists, add nothing. Otherwise append `## Learning Candidates` to the same plan document. Each candidate records applicability, observed problem, evidenced explanation, validated practice (or explicitly unverified proposal), sources, limits, and revisit conditions.
 
-Candidates are not long-term Memory and must not be recalled as active guidance. Show a concise handoff and link the complete candidate. Only when the user requests promotion or confirms a candidate, route to distill-spec-memory to prepare the exact Capsule/index write preview. Approval of the complete candidate plus exact write set authorizes that write once; changes invalidate it. Collection alone never writes under project-memory/ or changes AGENTS.md, skills, permissions, or configuration.
+Candidates are not long-term Memory and must not be recalled as active guidance. Show a concise handoff and link the complete candidate. Only when the user requests promotion or confirms a candidate, route to distill-learning to prepare the exact Capsule/index write preview. Approval of the complete candidate plus exact write set authorizes that write once; changes invalidate it. Collection alone never writes under project-memory/ or changes AGENTS.md, skills, permissions, or configuration.
 
 An unfinished feature can support a bounded failure observation; it cannot support a claim of feature success or an untested remedy. One success supports only its evidenced conditions. Continue reporting likely existing Memory impact candidates without silently changing their status.

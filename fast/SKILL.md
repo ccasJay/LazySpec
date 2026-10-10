@@ -1,11 +1,11 @@
 ---
 name: fast
-description: Create or resume a lightweight LazySpec fast/快速 plan when no requirements.md exists. Approve one plan, execute its authorized tasks, verify the feature, and collect learning candidates with risk-based controls.
+description: Create or resume a lightweight LazySpec fast/快速 plan when no spec.md exists. Approve one plan, execute its authorized tasks, verify the feature, and collect learning candidates with risk-based controls.
 ---
 
 # Fast
 
-Turn a new feature idea into an approved `plan.md` and execute it in one continuous run, skipping the full LazySpec phase pipeline. Use this Skill for first-time fast creation and subsequent execution, verification, or revision of that fast plan; never use it to revise an existing three-document Spec.
+Turn a new feature idea into an approved `plan.md` and execute it in one continuous run, skipping the full LazySpec phase pipeline. Use this Skill for first-time fast creation and subsequent execution, verification, or revision of that fast plan; never use it to revise an existing `spec.md`.
 
 ## Shared policies
 
@@ -22,7 +22,7 @@ Resolve every `specs/{feature_name}/...` path against `ACTIVE_PROJECT_ROOT`, the
 
 Before any discussion, inspect the target feature under `ACTIVE_PROJECT_ROOT`:
 
-1. If `specs/{feature_name}/requirements.md` exists, stop. Report in Chinese that this feature already has a Spec and must use the normal LazySpec chain (`writing-requirement` and onward); do not create or modify a `plan.md`.
+1. If `specs/{feature_name}/spec.md` exists, stop. Report in Chinese that this feature already has a Spec and must use the normal LazySpec chain (`writing-spec` and onward); do not create or modify a `plan.md`.
 2. If `specs/{feature_name}/plan.md` exists, inspect it and the current request. On an explicit execution request, resume the authorized tasks and missing/stale Feature Verification after confirming applicable plan approval from the conversation; never infer approval from checkboxes. On a verification-only request, run and report checks under delivery-loop.md without implementation repairs. For a status question, report read-only. Otherwise ask whether to resume or revise; never silently overwrite the plan.
 3. Only when neither file exists, proceed to discussion.
 
@@ -48,7 +48,7 @@ Write exactly one artifact: `specs/{feature_name}/plan.md` under `ACTIVE_PROJECT
 
 Record risk level, reasons, and critical operations in Constraints/Approach. During execution append Learning Candidates only when useful evidence exists.
 
-Keep the plan minimal and directly executable. Exclude user testing, deployment, documentation, and communication work from coding Tasks; automated tests are allowed. Necessary human acceptance checks belong in Feature Verification. Do not create `requirements.md`, `design.md`, `tasks.md`, or any other artifact.
+Keep the plan minimal and directly executable. Exclude user testing, deployment, documentation, and communication work from coding Tasks; automated tests are allowed. Necessary human acceptance checks belong in Feature Verification. Do not create `spec.md` or any other artifact.
 
 ## Approval
 
@@ -71,4 +71,4 @@ When all checkboxes are checked, run Feature-level Verification and collect valu
 
 - TODO completion separately from feature status/freshness, current evidence, required human acceptance, and remaining work. Pending or blocked verification is not feature success.
 - Inspect only the Project Memory index (`project-memory/index.md`) for Capsules whose feature, tags, summary, Source Spec, or authorities overlap the changed paths, and report likely impact candidates. Do not create, edit, or re-status Memory without a separate explicit distillation or maintenance request.
-- Note that the feature used fast mode and has no `requirements.md` / `design.md` / `tasks.md`; suggest the normal chain if the feature later needs a full Spec.
+- Note that the feature used fast mode and has no `spec.md`; suggest the normal chain if the feature later needs a full Spec.
