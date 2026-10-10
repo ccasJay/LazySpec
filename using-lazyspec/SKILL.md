@@ -46,12 +46,18 @@ Before inspecting or writing any Spec artifact, bind `ACTIVE_PROJECT_ROOT` to th
 
 Resolve every routed Skill with this platform-neutral protocol:
 
-1. Prefer the current environment's registered Skill invocation mechanism. Use the logical names `writing-requirement`, `writing-design`, `writing-task`, `executing-task`, `distill-spec-memory`, `fast`, and `orchestrating-specs`; a Claude Code Plugin may expose them as `lazyspec:<logical-name>`, while an Agent Skills installation may expose the unnamespaced logical name.
+1. Prefer the current environment's registered Skill invocation mechanism. Use the logical names `writing-spec`, `writing-plan`, `executing-plan`, `distill-feature`, `distill-learning`, `maintain-memory`, `fast`, `orchestrating-specs`, as well as legacy compatibility names `writing-requirement`, `writing-design`, `writing-task`, `executing-task`, and `distill-spec-memory`; a Claude Code Plugin may expose them as `lazyspec:<logical-name>`, while an Agent Skills installation may expose the unnamespaced logical name.
 2. If no registered Skill invocation mechanism is available, or the logical Skill is not registered, read its sibling `SKILL.md` using the fallback mapping below. Resolve the path relative to this `using-lazyspec/SKILL.md`, never relative to the process working directory or repository root.
 3. After resolving the target, follow that Skill's instructions and resolve its supporting files by the target Skill's own resource rules.
 
 | Logical name | Registered Claude Code name | Relative fallback |
 |---|---|---|
+| `writing-spec` | `lazyspec:writing-spec` | `../writing-spec/SKILL.md` |
+| `writing-plan` | `lazyspec:writing-plan` | `../writing-plan/SKILL.md` |
+| `executing-plan` | `lazyspec:executing-plan` | `../executing-plan/SKILL.md` |
+| `distill-feature` | `lazyspec:distill-feature` | `../distill-feature/SKILL.md` |
+| `distill-learning` | `lazyspec:distill-learning` | `../distill-learning/SKILL.md` |
+| `maintain-memory` | `lazyspec:maintain-memory` | `../maintain-memory/SKILL.md` |
 | `writing-requirement` | `lazyspec:writing-requirement` | `../writing-requirement/SKILL.md` |
 | `writing-design` | `lazyspec:writing-design` | `../writing-design/SKILL.md` |
 | `writing-task` | `lazyspec:writing-task` | `../writing-task/SKILL.md` |
@@ -60,11 +66,20 @@ Resolve every routed Skill with this platform-neutral protocol:
 | `fast` | `lazyspec:fast` | `../fast/SKILL.md` |
 | `orchestrating-specs` | `lazyspec:orchestrating-specs` | `../orchestrating-specs/SKILL.md` |
 
-### Memory Distillation Routing
+### Memory Distillation & Governance Routing
 
-- Route to `distill-spec-memory` only when the user explicitly asks to preserve or maintain Feature/Learning Memory, requests candidate promotion, or confirms a Learning Candidate for preview. Automatic candidate collection follows delivery-loop.md and does not authorize Memory writes.
+- Route to `distill-feature` when the user explicitly requests distilling an already delivered feature Spec.
+- Route to `distill-learning` when capturing engineering observations, troubleshooting remedies, or negative guardrails.
+- Route to `maintain-memory` for memory and specs maintenance, supersession propagation, foundation archival, or index self-healing.
+- Route to legacy `distill-spec-memory` only when the user explicitly asks to preserve or maintain Feature/Learning Memory, requests candidate promotion, or confirms a Learning Candidate for preview. Automatic candidate collection follows delivery-loop.md and does not authorize Memory writes.
 - Do not infer a distillation request from task completion. Collect valuable learning candidates in the task/plan artifact only; exact Memory write approval remains separate.
 - After routing, follow `distill-spec-memory` without changing the normal LazySpec phase order or approval gates.
+
+### Negative Guardrails Inspection
+
+Before routing to `writing-spec` or initiating new feature planning:
+- Inspect `specs/retired/` (or obsolete entries in `project-memory/`).
+- If the requested capability or approach matches a retired/obsolete specification or negative guardrail, issue an immediate warning in Chinese citing the retirement reason and require user confirmation before proceeding, preventing the agent from repeating past mistakes.
 
 ### Fast Mode Routing
 
@@ -83,17 +98,16 @@ Resolve every routed Skill with this platform-neutral protocol:
 
 For every ordinary LazySpec request, after binding `ACTIVE_PROJECT_ROOT` and before selecting the phase Skill, build a session-only `RelevantMemoryContext` by following [memory-recall.md](references/memory-recall.md) exactly. An explicit Memory distillation request routes directly to `distill-spec-memory`; it does not receive an unrelated default recall context.
 
-Inspect the requested feature's `specs/{feature_name}/requirements.md`, `design.md`, and `tasks.md` under `ACTIVE_PROJECT_ROOT`, the user's request, and explicit approvals available in the current conversation. Do not infer approval from file existence.
+Inspect the requested feature's `specs/{feature_name}/spec.md` (or legacy `requirements.md`, `design.md`, and `tasks.md`) under `ACTIVE_PROJECT_ROOT`, the user's request, and explicit approvals available in the current conversation. Do not infer approval from file existence.
 
 ### Phase Chain
 
-1. For the first creation of `requirements.md`, route directly to `writing-requirement`. That Skill owns the one-at-a-time collection exchange and writes the complete draft only after the user confirms collection is complete. No separate context approval or platform-specific plan adapter is required. Supplied plans are ordinary background and cannot bypass requirement collection. Respect the host environment's current tool and file-writing restrictions.
+1. For the first creation of `requirements.md`, route directly to `writing-requirement` (in v2 binary architecture, route new feature requests directly to `writing-spec`). That Skill conducts structured probing (/grill-me style) and writes the complete draft only after confirmation is complete. No separate context approval or platform-specific plan adapter is required. Supplied plans are ordinary background and cannot bypass requirement collection. Respect the host environment's current tool and file-writing restrictions.
+2. For a revision of an existing `requirements.md`, route directly to `writing-requirement`, which collects only additions, material changes, and removals while retaining unchanged requirements.
+3. Route to `writing-design` only after explicit approval of the current Requirements, and to `writing-task` (or v2 `writing-plan`) only after explicit approval of the current Design (or `spec.md`). Create one normal-phase document at a time and request its approval before advancing, at every risk level. Approval of a prior phase never approves the next one.
+4. For ordinary `tasks.md` execution, resume, or verification-only requests, route to `executing-task` (in v2: `executing-plan`) and the shared delivery-loop.md. Verification-only requests do not authorize implementation repairs. Answer task-status questions read-only without starting work; when execution is explicitly requested, pass the full TODO scope stated by the user to `executing-task`.
 
-2. For a revision of an existing `requirements.md`, route directly to `writing-requirement`, which collects only additions, material changes, and removals while retaining unchanged requirements. A request for discussion alone stays in the conversation and does not authorize writing a Spec artifact.
 
-3. Route to `writing-design` only after explicit approval of the current Requirements, and to `writing-task` only after explicit approval of the current Design. Create one normal-phase document at a time and request its approval before advancing, at every risk level. Approval of a prior phase never approves the next one.
-
-4. For ordinary `tasks.md` execution, resume, or verification-only requests, route to `executing-task` and the shared delivery-loop.md. Verification-only requests do not authorize implementation repairs. Answer task-status questions read-only without starting work; when execution is explicitly requested, pass the full TODO scope stated by the user to `executing-task`.
 
 ## Workflow Diagram
 

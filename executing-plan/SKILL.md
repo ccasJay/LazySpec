@@ -40,6 +40,7 @@ Once all TODOs are checked and Feature Verification is evaluated as `passed` wit
      - Open `specs/<old-feature>/spec.md` (or legacy `design.md`);
      - Update its frontmatter to `status: superseded` with `superseded_by: specs/{feature_name}/`;
      - Prepend a warning callout at the top of the superseded file:
-       `> [!WARNING]\n> 本规范已被 [specs/{feature_name}/spec.md](../{feature_name}/spec.md) 废黜，请勿作为当前系统事实参考。`
+       `> [!WARNING]`
+       `> 本规范已被新规范废黜，请勿作为当前系统事实参考。`
 4. **Cleanup**: Remove `.execution-progress.md`.
 5. **Handoff**: Present a concise delivery summary, highlighting delivered capabilities, verification pass evidence, and any affected superseded Specs or memory impact candidates.

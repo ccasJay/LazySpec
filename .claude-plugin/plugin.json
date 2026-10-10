@@ -8,6 +8,12 @@
   "repository": "https://github.com/ccasJay/LazySpec",
   "skills": [
     "./using-lazyspec",
+    "./writing-spec",
+    "./writing-plan",
+    "./executing-plan",
+    "./distill-feature",
+    "./distill-learning",
+    "./maintain-memory",
     "./writing-requirement",
     "./writing-design",
     "./writing-task",

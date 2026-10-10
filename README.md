@@ -5,20 +5,18 @@
 ## 工作流程
 
 ```text
-正常链路：Requirements 逐条收集并审批 → Design 并审批 → Tasks 并审批 → 按需执行 → 功能验收
+v2 二元链路：/grill-me 决策探针 → spec.md 审批 → plan.md (TDD) 审批 → 连续执行 → 自动交付收口
+生命周期演进：delivered (生效事实) / archived (成熟封存) / superseded (显式废黜) / obsolete (负向警示护栏)
+经验治理流：distill-feature (特性契约) / distill-learning (随时踩坑提炼) / maintain-memory (治理与索引自愈)
 fast 链路：讨论 → plan.md → 一次审批 → 连续执行 → 功能验收
-验证失败：诊断 → 范围内修复，或回到 Requirements / Design / Tasks
-经验学习：自动提取候选 → 确认完整写入预览 → Project Memory
+legacy 兼容：Requirements 逐条收集 → Design 审批 → Tasks 审批 → 按需执行
 ```
 
-- Requirements 直接从用户描述开始：Agent 每次提议一条需求，只说明需求是什么和简洁的目标行为，通过当前环境的提问工具请用户确认、修改或拒绝，并等待回答后继续。用户确认收集完成后才一次生成完整需求草稿，Agent 据此整理用户故事和 EARS 验收标准；发现新的行为取舍时返回提问。
-- Requirements 默认用白话中文、先讲用户能获得的结果，每次只请用户做一个决定，不在收集问题中展示详细验收标准。用户主动使用术语或要求深入时，表达会随之提高专业程度，但不会省略范围、约束、风险和成功标准。
-- 修改已有 Requirements 时，只询问新增、实质修改或删除的需求；保留未改变的需求，纯文字整理不重复询问。逐条确认和结束收集均不等于整份需求文档获批。
-- 进入 Design 后另行检查实现取舍，逐项询问需由用户决定的关键选择；新建 Design 至少提供一次补充设计约束或偏好的机会。
-- Requirements、Design、Tasks 分别生成 `requirements.md`、`design.md`、`tasks.md`。
-- 各阶段先将完整内容写入文件，再在会话中给出文件链接和简短审批问题；用户直接审阅文件，会话不重复展示整份草案。实质修订只附简短变更说明。
-- 所有风险等级均逐阶段生成并审批 Requirements、Design、Tasks；上一阶段未获明确批准前不得生成下一阶段文档。草稿存在不代表批准。
-- fast 模式面向轻量新功能：交互式讨论后生成单个 `specs/<feature-name>/plan.md`，一次明确批准后连续执行全部任务。仅限首次创建（无 `requirements.md`）；已有 Spec 的功能仍走正常链路。
+- **Spec 制定**：通过 `/grill-me` 风格结构化决策探针，针对范围、架构边界与关键技术分歧快速收敛，一次性生成 `specs/<feature-name>/spec.md`（包含业务目标、EARS 验收标准、架构决策与强制的“曾考虑的备选方案”）。
+- **Plan 制定**：基于已批准的 `spec.md` 生成 `specs/<feature-name>/plan.md`，按完整行为单元拆解任务，内置测试先行（TDD）验证契约与 `## Feature Verification` 端到端集成检查。
+- **自动交付收口**：验收通过后自动将 `spec.md` 状态置为 `delivered`，原位清洗计划假设语态为现态事实决策；若声明废黜关系，自动双向回写旧 Spec 的 `superseded` 状态与重定向警示。
+- **负向警示护栏**：对于证伪或废弃的规范（`obsolete`），移入 `specs/retired/` 并打上 `[!CAUTION]`，在立项时主动探测拦截，坚决防止未来 Agent 重蹈覆辙。
+- **记忆三权分立**：`distill-feature` 沉淀系统能力契约；`distill-learning` 随时沉淀避坑经验；`maintain-memory` 负责归档、废黜与索引自愈。
 
 ## 安装与接入
 
@@ -28,13 +26,11 @@ fast 链路：讨论 → plan.md → 一次审批 → 连续执行 → 功能验
 npx skills add ccasJay/LazySpec --skill '*' -g
 ```
 
-按提示选择目标代理。安装完成后，确认八个 Skill 均可发现；日常使用从
-`using-lazyspec` 进入。
+按提示选择目标代理。安装完成后，日常使用从 `using-lazyspec` 进入。
 
 ### Claude Code Plugin
 
-兼容性基线为 Claude Code `2.1.229`。克隆本仓库后，在仓库根目录校验
-`.claude-plugin/plugin.json`，再以仓库绝对路径加载本地 Plugin：
+兼容性基线为 Claude Code `2.1.229`。克隆本仓库后，在仓库根目录校验 `.claude-plugin/plugin.json`，再以仓库绝对路径加载本地 Plugin：
 
 ```bash
 claude --version
@@ -48,18 +44,25 @@ claude --plugin-dir /absolute/path/to/LazySpec
 /lazyspec:using-lazyspec
 ```
 
-八个可显式调用的 Skill 为：
+核心技能列表（含向后兼容别名）：
 
 ```text
 /lazyspec:using-lazyspec
-/lazyspec:writing-requirement
-/lazyspec:writing-design
-/lazyspec:writing-task
-/lazyspec:executing-task
-/lazyspec:distill-spec-memory
-/lazyspec:fast
-/lazyspec:orchestrating-specs
+/lazyspec:writing-spec       # [v2] 制定规范 (需求 + 设计 + 备选)
+/lazyspec:writing-plan       # [v2] 制定计划 (TDD 行为任务与验收)
+/lazyspec:executing-plan     # [v2] 执行计划并自动交付收口
+/lazyspec:distill-feature    # [v2] 特性记忆沉淀 (Feature Capsule)
+/lazyspec:distill-learning   # [v2] 随时提炼工程经验教训
+/lazyspec:maintain-memory    # [v2] 记忆库与规范全生命周期治理
+/lazyspec:fast               # 快速单文件轻量模式
+/lazyspec:orchestrating-specs# 多 Spec 编排
+/lazyspec:writing-requirement# [兼容别名] 路由至 writing-spec
+/lazyspec:writing-design     # [兼容别名] 路由至 writing-spec
+/lazyspec:writing-task       # [兼容别名] 路由至 writing-plan
+/lazyspec:executing-task     # [兼容别名] 路由至 executing-plan
+/lazyspec:distill-spec-memory# [兼容别名] 路由至 distill-feature/learning
 ```
+
 
 Plugin 或 Skill 未出现时，按以下顺序排查：
 

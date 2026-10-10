@@ -24,12 +24,15 @@ class RequirementCollectionContractTests(unittest.TestCase):
     def test_manifest_registers_only_the_eight_remaining_skills(self):
         manifest = json.loads((ROOT / ".claude-plugin/plugin.json").read_text())
         expected = {
-            "using-lazyspec", "writing-requirement", "writing-design",
+            "using-lazyspec", "writing-spec", "writing-plan", "executing-plan",
+            "distill-feature", "distill-learning", "maintain-memory",
+            "writing-requirement", "writing-design",
             "writing-task", "executing-task", "distill-spec-memory",
             "fast", "orchestrating-specs",
         }
         self.assertEqual(expected, {Path(p).name for p in manifest["skills"]})
         self.assertEqual(len(expected), len(manifest["skills"]))
+
         self.assertFalse((ROOT / "brainstorming/SKILL.md").exists())
         self.assertFalse((ROOT / "using-lazyspec/references/codex-plan-mode.md").exists())
 
