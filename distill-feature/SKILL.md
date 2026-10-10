@@ -32,3 +32,4 @@ description: Distill verified delivered feature specifications into compact Feat
    Summarize concisely in chat (1-3 sentences) with a link to the preview artifact. Ask for explicit approval.
 4. **Atomic Write & Verify**:
    Upon approval, write the capsule, regenerate/update `project-memory/index.md`, and verify metadata.
+

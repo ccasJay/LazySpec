@@ -20,3 +20,4 @@ description: Audit and govern project memory and specs lifecycle: propagate supe
 4. **Index Self-Healing**:
    - Scan all active, superseded, archived, and obsolete capsules.
    - Regenerate and align `project-memory/index.md` according to the active contract.
+

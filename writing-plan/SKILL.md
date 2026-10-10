@@ -37,3 +37,4 @@ Read [risk-policy.md](../using-lazyspec/references/risk-policy.md), [approval-po
 2. Present the saved file link to the user and request explicit approval under approval-policy.md:
    `"请审阅执行计划 specs/<feature>/plan.md；是否批准其中的任务拆解与验收范围？"`
 3. Await explicit approval before handoff to `executing-plan`.
+

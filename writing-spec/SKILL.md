@@ -62,3 +62,4 @@ The generated `specs/{feature_name}/spec.md` combines requirements and design in
 2. Present the saved file link to the user and request explicit approval under approval-policy.md:
    `"请审阅规范文件 specs/<feature>/spec.md；是否批准其中的目标、范围、验收标准、架构决策与备选方案？"`
 3. Await explicit approval before transitioning to `writing-plan`.
+

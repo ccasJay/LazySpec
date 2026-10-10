@@ -27,3 +27,4 @@ A Learning Capsule strictly conforms to:
 2. **Preview Artifact**: Prepare preview with candidate capsule content and proposed `index.md` row.
 3. **Approval Gate**: Request user approval of the preview artifact.
 4. **Atomic Write**: Write to `project-memory/learnings/<learning-id>.md` and update `index.md`.
+
