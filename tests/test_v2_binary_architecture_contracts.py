@@ -20,11 +20,19 @@ class V2BinaryArchitectureContractTests(unittest.TestCase):
             "distill-learning",
             "maintain-memory",
         )
+        import yaml
+
         for name in v2_skills:
             skill_file = ROOT / name / "SKILL.md"
             self.assertTrue(skill_file.exists(), f"missing skill {name}")
             text = skill_file.read_text()
             self.assertTrue(text.startswith("---\nname: " + name), f"invalid frontmatter in {name}")
+            match = re.match(r"^---\n(.*?)\n---", text, re.DOTALL)
+            self.assertIsNotNone(match, f"frontmatter delimiters missing in {name}")
+            data = yaml.safe_load(match.group(1))
+            self.assertIsInstance(data, dict, f"frontmatter in {name} is not a dict")
+            self.assertEqual(data.get("name"), name)
+            self.assertTrue(data.get("description"), f"missing description in {name}")
 
     def test_spec_template_contains_frontmatter_and_alternatives(self):
         template = (ROOT / "writing-spec" / "spec-template.md").read_text()

@@ -1,6 +1,6 @@
 ---
 name: maintain-memory
-description: Audit and govern project memory and specs lifecycle: propagate supersessions, archive mature foundation specs into specs/archived/, retire obsolete specs into specs/retired/, and heal project-memory/index.md.
+description: "Audit and govern project memory and specs lifecycle: propagate supersessions, archive mature foundation specs into specs/archived/, retire obsolete specs into specs/retired/, and heal project-memory/index.md."
 ---
 
 # Maintain Memory and Specs Governance
