@@ -9,7 +9,7 @@ description: Distill verified delivered feature specifications into compact Feat
 
 - Maintain durable feature capability decisions under `project-memory/features/<feature-name>.md`.
 - Read [approval-policy.md](../using-lazyspec/references/approval-policy.md). Writing to `project-memory/` strictly requires explicit user approval of a complete preview artifact outside the project-memory tree.
-- Resolve all project paths against `ACTIVE_PROJECT_ROOT`. Load project contract `project-memory/README.md` if present, otherwise load fallback `../distill-spec-memory/references/memory-format.md`.
+- Resolve all project paths against `ACTIVE_PROJECT_ROOT`. Load project contract `project-memory/README.md` if present, otherwise load fallback `../using-lazyspec/references/memory-format.md`.
 
 ## Prerequisites
 
@@ -24,7 +24,7 @@ description: Distill verified delivered feature specifications into compact Feat
    | Claim | Spec Anchors | Code Evidence | Test Evidence | Existing Owner | Result |
    |---|---|---|---|---|---|
 2. **Generate Preview Artifact**:
-   Write a complete preview artifact outside `project-memory/` showing:
+   Write a complete preview artifact outside `project-memory/` (e.g. temporary `memory-preview.md` or environment artifact) showing:
    - Full text of candidate `project-memory/features/<feature-name>.md`;
    - Exact diff or updated row for `project-memory/index.md`;
    - Reciprocal status transitions if overriding an existing capsule.
@@ -32,4 +32,6 @@ description: Distill verified delivered feature specifications into compact Feat
    Summarize concisely in chat (1-3 sentences) with a link to the preview artifact. Ask for explicit approval.
 4. **Atomic Write & Verify**:
    Upon approval, write the capsule, regenerate/update `project-memory/index.md`, and verify metadata.
+5. **Clean Up Preview Artifact**:
+   Immediately delete the temporary preview artifact (e.g., `memory-preview.md`) upon successful write to ensure no ephemeral files remain in the workspace.
 

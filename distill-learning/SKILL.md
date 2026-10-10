@@ -24,7 +24,8 @@ A Learning Capsule strictly conforms to:
 ## Workflow
 
 1. **Evidence Verification**: Verify that the observed problem and remedy have concrete, attributable evidence in the current repository.
-2. **Preview Artifact**: Prepare preview with candidate capsule content and proposed `index.md` row.
+2. **Preview Artifact**: Prepare preview with candidate capsule content and proposed `index.md` row (e.g., temporary `memory-preview.md` or environment artifact outside `project-memory/`).
 3. **Approval Gate**: Request user approval of the preview artifact.
 4. **Atomic Write**: Write to `project-memory/learnings/<learning-id>.md` and update `index.md`.
+5. **Clean Up Preview Artifact**: Immediately delete the temporary preview artifact (e.g., `memory-preview.md`) upon successful write to ensure no ephemeral files remain in the workspace.
 

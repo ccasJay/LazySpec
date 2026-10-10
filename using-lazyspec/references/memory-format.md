@@ -112,6 +112,7 @@ For feature-only legacy indexes preserve sorting by feature. For mixed indexes s
 - Validate reciprocal supersession and reject cycles.
 - Report completed-checkbox Specs without Capsules as candidates only; never create Memory automatically. Feature promotion still requires current passed verification. Learning promotion requires bounded claim evidence and exact write approval, not source feature completion.
 - Treat the approved Capsule set and generated index as one logical write set.
+- Ephemeral preview artifacts outside `project-memory/` (e.g. `memory-preview.md`) are transient review objects; delete them immediately upon successful write to keep the working tree clean.
 
 ## Learning Capsule format
 

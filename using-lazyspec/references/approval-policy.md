@@ -31,7 +31,7 @@ Single source of truth for approval semantics across all LazySpec gates: Require
 
 When an approval object is a saved Spec or plan file, finish writing and internally checking that file before requesting approval. Give the user a link to the current file (or its exact path if the environment cannot link files), name the phase, and ask them to review the file and approve it or request changes. Keep the approval question short: do not paste the complete document into the conversation or the question tool. The file remains the complete approval object; a link or file write alone does not count as approval.
 
-For a material revision, update the same file first and give a concise delta of material additions, changes, removals, and risk changes alongside its link. If the user explicitly asks to see the text in the conversation, provide the requested excerpt or document. This rule applies to saved `spec.md`, `plan.md`, fast plans, and orchestration plans; it does not replace Memory's exact write-preview approval.
+For a material revision, update the same file first and give a concise delta of material additions, changes, removals, and risk changes alongside its link. If the user explicitly asks to see the text in the conversation, provide the requested excerpt or document. This rule applies to saved `spec.md`, `plan.md`, fast plans, and orchestration plans; it does not replace Memory's exact write-preview approval. Ephemeral preview artifacts for Memory writes (such as `memory-preview.md` created outside `project-memory/`) exist solely as approval objects; once approved and atomically written (or if rejected/abandoned), they MUST be deleted immediately to prevent cluttering the working tree.
 
 ## How to ask
 
