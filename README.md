@@ -1,114 +1,119 @@
 # LazySpec
 
-一套面向编码代理的 Spec 驱动开发 Skills，以二元架构将功能想法转化为高密度、可审阅、可执行、可验证的交付闭环，并实现自动化交付收口与三权分立的项目经验治理。
+> 面向 AI Coding Agent 的极简二元规范驱动开发（Spec-Driven Development）。  
+> 告别脱缰乱写、只写不测与文档过时；以最小完备契约构建高密度交付闭环与长期工程记忆。
 
-## 工作流程
+---
 
-```text
-v2 二元链路：/grill-me 决策探针 → spec.md 审批 → plan.md (TDD) 审批 → 连续执行 → 自动交付收口
-生命周期演进：proposed (立项提议) → delivered (交付生效) → archived (成熟封存) → superseded (显式废黜) / obsolete (负向警示护栏)
-经验治理流：distill-feature (特性契约) / distill-learning (随时踩坑提炼) / maintain-memory (治理与索引自愈)
-fast 链路：讨论 → plan.md → 一次审批 → 连续执行 → 功能验收
+## 💡 为什么需要 LazySpec？
+
+| 痛点 | 传统 Agent 编码 | LazySpec 的解法 |
+|---|---|---|
+| **指令模糊脱缰** | 给一句话需求就乱写，脑补过多 | **结构化决策探针**：主动抛出关键分歧与备选方案，先收敛再动工 |
+| **文档写完即过时** | 繁琐的 PRD 维护成本极高，代码改完文档脱节 | **二元最小契约**：仅需 `spec.md` + `plan.md`，验收后**自动原位清洗为事实** |
+| **只写代码不验证** | 声称“已完成”，一跑全是 Bug | **TDD 行为门禁**：行为单元测试先行，内置 `Feature Verification` 验收 |
+| **多会话反复踩坑** | 新会话 Agent 毫无记忆，重蹈覆辙 | **三权分立记忆与负向护栏**：踩坑随时沉淀，立项前主动告警拦截 |
+
+---
+
+## 🔄 核心工作流
+
+```mermaid
+flowchart LR
+    A["💡 需求想法"] --> B["1. writing-spec<br/>(决策探针收敛分歧)"]
+    B -->|审批 spec.md| C["2. writing-plan<br/>(TDD 行为拆解)"]
+    C -->|审批 plan.md| D["3. executing-plan<br/>(连续执行与验收)"]
+    D --> E["4. 自动交付收口<br/>(原位清洗 + 沉淀护栏)"]
 ```
 
-- **Spec 制定 (`writing-spec`)**：通过 `/grill-me` 风格结构化决策探针，针对业务目标、范围、架构边界与关键技术分歧快速收敛，一次性生成 `specs/<feature-name>/spec.md`（包含业务目标、EARS 验收标准、架构决策、强制的“曾考虑的备选方案”与否定性保证）。
-- **Plan 制定 (`writing-plan`)**：基于已批准的 `spec.md` 生成 `specs/<feature-name>/plan.md`，按完整行为单元（Behavioral Unit）拆解任务，内置测试先行（TDD）验证入口与 `## Feature Verification` 端到端集成检查。
-- **自动交付收口 (`executing-plan`)**：连续执行并运行 Feature Verification，验收通过后自动将 `spec.md` 状态置为 `delivered`，原位清洗计划假设语态为现态事实决策；若声明废黜关系，自动双向回写旧 Spec 的 `superseded` 状态与重定向警示。
-- **负向警示护栏**：对于证伪或废弃的规范（`obsolete`），移入 `specs/retired/` 并打上 `[!CAUTION]`，在立项时主动探测拦截，坚决防止未来 Agent 重蹈覆辙。
-- **记忆三权分立**：
-  - `distill-feature`：提炼交付特性的系统能力契约（Feature Capsule）。
-  - `distill-learning`：随时提炼工程教训、修复经验与负向护栏（Learning Capsule）。
-  - `maintain-memory`：负责归档、废黜维护、失效清理与索引自愈。
+- **标准通道 (Standard)**：`spec.md` (定义意图与边界) ➔ `plan.md` (定义 TDD 任务与验证) ➔ 连续执行并自动收口。
+- **快速通道 (Fast)**：轻量场景单文件闭环，一步生成 `plan.md`，一次审批即连续执行验收。
+- **多 Spec 编排 (Orchestration)**：通过 `orchestrating-specs` 联合处理多 Spec 依赖拓扑、堆叠分支与集成验证。
 
-## 安装与接入
+---
 
-### Agent Skills
+## 📂 项目资产结构
 
+LazySpec 在项目根目录下规范化管理两类资产：
+
+```text
+your-project/
+├── specs/                          # 规范与执行工件
+│   ├── user-auth/                  # 功能目录
+│   │   ├── spec.md                 # 规范契约（生命周期状态、EARS 验收标准、架构决策）
+│   │   └── plan.md                 # 执行计划（TDD 任务清单、端到端集成验证）
+│   ├── archived/                   # 成熟稳定的基石规范
+│   └── retired/                    # 废弃/证伪方案（负向警示护栏，立项时自动拦截）
+└── project-memory/                 # 跨会话长期工程记忆
+    ├── index.md                    # 记忆总索引（自动治理）
+    ├── features/                   # 系统能力契约胶囊 (Feature Capsules)
+    └── learnings/                  # 踩坑教训与工程经验 (Learning Capsules)
+```
+
+---
+
+## 📦 安装与接入
+
+### 方式 1：Agent Skills（推荐通用平台）
 ```bash
 npx skills add ccasJay/LazySpec --skill '*' -g
 ```
 
-安装完成后，日常统一从 `using-lazyspec` 进入。
-
-### Claude Code Plugin
-
-兼容性基线为 Claude Code `2.1.229`。克隆本仓库后，在仓库根目录校验 `.claude-plugin/plugin.json`，再以仓库绝对路径加载本地 Plugin：
-
+### 方式 2：Claude Code Plugin
+基线版本要求 Claude Code `2.1.229+`：
 ```bash
-claude --version
+# 验证插件并加载本地目录
 claude plugin validate .
 claude --plugin-dir /absolute/path/to/LazySpec
 ```
 
-进入 Claude Code 后可用 `/help` 查看已加载命令；日常推荐使用统一入口：
+---
 
+## 🚀 极速上手
+
+安装完成后，日常统一通过 **`using-lazyspec`** 入口进入：
+
+### 1. 立项与决策探针
 ```text
-/lazyspec:using-lazyspec
+使用 using-lazyspec 为“用户邮箱验证”立项。
 ```
+> Agent 发起结构化探针确认核心架构决策与边界，生成 `specs/user-auth/spec.md`。
 
-核心技能列表（9 个精简专属技能）：
-
+### 2. 计划制定 (TDD)
 ```text
-/lazyspec:using-lazyspec     # 统一入口路由与生命周期护栏检查
-/lazyspec:writing-spec       # 制定规范 (需求 + 架构决策 + 备选方案)
-/lazyspec:writing-plan       # 制定计划 (TDD 行为任务与验收标准)
-/lazyspec:executing-plan     # 连续执行任务并自动交付收口
-/lazyspec:distill-feature    # 特性记忆沉淀 (Feature Capsule)
-/lazyspec:distill-learning   # 随时提炼工程经验教训 (Learning Capsule)
-/lazyspec:maintain-memory    # 规范全生命周期治理与记忆库自愈
-/lazyspec:fast               # 单文件轻量快速通道
-/lazyspec:orchestrating-specs# 多 Spec 联合执行编排
+spec.md 已批准，请为 specs/user-auth/ 制定执行计划。
 ```
+> Agent 基于 EARS 标准拆解测试先行的行为任务清单，生成 `specs/user-auth/plan.md`。
 
-## 快速开始
-
+### 3. 执行与自动收口
 ```text
-# 创建 Spec
-使用 using-lazyspec 为“用户认证”创建一个 Spec。
+plan.md 已批准，请执行 specs/user-auth/plan.md 中的全部任务。
+```
+> Agent 连续执行 TDD 编码，运行 Feature Verification；验收后自动将 `spec.md` 标记为 `delivered` 并原位清洗假设语态。
 
-# 制定执行计划
-使用 using-lazyspec 为 specs/user-authentication/ 制定执行计划。
-
-# 执行计划并完成交付
-使用 using-lazyspec 执行 specs/user-authentication/plan.md 中的全部任务。
-
-# fast 模式创建轻量新功能
+### 4. 经验沉淀与快速模式
+```text
+# 轻量改动直接走 fast 模式（跳过 spec.md，一次审批即可执行）
 使用 using-lazyspec 以 fast 模式为“导出 CSV”创建 plan 并执行。
 
-# 沉淀特性记忆或踩坑经验
-使用 distill-feature 沉淀已交付的 specs/user-authentication/。
-使用 distill-learning 沉淀本次排查连接泄漏的工程教训。
+# 随时沉淀排错教训或负向护栏
+使用 distill-learning 沉淀本次连接泄漏排查经验。
 ```
 
-## 产物与结构
+---
 
-产物保存在 `specs/<feature-name>/`：
+## 🛠️ 技能清单
 
-| 文件 | 内容与职责 |
+统一通过 `using-lazyspec` 路由，各技能亦可按需单独使用：
+
+| 技能名称 | 职责说明 |
 |---|---|
-| `spec.md` | YAML 元数据（生命周期状态）、业务目标与范围、EARS 验收标准、架构核心决策、曾考虑的备选方案、风险与否定性保证 |
-| `plan.md` | 行为单元编码任务（TDD 测试先行）、Feature Verification 端到端检查与运行结果、可选的 Learning Candidates |
-
-### 生命周期状态机
-
-`spec.md` 包含标准化的状态机元数据：
-
-- `proposed`：立项草案，处于决策探针或评审中。
-- `delivered`：验证通过并已合入主干的现态系统能力事实。
-- `archived`：成熟稳定的基石规范，归档至 `specs/archived/`。
-- `superseded`：被新规范推翻废黜，保留双向链接与警示重定向。
-- `obsolete`：证伪废弃的负向警示护栏，归档至 `specs/retired/`，永久阻止未来 Agent 重复犯错。
-
-## Skill 职责一览
-
-| Skill | 职责说明 |
-|---|---|
-| [`using-lazyspec`](./using-lazyspec/SKILL.md) | 统一路由门面、负向警示护栏探测、阶段流转控制 |
-| [`writing-spec`](./writing-spec/SKILL.md) | /grill-me 结构化决策探针，生成合并版 `spec.md` |
-| [`writing-plan`](./writing-plan/SKILL.md) | 拆解行为单元任务（测试先行），生成 `plan.md` |
-| [`executing-plan`](./executing-plan/SKILL.md) | 连续执行、端到端功能验收、自动原位转正与废黜指针同步 |
-| [`distill-feature`](./distill-feature/SKILL.md) | 沉淀已交付特性的系统能力契约 (Feature Capsule) |
-| [`distill-learning`](./distill-learning/SKILL.md) | 随时沉淀经验教训与负向护栏 (Learning Capsule) |
-| [`maintain-memory`](./maintain-memory/SKILL.md) | 生命周期演进、归档治理、废黜维护与索引自愈 |
-| [`fast`](./fast/SKILL.md) | 单文件极简通道，轻量讨论并一次性执行 plan.md |
-| [`orchestrating-specs`](./orchestrating-specs/SKILL.md) | 多 Spec 依赖编排、堆叠分支与跨 Spec 集成验证 |
+| [`using-lazyspec`](./using-lazyspec/SKILL.md) | **统一调度入口**：路由分发、负向警示护栏探测、记忆检索 |
+| [`writing-spec`](./writing-spec/SKILL.md) | **规范制定**：结构化决策探针收敛分歧，生成合并版 `spec.md` |
+| [`writing-plan`](./writing-plan/SKILL.md) | **计划制定**：拆解 TDD 行为单元任务与端到端验收入口 |
+| [`executing-plan`](./executing-plan/SKILL.md) | **执行收口**：连续执行编码、功能验收、自动原位转正与废黜回写 |
+| [`distill-feature`](./distill-feature/SKILL.md) | **特性沉淀**：将已交付特性提炼为能力契约胶囊 |
+| [`distill-learning`](./distill-learning/SKILL.md) | **经验提炼**：随时沉淀排查经验、踩坑记录与负向护栏 |
+| [`maintain-memory`](./maintain-memory/SKILL.md) | **记忆治理**：生命周期演进、成熟归档与索引自愈 |
+| [`fast`](./fast/SKILL.md) | **快速通道**：单文件极简闭环，快速讨论并一次性执行 |
+| [`orchestrating-specs`](./orchestrating-specs/SKILL.md) | **联合编排**：多 Spec 依赖拓扑、堆叠分支与跨 Spec 集成验证 |
