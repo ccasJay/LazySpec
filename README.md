@@ -52,6 +52,25 @@ your-project/
 
 ---
 
+## 🧬 Spec 生命周期
+
+每个 `spec.md` 均拥有严格的状态机元数据，完整追踪功能演进：
+
+| 状态 | 职责说明 | 存放路径 |
+|---|---|---|
+| `proposed` | 立项草案，处于决策探针收敛或方案评审阶段 | `specs/<feature>/` |
+| `delivered` | 验收通过，已转正为系统现态能力事实的生效规范 | `specs/<feature>/` |
+| `archived` | 成熟封存，长期稳定运行的系统基石规范 | `specs/archived/<feature>/` |
+| `superseded` | 被新规范替代废黜，保留双向跳转与重定向警示 | `specs/<feature>/` |
+| `obsolete` | 证伪或废弃的负向警示护栏，立项时主动探测拦截 | `specs/retired/<feature>/` |
+
+**演进路径**：
+- **正常迭代**：`proposed` ➔ `delivered` ➔ `archived`
+- **迭代废黜**：`delivered` ➔ `superseded`（新规范交付时自动双向回写旧规范）
+- **证伪淘汰**：`proposed` / `delivered` ➔ `obsolete`（移入 `retired/` 永久拦截旧坑）
+
+---
+
 ## 📦 安装与接入
 
 ### 方式 1：Agent Skills（推荐通用平台）
