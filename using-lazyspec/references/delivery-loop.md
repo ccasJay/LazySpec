@@ -47,7 +47,7 @@ LazySpec defines formal lifecycle states for Specs:
 
 ## Mode-specific execution
 
-Use `executing-plan/SKILL.md` for the normal `plan.md` execution strategy, including approvals, progressive context discovery, TODO scope, branch, verification, checkbox, commit, handoff, and temporary progress rules. Use `fast/SKILL.md` for fast `plan.md` execution. Both modes follow the shared Feature Verification, failure routing, and Learning Candidates rules in this reference. Multi-Spec orchestration controls cross-Spec sequencing and branches only; it does not govern intra-Spec task execution or grant delegation authority.
+Use `executing-plan/SKILL.md` for the normal `plan.md` execution strategy, including approvals, worktree setup, spec baseline first commit, TODO scope, per-TODO atomic commit, verification, checkbox, user review gate, dev merge, worktree cleanup, handoff, and temporary progress rules. Use `fast/SKILL.md` for fast `plan.md` execution. Both modes follow the shared Feature Verification, failure routing, and Learning Candidates rules in this reference. Multi-Spec orchestration controls cross-Spec sequencing and branches only; it does not govern intra-Spec task execution or grant delegation authority.
 
 ## Failure routing and repair
 

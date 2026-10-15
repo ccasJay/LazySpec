@@ -103,11 +103,13 @@ Inspect the requested feature's `specs/{feature_name}/spec.md` and `plan.md` und
    - Only after explicit approval of `spec.md`, route to `writing-plan`.
    - Break down implementation into behavioral TODO tasks with test-first entry points and explicit `## Feature Verification` checks.
    - Present the saved file link to the user and await explicit approval.
-3. **Phase 3: Execution and Automated Delivery Finalization**:
+3. **Phase 3: Execution, Review, and Delivery Finalization**:
    - For `plan.md` execution, resume, or verification requests, route to `executing-plan` and [delivery-loop.md](references/delivery-loop.md).
-   - Execute tasks continuously within the approved plan scope.
+   - Create a dedicated Git worktree on `dev` and commit the approved spec/plan as the first commit.
+   - Execute tasks continuously with atomic per-TODO commits within the approved plan scope.
    - Execute Feature Verification端到端验收.
-   - Upon verification passing, automatically finalize delivery: in-place flip `spec.md` status to `delivered`, cleanse hypothetical phrasing into present-tense facts, and sync bidirectional `superseded` pointers if applicable.
+   - Present the completed branch and verification evidence for explicit user review; require user approval before merging.
+   - Upon user approval, merge the feature branch to `dev`, remove the worktree, and automatically finalize delivery (in-place flip `spec.md` status to `delivered`, cleanse hypothetical phrasing into present-tense facts, and sync bidirectional `superseded` pointers if applicable).
 
 ## Workflow Diagram
 
@@ -123,10 +125,12 @@ stateDiagram-v2
   ReviewPlan --> PlanDraft : Feedback/Changes Requested
   ReviewPlan --> Execution : Explicit Approval
 
-  Execution --> FeatureVerify : Continuous execution of tasks
+  Execution --> FeatureVerify : Worktree isolation, spec first commit, per-TODO commits
   FeatureVerify --> Execution : Scoped implementation repair
-  FeatureVerify --> Finalize : Verification passed
-  Finalize --> [*] : Auto-mark delivered, cleanse tense, write supersedes
+  FeatureVerify --> UserReview : Feature Verification passed
+  UserReview --> Execution : Feedback/Changes Requested
+  UserReview --> Finalize : Explicit User Approval
+  Finalize --> [*] : Merge to dev, remove worktree, auto-mark delivered
 
   state "Entry Points" as EP {
       [*] --> SpecDraft : Update existing spec.md

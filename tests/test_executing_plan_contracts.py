@@ -50,5 +50,22 @@ class ExecutingPlanContractTests(unittest.TestCase):
                 self.assertIn(rule, EXECUTOR)
 
 
+    def test_worktree_and_commit_discipline_contract(self):
+        for rule in (
+            "Worktree & Branch Setup",
+            "git worktree add -b",
+            "First Commit (Spec Baseline)",
+            "docs(spec): add approved specification and plan",
+            "Per-TODO Atomic Commit",
+            "User Review Gate",
+            "Merge to dev",
+            "git merge --no-ff",
+            "Worktree Cleanup",
+            "git worktree remove",
+        ):
+            with self.subTest(rule=rule):
+                self.assertIn(rule, EXECUTOR)
+
+
 if __name__ == "__main__":
     unittest.main()
