@@ -1,6 +1,6 @@
 ---
 name: writing-spec
-description: Probe requirements and architectural decisions using /grill-me structured questions, then draft a unified spec.md containing EARS criteria, architecture decisions, and alternatives considered. Request explicit Spec approval before LazySpec enters planning.
+description: Probe requirements and architectural decisions using /grill-me structured questions, reconcile related uncommitted Specs, then draft a unified spec.md containing EARS criteria, architecture decisions, and alternatives considered. Request explicit Spec approval before LazySpec enters planning.
 ---
 
 # Writing Spec
@@ -17,11 +17,25 @@ Read [risk-policy.md](../using-lazyspec/references/risk-policy.md), [approval-po
 - Resolve supporting resources (`spec-prompt.md`, `spec-template.md`) relative to the directory containing this `SKILL.md`.
 - Resolve `specs/{feature_name}/spec.md` against `ACTIVE_PROJECT_ROOT`, defined by `using-lazyspec` as the user's project working directory at session start. Never use this Skill's directory, its repository, or a Plugin cache as the project root. If invoked directly and the session working directory is unavailable or ambiguous, ask for the project root before writing.
 
+## Uncommitted Spec Boundary Check
+
+Before design probing for a new or revised Spec, inspect staged, unstaged, and untracked changes from `ACTIVE_PROJECT_ROOT`:
+
+```sh
+git status --porcelain=v1 -z --untracked-files=all -M -- specs/
+```
+
+- Treat the output as NUL-delimited records, including both index and working-tree status. For renames, use the destination path and consume the following source-path field. Select other added, modified, or renamed `specs/<feature>/spec.md` files that currently exist; exclude the current Spec, deleted files, and `specs/archived/` and `specs/retired/`. Limit this check to the current working tree; do not search other branches or worktrees. If Git is unavailable or the project is not a Git repository, report the limitation in Chinese and continue with visible project evidence.
+- Read each candidate's complete current working-tree content, rather than only its diff or staged version. Use goals, responsibilities, interfaces, data, and constraints to identify related Specs; skip unrelated ones. Include incomplete drafts and completed designs. File existence or `status: proposed` establishes neither approval nor implementation; other drafts are designs to coordinate, not automatically binding constraints or available capabilities. Apply approval-policy.md to any approval established in the conversation.
+- For related Specs, check overlapping responsibilities, conflicting interface or data ownership, circular dependencies, reliance on another Spec's internals, and contradictory constraints. Prefer explicit ownership and dependencies through defined contracts. Preserve necessary dependencies; do not introduce abstractions or split features merely to claim decoupling.
+- Resolve conflicts in the current Spec first, defining its responsibilities, exclusions, dependency contracts, and relevant absence/failure behavior. Reference the owning Spec instead of duplicating its contract. If resolution requires materially changing another Spec, explain the conflict and proposed coordinated change and ask under approval-policy.md before that dependent work; do not modify other Specs by default or silently choose a conflicting design. Continue independent design work where possible.
+- Keep inspected paths and content versions in session context. After saving the current Spec and before requesting approval, rerun discovery and compare current candidate contents; reassess new, changed, renamed, or removed peers and any resulting boundary decisions. Resolve material conflicts before presenting the file for approval. Record relevant boundaries and dependencies concisely within the current Spec's architecture section; with no related Specs, continue normally without an extra section or table. Do not create another artifact, status field, approval phase, or orchestration workflow for this check.
+
 ## Structured Probing (/grill-me Style)
 
 Instead of mechanical, one-by-one incremental confirmations, `writing-spec` conducts a structured decision interview:
 
-1. **Inspect and Research**: Inspect the user's request, project architecture, and relevant existing codebase facts before asking.
+1. **Inspect and Research**: Complete the Uncommitted Spec Boundary Check, then inspect the user's request, project architecture, and relevant existing codebase facts before asking.
 2. **Identify Branches of Decision Tree**:
    - Scope and boundaries (what is in, what is explicitly out);
    - Core behavior and observable outcomes (EARS scenarios);
@@ -42,7 +56,7 @@ Read [spec-prompt.md](spec-prompt.md) for content rules and [spec-template.md](s
 ## Approval Gate
 
 1. Write the complete `specs/{feature_name}/spec.md` under `ACTIVE_PROJECT_ROOT`.
-2. Present the saved file link to the user and request explicit approval under approval-policy.md:
+2. Complete the pre-approval recheck in Uncommitted Spec Boundary Check, then present the saved file link to the user and request explicit approval under approval-policy.md:
    `"请审阅规范文件 specs/<feature>/spec.md；是否批准其中的目标、范围、验收标准、架构决策与备选方案？"`
 3. Await explicit approval before transitioning to `writing-plan`.
 

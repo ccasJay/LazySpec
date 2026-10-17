@@ -64,5 +64,77 @@
     "facts": "用户提供已批准的原生计划，要求据此创建 spec.md，但环境不允许写文件。",
     "expected": "保留已明确的意图，仅澄清实质未知点；不绕过写入限制，也不把原生计划批准当作 spec.md 文件审批。允许写入后保存完整文件并请求审批。",
     "rule": "writing-spec/SKILL.md#structured-probing-grill-me-style"
+  },
+  {
+    "id": "uncommitted-spec-discovery",
+    "facts": "当前 Spec 为 orders；Git 工作区同时包含已暂存修改的 billing/spec.md、未暂存修改的 inventory/spec.md、未跟踪目录下的 notifications/spec.md，以及新增且已暂存的 payments/spec.md。",
+    "expected": "设计探查开始前发现并读取四份其他 Spec 的完整当前内容；按职责、接口、数据和约束判断关联性，不等待用户提醒。",
+    "rule": "writing-spec/SKILL.md#uncommitted-spec-boundary-check"
+  },
+  {
+    "id": "uncommitted-spec-current-content",
+    "facts": "billing/spec.md 已暂存版本约定同步调用，但工作区最新未暂存版本改为异步接口。",
+    "expected": "读取完整工作区当前版本，以最新接口协调设计，不只读 diff，也不把暂存版本当作当前设计。",
+    "rule": "writing-spec/SKILL.md#uncommitted-spec-boundary-check"
+  },
+  {
+    "id": "uncommitted-spec-exclusions",
+    "facts": "变更包含当前 orders/spec.md 自身、已删除的 old/spec.md、archived/base/spec.md、retired/legacy/spec.md，以及与订单无关的 theme/spec.md。",
+    "expected": "排除当前文件、删除文件及归档废弃目录；读取 theme 后判定无关，跳过解耦，不要求额外章节或表格。",
+    "rule": "writing-spec/SKILL.md#uncommitted-spec-boundary-check"
+  },
+  {
+    "id": "uncommitted-spec-rename",
+    "facts": "另一份 Spec 从 specs/old-name/spec.md 重命名到 specs/新 名称/spec.md，Git 返回 NUL 分隔的现路径和原路径。",
+    "expected": "按现路径读取一次，正确消费原路径字段，不按空格或换行拆分文件名，也不尝试读取已不存在的旧路径。",
+    "rule": "writing-spec/SKILL.md#uncommitted-spec-boundary-check"
+  },
+  {
+    "id": "uncommitted-spec-draft-authority",
+    "facts": "另一份 Spec 是未写完的 proposed 草稿，声明将提供库存接口；当前会话没有批准记录，也没有实现证据。",
+    "expected": "纳入设计协调，但不把 proposed、文件存在或草稿承诺当作批准、既定约束或可用能力；明确当前 Spec 的依赖契约及必要的缺失行为。",
+    "rule": "writing-spec/SKILL.md#uncommitted-spec-boundary-check"
+  },
+  {
+    "id": "uncommitted-spec-local-resolution",
+    "facts": "订单与通知 Spec 重复拥有通知重试策略；通知 Spec 的职责已经明确，当前正在设计订单 Spec。",
+    "expected": "优先在当前订单 Spec 中移除职责重叠，明确通知契约的所有者并引用它，不重复定义对方规则；默认不修改通知 Spec。",
+    "rule": "writing-spec/SKILL.md#uncommitted-spec-boundary-check"
+  },
+  {
+    "id": "uncommitted-spec-coordinated-change",
+    "facts": "当前 Spec 与另一已批准 Spec 的数据写入归属矛盾，满足用户目标必须实质修改对方契约。",
+    "expected": "说明冲突、影响和联动建议，提问并等待实际回答后才进行依赖该决定的修改；沿用原审批规则，不擅自修改对方或带着实质冲突请求批准，独立设计工作可继续。",
+    "rule": "writing-spec/SKILL.md#uncommitted-spec-boundary-check"
+  },
+  {
+    "id": "uncommitted-spec-required-dependency",
+    "facts": "订单必须依赖支付结果才能确认成交；两份设计通过明确的支付接口交互，不访问内部数据。",
+    "expected": "保留这一必要依赖，明确契约及失败行为；不为追求零依赖增加抽象、拆分功能或改变业务要求。",
+    "rule": "writing-spec/SKILL.md#uncommitted-spec-boundary-check"
+  },
+  {
+    "id": "uncommitted-spec-coupling-review",
+    "facts": "A 与 B 循环依赖对方完成状态，同时直接写对方内部数据，并分别声明自己拥有同一公共接口且约束相互矛盾。",
+    "expected": "主动检查循环依赖、内部实现依赖、接口和数据归属及矛盾约束；优先调整当前 Spec，无法局部解决的实质设计冲突向用户提出。",
+    "rule": "writing-spec/SKILL.md#uncommitted-spec-boundary-check"
+  },
+  {
+    "id": "uncommitted-spec-preapproval-refresh",
+    "facts": "初次检查后，另一会话新增关联 Spec，并修改此前读取的接口约束；现有文件的 Git 状态码没有变化。",
+    "expected": "保存当前 Spec 后、请求审批前重新发现候选并比较完整当前内容，纳入新增文件和内容变化，重新协调并更新当前 Spec 后才请求审批。",
+    "rule": "writing-spec/SKILL.md#uncommitted-spec-boundary-check"
+  },
+  {
+    "id": "uncommitted-spec-peer-removal",
+    "facts": "设计探查期间，原关联 Spec 被删除，另一份被重命名。",
+    "expected": "审批前复查识别删除和现路径，重新评估依赖与链接，不沿用不存在文件的承诺。",
+    "rule": "writing-spec/SKILL.md#uncommitted-spec-boundary-check"
+  },
+  {
+    "id": "uncommitted-spec-scope-and-fallback",
+    "facts": "当前 Git 工作区没有其他未提交 Spec，另一个 worktree 存在草稿；另一运行环境完全没有 Git。",
+    "expected": "前者沿用原流程，不搜索其他分支或 worktree，也不额外创建工件或审批门；后者用中文说明检查受限，依据可见项目资料继续设计。",
+    "rule": "writing-spec/SKILL.md#uncommitted-spec-boundary-check"
   }
 ]

@@ -1,7 +1,10 @@
-"""Static Skill contracts for writing-spec and decision probing."""
+"""Static Skill contracts and Git discovery checks, not an Agent simulator."""
 
 import json
 import re
+import shlex
+import subprocess
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -47,6 +50,64 @@ class WritingSpecContractTests(unittest.TestCase):
         self.assertIn('spec-req-', template)
         self.assertIn('## 曾考虑的备选方案', template)
         self.assertIn('## 风险与否定性保证', template)
+
+    def test_documented_discovery_command_observes_current_workspace_changes(self):
+        command = shlex.split(re.search(r"```sh\n([^\n]+)\n```", SKILL).group(1))
+        with tempfile.TemporaryDirectory() as directory:
+            workspace = Path(directory)
+
+            def git(*args):
+                return subprocess.run(
+                    ["git", "-c", "user.name=LazySpec Test",
+                     "-c", "user.email=test@example.invalid",
+                     "-c", "commit.gpgsign=false", "-c", "core.hooksPath=/dev/null", *args],
+                    cwd=workspace, check=True, capture_output=True,
+                ).stdout
+
+            def write(path, content):
+                file = workspace / path
+                file.parent.mkdir(parents=True, exist_ok=True)
+                file.write_text(content)
+
+            git("init", "-q")
+            for feature in ("staged", "unstaged", "both", "old", "deleted", "clean"):
+                write(f"specs/{feature}/spec.md", f"# {feature}\nOriginal design.\n")
+            git("add", ".")
+            git("commit", "-qm", "Initial fixture")
+            write("specs/staged/spec.md", "Staged design.\n")
+            write("specs/both/spec.md", "Staged version.\n")
+            write("specs/added/spec.md", "New staged Spec.\n")
+            git("add", "specs/staged", "specs/both", "specs/added")
+            write("specs/both/spec.md", "Current working-tree version.\n")
+            write("specs/unstaged/spec.md", "Unstaged design.\n")
+            write("specs/新 草稿/spec.md", "Untracked draft.\n")
+            write("outside.txt", "Outside the Spec discovery scope.\n")
+            git("mv", "specs/old", "specs/重命名 设计")
+            git("rm", "specs/deleted/spec.md")
+
+            def discover():
+                return subprocess.run(command, cwd=workspace, check=True, capture_output=True).stdout
+
+            initial = discover()
+            for record in (
+                b"M  specs/staged/spec.md\0", b" M specs/unstaged/spec.md\0",
+                b"MM specs/both/spec.md\0", b"A  specs/added/spec.md\0",
+                "?? specs/新 草稿/spec.md\0".encode(),
+                "R  specs/重命名 设计/spec.md\0specs/old/spec.md\0".encode(),
+                b"D  specs/deleted/spec.md\0",
+            ):
+                with self.subTest(record=record):
+                    self.assertIn(record, initial)
+            self.assertNotIn(b"outside.txt", initial)
+            self.assertNotIn(b"specs/clean/spec.md", initial)
+
+            # A status-only snapshot misses content changes with unchanged XY codes.
+            write("specs/unstaged/spec.md", "Revised again during probing.\n")
+            self.assertEqual(initial, discover())
+            self.assertEqual("Revised again during probing.\n", (workspace / "specs/unstaged/spec.md").read_text())
+            write("specs/later/spec.md", "Peer created before approval.\n")
+            self.assertIn(b"?? specs/later/spec.md\0", discover())
+            self.assertNotIn(b"specs/later/spec.md", initial)
 
 
 if __name__ == "__main__":
