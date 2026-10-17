@@ -17,7 +17,6 @@ class V2BinaryArchitectureContractTests(unittest.TestCase):
             "writing-plan",
             "executing-plan",
             "distill-feature",
-            "distill-learning",
             "maintain-memory",
         )
         import yaml

@@ -114,18 +114,6 @@
     "rule": "delivery-loop.md#failure-routing-and-repair"
   },
   {
-    "id": "learning-unapproved",
-    "facts": "运行得到有证据的可复用经验，用户尚未确认。",
-    "expected": "只写 Learning Candidates；不写 project-memory，不默认召回。",
-    "rule": "delivery-loop.md#learning-candidates"
-  },
-  {
-    "id": "learning-failed-feature",
-    "facts": "fast 功能尚未完成；重复检查证明特定配置会触发故障，猜测的修复尚未验证。",
-    "expected": "可提炼限定条件的失败观察，未经验证的修复仍是候选，不宣称功能成功。",
-    "rule": "delivery-loop.md#learning-candidates"
-  },
-  {
     "id": "verification-only",
     "facts": "用户仅要求验证功能，检查发现实现错误。",
     "expected": "报告失败和诊断，不把验证请求当作修复授权。",

@@ -1,4 +1,4 @@
-# Shared feature verification, repair, and learning
+# Shared feature verification and repair
 
 Read for task planning and for execution in both normal and fast modes, after `risk-policy.md`. This is a shared workflow contract, not a runtime or permission grant. Normal `plan.md` execution is owned by `executing-plan/SKILL.md`; fast `plan.md` execution is owned by `fast/SKILL.md`.
 
@@ -29,6 +29,7 @@ Related implementation or acceptance-contract changes make previous evidence sta
 - Human acceptance explicitly required by the user, binding project rules, or an outcome that available evidence cannot establish remains pending-human until confirmed. Risk alone does not mandate an extra sign-off. Record any confirmation against the tested state.
 - Handoff separately reports TODO completion, feature status/freshness, evidence and remaining work. A checked task list alone is not a verified feature.
 - A `passed` and `current` result is verification success, not merge approval. Normal mode proceeds to the user review and delivery finalization procedure in [executing-plan](../../executing-plan/SKILL.md#merge-and-automatic-delivery-finalization). Fast completes its own handoff without creating or updating `spec.md` and without inheriting normal-mode merge or status-transition rules.
+- Continue reporting likely existing Memory impact candidates without silently changing their status. Impact reporting never writes under project-memory/; use an explicit distillation or maintenance request and its approval workflow for changes.
 - Follow explicit user/project commit requirements. Mode-specific commit rules live in the executing Skill. Commit later repairs without rewriting history or including unrelated changes; fast does not acquire a new mandatory commit policy.
 
 ## Lifecycle states and negative guardrails
@@ -45,7 +46,7 @@ Archive/retirement paths, warnings, and preservation operations belong to [maint
 
 ## Mode-specific execution
 
-Use `executing-plan/SKILL.md` for the normal `plan.md` execution strategy, including approvals, worktree setup, spec baseline first commit, TODO scope, per-TODO atomic commit, verification, checkbox, user review gate, dev merge, worktree cleanup, handoff, and temporary progress rules. Use `fast/SKILL.md` for fast `plan.md` execution. Both modes follow the shared Feature Verification, failure routing, and Learning Candidates rules in this reference. Multi-Spec orchestration controls cross-Spec sequencing and branches only; it does not govern intra-Spec task execution or grant delegation authority.
+Use `executing-plan/SKILL.md` for the normal `plan.md` execution strategy, including approvals, worktree setup, spec baseline first commit, TODO scope, per-TODO atomic commit, verification, checkbox, user review gate, dev merge, worktree cleanup, handoff, and temporary progress rules. Use `fast/SKILL.md` for fast `plan.md` execution. Both modes follow the shared Feature Verification and failure routing rules in this reference. Multi-Spec orchestration controls cross-Spec sequencing and branches only; it does not govern intra-Spec task execution or grant delegation authority.
 
 ## Failure routing and repair
 
@@ -63,11 +64,3 @@ Never weaken approved success criteria, remove a required check, or relabel a fa
 During an authorized implementation run, continue repairs while progressing. For the same issue, after two consecutive rounds without new evidence or improvement, reassess the hypothesis and method. Continue only with a concrete new diagnostic approach within the authorized budget; otherwise stop and report. Report attempts, evidence, and the unresolved decision. Rewording an explanation, renaming an issue, or repeating the same failed approach is not a new diagnostic approach. Honor explicit attempt/time/cost limits. Stop immediately for working-tree conflicts, missing authority, or a necessary user decision.
 
 Only affected approvals and evidence become invalid. Preserve completed TODO text: completion changes only its checkbox; later remedial work is appended as a clearly identified repair task. A scoped implementation-only repair may be appended as an execution record without renewed approval; a task-plan gap follows the materiality decision above. Never rewrite completed task descriptions or existing commits.
-
-## Learning Candidates
-
-After verification or a valuable blocked/failed attempt, inspect the run for reusable, project-specific evidence. If none exists, add nothing. Otherwise append `## Learning Candidates` to the same plan document. Each candidate records applicability, observed problem, evidenced explanation, validated practice (or explicitly unverified proposal), sources, limits, and revisit conditions.
-
-Candidates are not long-term Memory and must not be recalled as active guidance. Show a concise handoff and link the complete candidate. Only when the user requests promotion or confirms a candidate, route to distill-learning and its shared Memory write workflow under approval-policy.md. Collection alone never writes under project-memory/ or changes AGENTS.md, skills, permissions, or configuration.
-
-An unfinished feature can support a bounded failure observation; it cannot support a claim of feature success or an untested remedy. One success supports only its evidenced conditions. Continue reporting likely existing Memory impact candidates without silently changing their status.

@@ -9,7 +9,6 @@ V2_SKILLS = (
     "writing-plan",
     "executing-plan",
     "distill-feature",
-    "distill-learning",
     "maintain-memory",
     "fast",
     "orchestrating-specs",

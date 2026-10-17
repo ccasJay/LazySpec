@@ -12,7 +12,7 @@ Coordinate the joint execution of several approved Specs through one temporary a
 
 ## Shared policies
 
-Read [risk-policy.md](../using-lazyspec/references/risk-policy.md), [approval-policy.md](../using-lazyspec/references/approval-policy.md), and [delivery-loop.md](../using-lazyspec/references/delivery-loop.md) before this workflow; resolve them relative to this Skill directory. risk-policy.md separates risk-based verification from decision-based approval; approval-policy.md is the single source of explicit-approval, materiality, invalidation, and approval-asking semantics; delivery-loop.md governs shared Feature Verification, repair, and Learning Candidates. Each Spec's internal execution is governed by [executing-plan/SKILL.md](../executing-plan/SKILL.md).
+Read [risk-policy.md](../using-lazyspec/references/risk-policy.md), [approval-policy.md](../using-lazyspec/references/approval-policy.md), and [delivery-loop.md](../using-lazyspec/references/delivery-loop.md) before this workflow; resolve them relative to this Skill directory. risk-policy.md separates risk-based verification from decision-based approval; approval-policy.md is the single source of explicit-approval, materiality, invalidation, and approval-asking semantics; delivery-loop.md governs shared Feature Verification and repair. Each Spec's internal execution is governed by [executing-plan/SKILL.md](../executing-plan/SKILL.md).
 
 ## Project Root
 
@@ -52,8 +52,8 @@ Only after orchestration approval:
 
 ## Memory Distillation Gate
 
-- After every Spec's Feature Verification and the cross-Spec Integration Verification have passed, MUST proactively initiate the distillation step: summarize the Learning Candidates and Feature Memory material collected during each Spec's execution, present them to the user, and request confirmation of what should be preserved.
-- Candidates the user confirms are routed to `distill-feature` or `distill-learning` to prepare the exact Capsule/index write preview and are written only after user approval; this Skill MUST NOT bypass that boundary or write Memory directly.
+- After every Spec's Feature Verification and the cross-Spec Integration Verification have passed, MUST proactively initiate the distillation step: summarize the Feature Memory material collected during each Spec's execution, present them to the user, and request confirmation of what should be preserved.
+- Candidates the user confirms are routed to `distill-feature` to prepare the exact Capsule/index write preview and are written only after user approval; this Skill MUST NOT bypass that boundary or write Memory directly.
 - The gate is complete when required writes are approved and finished, or the user explicitly confirms nothing needs preserving; neither may be silently skipped.
 
 ## Lifecycle and Deletion

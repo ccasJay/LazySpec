@@ -12,7 +12,7 @@
 | **指令模糊脱缰** | 给一句话需求就乱写，脑补过多 | **结构化决策探针**：主动抛出关键分歧与备选方案，先收敛再动工 |
 | **文档写完即过时** | 繁琐的 PRD 维护成本极高，代码改完文档脱节 | **二元最小契约**：仅需 `spec.md` + `plan.md`，验收后**自动原位清洗为事实** |
 | **只写代码不验证** | 声称“已完成”，一跑全是 Bug | **TDD 行为门禁**：行为单元测试先行，内置 `Feature Verification` 验收 |
-| **多会话反复踩坑** | 新会话 Agent 毫无记忆，重蹈覆辙 | **三权分立记忆与负向护栏**：踩坑随时沉淀，立项前主动告警拦截 |
+| **多会话反复踩坑** | 新会话 Agent 毫无记忆，重蹈覆辙 | **特性记忆与负向护栏**：沉淀已交付能力与决策，立项前检查废弃方案 |
 
 ---
 
@@ -46,8 +46,7 @@ your-project/
 │   └── retired/                    # 废弃/证伪方案（负向警示护栏，立项时自动拦截）
 └── project-memory/                 # 跨会话长期工程记忆
     ├── index.md                    # 记忆总索引（自动治理）
-    ├── features/                   # 系统能力契约胶囊 (Feature Capsules)
-    └── learnings/                  # 踩坑教训与工程经验 (Learning Capsules)
+    └── features/                   # 系统能力契约胶囊 (Feature Capsules)
 ```
 
 ---
@@ -110,13 +109,13 @@ plan.md 已批准，请执行 specs/user-auth/plan.md 中的全部任务。
 ```
 > Agent 连续执行 TDD 编码，运行 Feature Verification；用户审核并批准合并后，合并到 `dev`，将 `spec.md` 标记为 `delivered` 并原位清洗架构说明中的假设语态。
 
-### 4. 经验沉淀与快速模式
+### 4. 特性沉淀与快速模式
 ```text
 # 轻量改动直接走 fast 模式（跳过 spec.md，一次审批即可执行）
 使用 using-lazyspec 以 fast 模式为“导出 CSV”创建 plan 并执行。
 
-# 随时沉淀排错教训或负向护栏
-使用 distill-learning 沉淀本次连接泄漏排查经验。
+# 将已交付特性沉淀为能力契约胶囊
+使用 distill-feature 沉淀已交付的“用户邮箱验证”特性。
 ```
 
 ---
@@ -132,7 +131,6 @@ plan.md 已批准，请执行 specs/user-auth/plan.md 中的全部任务。
 | [`writing-plan`](./writing-plan/SKILL.md) | **计划制定**：拆解 TDD 行为单元任务与端到端验收入口 |
 | [`executing-plan`](./executing-plan/SKILL.md) | **执行收口**：连续执行编码、功能验收、自动原位转正与废黜回写 |
 | [`distill-feature`](./distill-feature/SKILL.md) | **特性沉淀**：将已交付特性提炼为能力契约胶囊 |
-| [`distill-learning`](./distill-learning/SKILL.md) | **经验提炼**：随时沉淀排查经验、踩坑记录与负向护栏 |
 | [`maintain-memory`](./maintain-memory/SKILL.md) | **记忆治理**：生命周期演进、成熟归档与索引自愈 |
 | [`fast`](./fast/SKILL.md) | **快速通道**：单文件极简闭环，快速讨论并一次性执行 |
 | [`orchestrating-specs`](./orchestrating-specs/SKILL.md) | **联合编排**：多 Spec 依赖拓扑、堆叠分支与跨 Spec 集成验证 |

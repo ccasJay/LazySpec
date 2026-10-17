@@ -16,7 +16,7 @@ ROUTE_TO_SKILL = {
     "fast": "fast",
     "orchestration": "orchestrating-specs",
     "memory-recall": "using-lazyspec",
-    "memory-distill": "distill-learning",
+    "memory-distill": "distill-feature",
     "memory-maintain": "maintain-memory",
 }
 
@@ -58,7 +58,7 @@ class ResourceLoadingContractTests(unittest.TestCase):
                 )
 
     def test_distill_memory_skills_declare_only_approval_policy(self):
-        for distill_name in ("distill-feature", "distill-learning", "maintain-memory"):
+        for distill_name in ("distill-feature", "maintain-memory"):
             text = (ROOT / distill_name / "SKILL.md").read_text()
             self.assertEqual([], re.findall(r"\]\(([^)]+risk-policy\.md)\)", text))
 

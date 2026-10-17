@@ -1,10 +1,10 @@
 # Memory write workflow
 
-Shared preparation, write, and cleanup procedure for `distill-feature`, `distill-learning`, and `maintain-memory`. Approval semantics and the exact preview contract belong to [approval-policy.md](approval-policy.md#file-backed-review); Capsule schemas, status invariants, and index validation belong to the active Memory format.
+Shared preparation, write, and cleanup procedure for `distill-feature` and `maintain-memory`. Approval semantics and the exact preview contract belong to [approval-policy.md](approval-policy.md#file-backed-review); Capsule schemas, status invariants, and index validation belong to the active Memory format.
 
 ## Context and format
 
-Resolve project paths against `ACTIVE_PROJECT_ROOT`, the user's project working directory at session start. If invoked directly and that directory is ambiguous, establish it before reading or writing project artifacts. Load `project-memory/README.md` when present; otherwise load [memory-format.md](memory-format.md). Use that contract for both Capsule kinds and maintenance; do not invent a reduced local schema.
+Resolve project paths against `ACTIVE_PROJECT_ROOT`, the user's project working directory at session start. If invoked directly and that directory is ambiguous, establish it before reading or writing project artifacts. Load `project-memory/README.md` when present; otherwise load [memory-format.md](memory-format.md). Use that contract for Feature Capsules and maintenance; do not invent a reduced local schema.
 
 ## Prepare and apply
 

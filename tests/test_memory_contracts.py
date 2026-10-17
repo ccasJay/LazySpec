@@ -25,7 +25,7 @@ def index_rows(path):
     rows = {}
     link = re.compile(r"^\[([^]]+)\]\([^)]+\)$")
     for line in path.read_text().splitlines():
-        if not line.startswith(("| [project-memory/features/", "| [project-memory/learnings/")):
+        if not line.startswith("| [project-memory/features/"):
             continue
         cells = [cell.strip() for cell in line.strip("|").split("|")]
         memory_match = link.match(cells[0])
@@ -43,8 +43,8 @@ def index_rows(path):
 
 
 class MemorySkillContractTests(unittest.TestCase):
-    def test_tripartite_memory_skills_frontmatter(self):
-        for name in ("distill-feature", "distill-learning", "maintain-memory"):
+    def test_memory_skills_frontmatter(self):
+        for name in ("distill-feature", "maintain-memory"):
             skill_path = ROOT / name / "SKILL.md"
             self.assertTrue(skill_path.is_file(), f"missing {name}/SKILL.md")
             text = skill_path.read_text()
@@ -54,13 +54,12 @@ class MemorySkillContractTests(unittest.TestCase):
 
     def test_plugin_and_router_register_memory_skills(self):
         manifest = json.loads((ROOT / ".claude-plugin" / "plugin.json").read_text())
-        for name in ("distill-feature", "distill-learning", "maintain-memory"):
+        for name in ("distill-feature", "maintain-memory"):
             self.assertIn(f"./{name}", manifest["skills"])
         self.assertEqual(len(manifest["skills"]), len(set(manifest["skills"])))
 
         routing = (ROUTER_ROOT / "SKILL.md").read_text()
         self.assertIn("`distill-feature`", routing)
-        self.assertIn("`distill-learning`", routing)
         self.assertIn("`maintain-memory`", routing)
         self.assertIn("when the user explicitly requests", routing)
         self.assertIn("Do not infer a distillation request", routing)
@@ -106,10 +105,12 @@ class MemorySkillContractTests(unittest.TestCase):
             fields, body = read_frontmatter(path)
             row = rows[f"project-memory/features/{path.name}"]
             with self.subTest(path=path):
+                self.assertEqual(fields["feature"], path.stem)
                 self.assertEqual(fields["status"], row["status"])
                 self.assertEqual(fields["source_spec"], row["source_spec"])
                 self.assertEqual(fields["reviewed_at"], row["reviewed_at"])
-                self.assertIn("summary", fields)
+                self.assertEqual(fields["summary"].strip('"'), row["summary"])
+                self.assertEqual(fields["tags"].strip("[]"), row["tags"])
                 self.assertIn("authorities", fields)
                 self.assertIn("## Purpose", body)
                 self.assertIn("## Revisit When", body)
@@ -171,7 +172,7 @@ class MemorySkillContractTests(unittest.TestCase):
         self.assertIn("memory impact candidates", text)
         shared = (ROUTER_ROOT / "references" / "delivery-loop.md").read_text()
         self.assertIn("Continue reporting likely existing Memory impact candidates", shared)
-        self.assertIn("Collection alone never writes under project-memory/", shared)
+        self.assertIn("Impact reporting never writes under project-memory/", shared)
 
     def test_recall_fixture_has_more_than_three_active_matches_and_history(self):
         rows = index_rows(FIXTURE_ROOT / "retrieval-index.md")
@@ -187,7 +188,7 @@ class MemorySkillContractTests(unittest.TestCase):
 
     def test_memory_distillation_skills_require_preview_cleanup(self):
         workflow = ROUTER_ROOT / "references" / "memory-workflow.md"
-        for name in ("distill-feature", "distill-learning", "maintain-memory"):
+        for name in ("distill-feature", "maintain-memory"):
             skill_text = (ROOT / name / "SKILL.md").read_text()
             links = re.findall(r"\]\(([^)]+memory-workflow\.md)\)", skill_text)
             self.assertEqual(1, len(links), name)

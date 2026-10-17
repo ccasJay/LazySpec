@@ -14,11 +14,11 @@ POLICY = (ROOT / "using-lazyspec/references/approval-policy.md").read_text()
 
 
 class WritingSpecContractTests(unittest.TestCase):
-    def test_manifest_registers_pure_v2_nine_skills(self):
+    def test_manifest_registers_current_skills(self):
         manifest = json.loads((ROOT / ".claude-plugin/plugin.json").read_text())
         expected = {
             "using-lazyspec", "writing-spec", "writing-plan", "executing-plan",
-            "distill-feature", "distill-learning", "maintain-memory",
+            "distill-feature", "maintain-memory",
             "fast", "orchestrating-specs",
         }
         self.assertEqual(expected, {Path(p).name for p in manifest["skills"]})

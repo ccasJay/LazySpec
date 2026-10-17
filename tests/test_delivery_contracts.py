@@ -10,8 +10,6 @@ import re
 import unittest
 from pathlib import Path
 
-from test_memory_contracts import index_rows, read_frontmatter
-
 
 ROOT = Path(__file__).resolve().parents[1]
 POLICIES = ROOT / "using-lazyspec/references"
@@ -54,11 +52,11 @@ def lint_report(report):
 class DeliveryContractTests(unittest.TestCase):
     def test_shared_references_resolve_from_every_installed_skill(self):
         manifest = json.loads((ROOT / ".claude-plugin/plugin.json").read_text())
-        self.assertEqual(9, len(manifest["skills"]))
+        self.assertEqual(8, len(manifest["skills"]))
         risk_readers = [
             d for d in manifest["skills"]
             if not any(d.endswith(suffix) for suffix in (
-                "distill-feature", "distill-learning", "maintain-memory"
+                "distill-feature", "maintain-memory"
             ))
         ]
         for directory in risk_readers:
@@ -69,7 +67,7 @@ class DeliveryContractTests(unittest.TestCase):
             approval = re.findall(r"\]\(([^)]+approval-policy\.md)\)", skill.read_text())
             self.assertEqual(1, len(approval), skill)
             self.assertEqual((POLICIES / "approval-policy.md").resolve(), (skill.parent / approval[0]).resolve())
-        for distill_name in ("distill-feature", "distill-learning", "maintain-memory"):
+        for distill_name in ("distill-feature", "maintain-memory"):
             distill = (ROOT / distill_name / "SKILL.md").read_text()
             self.assertEqual([], re.findall(r"\]\(([^)]+risk-policy\.md)\)", distill))
             approval_links = re.findall(r"\]\(([^)]+approval-policy\.md)\)", distill)
@@ -146,33 +144,6 @@ class DeliveryContractTests(unittest.TestCase):
             report["checks"][0]["status"] = status
             report["status"] = status
             self.assertFalse(lint_report(report))
-
-    def test_mixed_index_keeps_legacy_capsule_and_learning_metadata(self):
-        corpus = FIXTURES / "project-memory"
-        rows = index_rows(corpus / "mixed-index.md")
-        self.assertEqual(2, len(rows))
-        kinds = []
-        for path, row in rows.items():
-            capsule = corpus / path.removeprefix("project-memory/")
-            fields, body = read_frontmatter(capsule)
-            kind = fields.get("kind", "feature")
-            kinds.append(kind)
-            self.assertEqual(kind + "s", capsule.parent.name)
-            self.assertEqual(fields.get("feature", fields.get("learning")), capsule.stem)
-            for key in ("status", "source_spec", "reviewed_at"):
-                self.assertEqual(fields[key], row[key])
-            self.assertEqual(fields["summary"].strip('"'), row["summary"])
-            self.assertEqual(fields["tags"].strip("[]"), row["tags"])
-            if kind == "learning":
-                sections = re.findall(r"^## (.+)$", body, re.M)
-                self.assertEqual(["Applicability", "Observation", "Validated Practice", "Limits", "Revisit When", "Sources"], sections)
-                defined = set(re.findall(r"^- (S\d+):", body, re.M))
-                cited = set(re.findall(r"S\d+", " ".join(re.findall(r"\[([^]]+)\]", body))))
-                self.assertEqual(defined, cited)
-                source_plan = corpus / fields["source_spec"] / "plan.md"
-                self.assertIn("- [ ] //TODO", source_plan.read_text())
-                self.assertFalse((source_plan.parent / "requirements.md").exists())
-        self.assertEqual(["feature", "learning"], kinds)
 
 
 if __name__ == "__main__":

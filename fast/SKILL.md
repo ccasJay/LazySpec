@@ -1,6 +1,6 @@
 ---
 name: fast
-description: Create or resume a lightweight LazySpec fast/快速 plan when no spec.md exists. Approve one plan, execute its authorized tasks, verify the feature, and collect learning candidates with risk-based controls.
+description: Create or resume a lightweight LazySpec fast/快速 plan when no spec.md exists. Approve one plan, execute its authorized tasks, verify the feature with risk-based controls.
 ---
 
 # Fast
@@ -9,7 +9,7 @@ Turn a new feature idea into an approved `plan.md` and execute it in one continu
 
 ## Shared policies
 
-Read [risk-policy.md](../using-lazyspec/references/risk-policy.md), [approval-policy.md](../using-lazyspec/references/approval-policy.md), and [delivery-loop.md](../using-lazyspec/references/delivery-loop.md) before this workflow; resolve them relative to this Skill directory. risk-policy.md separates risk-based verification from decision-based approval; approval-policy.md is the single source of explicit-approval, materiality, invalidation, and approval-asking semantics; delivery-loop.md defines executable success criteria, Feature Verification, repair, and Learning Candidates.
+Read [risk-policy.md](../using-lazyspec/references/risk-policy.md), [approval-policy.md](../using-lazyspec/references/approval-policy.md), and [delivery-loop.md](../using-lazyspec/references/delivery-loop.md) before this workflow; resolve them relative to this Skill directory. risk-policy.md separates risk-based verification from decision-based approval; approval-policy.md is the single source of explicit-approval, materiality, invalidation, and approval-asking semantics; delivery-loop.md defines executable success criteria, Feature Verification and repair.
 
 ## Rule
 - The output content should all be in chinese, except the key word from the project
@@ -46,7 +46,7 @@ Write exactly one artifact: `specs/{feature_name}/plan.md` under `ACTIVE_PROJECT
 4. **Tasks** — a numbered checkbox list; format every task line as `- [ ] //TODO <number>. <task text>` with at most two hierarchy levels and decimal numbering for sub-tasks. Apply delivery-loop.md's executable success criteria.
 5. **Feature Verification** — follow delivery-loop.md's fast-mode artifact contract.
 
-Record risk level, reasons, and critical operations in Constraints/Approach. During execution append Learning Candidates only when useful evidence exists.
+Record risk level, reasons, and critical operations in Constraints/Approach.
 
 Keep the plan minimal and directly executable. Exclude user testing, deployment, documentation, and communication work from coding Tasks; automated tests are allowed. Necessary human acceptance checks belong in Feature Verification. Do not create `spec.md` or any other artifact.
 
@@ -65,7 +65,7 @@ After explicit approval, execute the plan continuously:
 
 ## Handoff
 
-Complete the shared verification, handoff, and Learning Candidates requirements in delivery-loop.md, then report in Chinese:
+Complete the shared verification and handoff requirements in delivery-loop.md, then report in Chinese:
 
 - Inspect only the Project Memory index (`project-memory/index.md`) for Capsules whose feature, tags, summary, Source Spec, or authorities overlap the changed paths, and report likely impact candidates. Do not create, edit, or re-status Memory without a separate explicit distillation or maintenance request.
 - Note that the feature used fast mode and has no `spec.md`; suggest the normal chain if the feature later needs a full Spec. This handoff does not create a Spec or apply normal-mode delivery status changes.

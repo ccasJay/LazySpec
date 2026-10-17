@@ -30,7 +30,7 @@ Rules:
 - A routed Skill may load its own prompt/template/resources.
 - Resolve every reference from this Skill's `references/` directory; if a resource is unavailable, report the missing resource rather than inventing a policy.
 
-[approval-policy.md](references/approval-policy.md) owns approval semantics and user questions; [risk-policy.md](references/risk-policy.md) owns risk classification and verification depth; [delivery-loop.md](references/delivery-loop.md) owns shared verification, repair, lifecycle state definitions, and learning candidates. `executing-plan` owns normal-mode execution and delivery finalization; `fast` owns fast execution. [doc-policy.md](references/doc-policy.md) owns documentation scope; [memory-workflow.md](references/memory-workflow.md) owns Memory write preparation and cleanup; [memory-recall.md](references/memory-recall.md) owns recall. Load each only for its route.
+[approval-policy.md](references/approval-policy.md) owns approval semantics and user questions; [risk-policy.md](references/risk-policy.md) owns risk classification and verification depth; [delivery-loop.md](references/delivery-loop.md) owns shared verification, repair, lifecycle state definitions. `executing-plan` owns normal-mode execution and delivery finalization; `fast` owns fast execution. [doc-policy.md](references/doc-policy.md) owns documentation scope; [memory-workflow.md](references/memory-workflow.md) owns Memory write preparation and cleanup; [memory-recall.md](references/memory-recall.md) owns recall. Load each only for its route.
 
 ## Routing Protocol
 Use this Skill as the single entry point. Route by logical Skill name and read only that Skill's required resources; do not copy a phase's detailed body here.
@@ -39,7 +39,7 @@ Before inspecting or writing any Spec artifact, bind `ACTIVE_PROJECT_ROOT` to th
 
 Resolve every routed Skill with this platform-neutral protocol:
 
-1. Prefer the current environment's registered Skill invocation mechanism. Use the logical names `writing-spec`, `writing-plan`, `executing-plan`, `distill-feature`, `distill-learning`, `maintain-memory`, `fast`, `orchestrating-specs`; a Claude Code Plugin may expose them as `lazyspec:<logical-name>`, while an Agent Skills installation may expose the unnamespaced logical name.
+1. Prefer the current environment's registered Skill invocation mechanism. Use the logical names `writing-spec`, `writing-plan`, `executing-plan`, `distill-feature`, `maintain-memory`, `fast`, `orchestrating-specs`; a Claude Code Plugin may expose them as `lazyspec:<logical-name>`, while an Agent Skills installation may expose the unnamespaced logical name.
 2. If no registered Skill invocation mechanism is available, or the logical Skill is not registered, read its sibling `SKILL.md` using the fallback mapping below. Resolve the path relative to this `using-lazyspec/SKILL.md`, never relative to the process working directory or repository root.
 3. After resolving the target, follow that Skill's instructions and resolve its supporting files by the target Skill's own resource rules.
 
@@ -49,7 +49,6 @@ Resolve every routed Skill with this platform-neutral protocol:
 | `writing-plan` | `lazyspec:writing-plan` | `../writing-plan/SKILL.md` |
 | `executing-plan` | `lazyspec:executing-plan` | `../executing-plan/SKILL.md` |
 | `distill-feature` | `lazyspec:distill-feature` | `../distill-feature/SKILL.md` |
-| `distill-learning` | `lazyspec:distill-learning` | `../distill-learning/SKILL.md` |
 | `maintain-memory` | `lazyspec:maintain-memory` | `../maintain-memory/SKILL.md` |
 | `fast` | `lazyspec:fast` | `../fast/SKILL.md` |
 | `orchestrating-specs` | `lazyspec:orchestrating-specs` | `../orchestrating-specs/SKILL.md` |
@@ -63,9 +62,8 @@ Before routing to `writing-spec` or initiating new feature planning:
 ### Memory Distillation & Governance Routing
 
 - Route to `distill-feature` when the user explicitly requests distilling an already delivered feature into a Feature Capsule, using its Spec or verified fast plan.
-- Route to `distill-learning` when capturing engineering observations, troubleshooting remedies, or negative guardrails into a Learning Capsule.
 - Route to `maintain-memory` for memory and specs maintenance, supersession propagation, foundation archival, or index self-healing.
-- Do not infer a distillation request from task completion. Collect valuable learning candidates in the plan artifact only; exact Memory write approval remains separate.
+- Do not infer a distillation request from task completion; exact Memory write approval remains separate.
 
 ### Fast Mode Routing
 
