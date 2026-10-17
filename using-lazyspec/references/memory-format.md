@@ -112,7 +112,6 @@ For feature-only legacy indexes preserve sorting by feature. For mixed indexes s
 - Validate reciprocal supersession and reject cycles.
 - Report completed-checkbox Specs without Capsules as candidates only; never create Memory automatically. Feature promotion still requires current passed verification. Learning promotion requires bounded claim evidence and exact write approval, not source feature completion.
 - Treat the approved Capsule set and generated index as one logical write set.
-- Ephemeral preview artifacts outside `project-memory/` (e.g. `memory-preview.md`) are transient review objects; delete them immediately upon successful write to keep the working tree clean.
 
 ## Learning Capsule format
 
@@ -163,5 +162,5 @@ authorities: [<current-source-or-test-path>]
 - `kind: learning` is required, and `learning` equals the filename stem. `source_spec` identifies the primary originating feature and need not match the learning ID. Additional source features belong in Sources, each traceable to approved intent and attributable evidence.
 - The metadata, dates, authority existence, four statuses, and reciprocal supersession rules are shared with Feature Capsules. Learning uses stable unique `L<N>` IDs rather than `D<N>` IDs. Cite defined sources for factual bullets in Applicability, Observation, Validated Practice, and Limits.
 - A failed or incomplete source feature is permitted when current evidence proves the bounded observation and practice. A failure does not prove a proposed fix; user confirmation cannot replace evidence. Never label a feature verified through a Learning Capsule.
-- Reject kind/path mismatches, absolute paths, traversal (including symlinks escaping the project), duplicate IDs, invalid source links, stale unsupported claims, and index/metadata discrepancies. Recall accepts only active, applicable guidance, at most three Capsules across both kinds combined.
+- Reject kind/path mismatches, absolute paths, traversal (including symlinks escaping the project), duplicate IDs, invalid source links, stale unsupported claims, and index/metadata discrepancies. Recall selection follows [memory-recall.md](memory-recall.md).
 - Keep the six-column index and one row per Capsule. Feature and Learning conclusions must not create duplicate active owners; reconcile overlap in one approved preview. Candidate collection or suspected drift alone does not authorize status changes.

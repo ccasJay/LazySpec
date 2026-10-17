@@ -14,7 +14,7 @@ description: Execute, resume, or verify approved LazySpec plan.md files in an is
 
 ## Execution Workflow
 
-1. **Verify Authorization**: Confirm `spec.md` and `plan.md` are explicitly approved under approval-policy.md.
+1. **Verify Authorization**: Confirm `spec.md` and `plan.md` are explicitly approved and execution is authorized under approval-policy.md.
 2. **Context Discovery**: Read complete `spec.md` (goal, EARS criteria, architecture decisions, invariants) and the `plan.md` checklist with Planned Checks.
 3. **Worktree & Branch Setup**:
    - Create a dedicated Git worktree and feature branch based on `dev` (unless another base branch or name is requested):
@@ -28,7 +28,7 @@ description: Execute, resume, or verify approved LazySpec plan.md files in an is
      `git commit -m "docs(spec): add approved specification and plan for <feature-name>"`
    - This baseline commit anchors the approved requirements and plan as the first commit on this branch.
 5. **Behavioral TDD & Per-TODO Commit Execution**:
-   - Execute all currently unchecked TODOs continuously without per-TODO confirmation.
+   - Execute all currently unchecked TODOs continuously without per-TODO confirmation, honoring the shared scope boundary for an explicitly requested subset.
    - For each TODO:
      1. Identify the verification entry point (failing test or command probe) before editing code (Red).
      2. Implement the minimal code to satisfy the scenario and make the verification pass (Green).
@@ -45,7 +45,7 @@ description: Execute, resume, or verify approved LazySpec plan.md files in an is
 
 ## Merge and Automatic Delivery Finalization
 
-Once the user approves the reviewed feature branch:
+Once Feature Verification is `passed` and `current` and the user approves the reviewed feature branch, complete these steps. Verification alone never authorizes them; if the reviewed implementation changes, refresh the affected evidence and review before merging.
 
 1. **Merge to dev**:
    - Switch to the main repository and merge the feature branch into `dev`:
@@ -58,7 +58,7 @@ Once the user approves the reviewed feature branch:
      delivered_at: YYYY-MM-DD
      ```
 3. **In-place Phrasing Cleansing**:
-   - Cleanses proposal/hypothetical phrasing (e.g. "拟议", "计划", "should", "proposed") in `spec.md` into current-tense factual architectural decisions (Decision).
+   - Cleanses proposal/hypothetical phrasing in architectural narrative (e.g. "拟议", "计划", "proposed") in `spec.md` into current-tense factual architectural decisions (Decision). Preserve normative acceptance criteria, anchors, and the approved behavior; do not mechanically replace requirement keywords.
 4. **Bidirectional Supersession Sync**:
    - If `spec.md` lists `supersedes: [specs/<old-feature>/]`:
      - Open `specs/<old-feature>/spec.md`;
@@ -66,8 +66,8 @@ Once the user approves the reviewed feature branch:
      - Prepend a warning callout at the top of the superseded file:
        `> [!WARNING]`
        `> 本规范已被新规范废黜，请勿作为当前系统事实参考。`
-5. **Worktree Cleanup**:
-   - Safely remove the worktree and clean up the temporary progress record:
+5. **Persist Finalization and Worktree Cleanup**:
+   - Commit the Spec status, narrative, and supersession changes on `dev`, without including unrelated edits. Preserve `plan.md` and its verification evidence; do not implicitly archive it or write Project Memory.
+   - Remove the temporary `.execution-progress.md` record, then safely remove the clean worktree:
      `git worktree remove .worktrees/<feature-name>`
-     (and delete `.execution-progress.md`).
 6. **Handoff**: Present the final completion report to the user in Chinese, confirming merge into `dev`, worktree removal, and finalized delivery status.

@@ -67,12 +67,11 @@ class OrchestrationBoundaryTests(unittest.TestCase):
             "MUST NOT specify how tasks inside any individual Spec are executed",
             "remain governed by that Spec's approved `plan.md` and executing-plan/SKILL.md",
             "The orchestration decides only when a Spec's turn arrives, on which branch, and alongside which other Specs",
-            "each Spec's internal task execution remains fully governed by that Spec's `plan.md` and executing-plan/SKILL.md",
         ):
             with self.subTest(required=required):
                 self.assertIn(required, SKILL)
         self.assertIn(
-            "does not govern how tasks inside any individual Spec are executed",
+            "its boundaries and lifecycle are owned by `orchestrating-specs`",
             ROUTER,
         )
         self.assertIn(
@@ -86,10 +85,6 @@ class OrchestrationBoundaryTests(unittest.TestCase):
         ):
             with self.subTest(required=required):
                 self.assertIn(required, SKILL)
-        self.assertIn(
-            "gaps between Specs route back to the affected Spec's revision",
-            ROUTER,
-        )
 
     def test_specs_remain_their_own_source_of_truth(self):
         self.assertIn(
@@ -118,7 +113,7 @@ class OrchestrationApprovalAndBranchTests(unittest.TestCase):
             "Orchestration approval never approves new Spec content", APPROVAL_POLICY
         )
         self.assertIn(
-            "multi-Spec orchestration approves its complete `orchestration.md`", ROUTER
+            "explicit approval of the complete `orchestration.md`", APPROVAL_POLICY
         )
 
     def test_stacked_branch_strategy(self):

@@ -73,7 +73,8 @@ class SkillContractTests(unittest.TestCase):
         self.assertIn("status: delivered", execution)
         self.assertIn("checkbox token from `[ ]` to `[x]`", execution)
         self.assertIn("//TODO", execution)
-        self.assertIn("//TODO", planning)
+        self.assertIn("[plan-template.md](plan-template.md)", planning)
+        self.assertIn("//TODO", (ROOT / "writing-plan/plan-template.md").read_text())
 
     def test_downstream_approval_and_binary_boundaries(self):
         routing = (ROOT / "using-lazyspec" / "SKILL.md").read_text()
@@ -83,7 +84,8 @@ class SkillContractTests(unittest.TestCase):
         spec = (ROOT / "writing-spec" / "SKILL.md").read_text()
         plan = (ROOT / "writing-plan" / "SKILL.md").read_text()
 
-        self.assertIn("`spec.md` and `plan.md` separately in that order", routing)
+        self.assertIn("Only after explicit approval of `spec.md`, route to `writing-plan`", routing)
+        self.assertIn("Spec → explicit Spec approval → Plan → explicit Plan approval", policy)
         self.assertIn("Await explicit approval before transitioning to `writing-plan`", spec)
         self.assertIn("Only an explicit approval in the current conversation", policy)
         self.assertIn("A material change invalidates the prior approval", policy)

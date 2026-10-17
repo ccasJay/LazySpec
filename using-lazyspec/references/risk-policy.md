@@ -12,15 +12,15 @@ When pausing, name the affected action, missing decision or permission, and exac
 
 Use the highest applicable level, not a numerical score:
 
-| Level | Conditions | Normal planning approval | Feature verification |
+| Level | Conditions | Critical operations | Feature verification |
 |---|---|---|---|
-| low | Local, readily reversible; no public interface, persistent data, or permission-boundary changes | Requirements, Design, and Tasks each require approval under approval-policy.md | All acceptance outcomes and directly affected regression checks |
-| medium | Cross-component behavior, public interfaces, or compatible data changes with bounded impact | The same three phase approvals | Also integration, compatibility, and failure paths |
-| high | Permissions, sensitive data, destructive migrations, irreversible effects, or broad impact | The same three phase approvals; confirm unauthorized critical operations and required human acceptance | Also relevant security, recovery, and impact-boundary checks |
+| low | Local, readily reversible; no public interface, persistent data, or permission-boundary changes | Stay within the authorized scope | All acceptance outcomes and directly affected regression checks |
+| medium | Cross-component behavior, public interfaces, or compatible data changes with bounded impact | Inspect external effects and applicable authorization | Also integration, compatibility, and failure paths |
+| high | Permissions, sensitive data, destructive migrations, irreversible effects, or broad impact | Identify concrete critical operations; apply approval-policy.md before any unauthorized operation | Also relevant security, recovery, and impact-boundary checks |
 
-Requirements assesses the initial level during requirement collection; Design re-evaluates it. Default to medium unless low is justified; clarify uncertain high-impact consequences before approving the document. Do not add irrelevant tests merely to satisfy a level.
+Assess the initial level while writing `spec.md`; re-evaluate it when planning or implementation reveals new consequences. Default to medium unless low is justified; clarify uncertain high-impact consequences before approving the document. Do not add irrelevant tests merely to satisfy a level. Risk changes verification depth, not the Spec → Plan approval order defined in approval-policy.md.
 
-Record the level, reasons, and named critical operations in Requirements and Design's `风险与待确认`; Design records any assessment change. Tasks links to this assessment instead of duplicating it. Fast records it in Constraints and Approach. Before execution, reconcile discrepancies using the highest applicable level.
+Record the level, reasons, and named critical operations in `spec.md`'s `风险与否定性保证`. `plan.md` links to that assessment; update the Spec if the assessment materially changes. Fast records it in Constraints and Approach. Before execution, reconcile discrepancies using the highest applicable level.
 
 ## Existing artifacts
 

@@ -19,17 +19,14 @@ Read [risk-policy.md](../using-lazyspec/references/risk-policy.md), [approval-po
 ## Plan Structure and Engineering Discipline
 
 1. **Behavioral Slices (Superpowers Inspired)**:
-   - Format each task as `- [ ] //TODO <number>. <task text>`.
-   - Each task represents a cohesive, independently deliverable behavior slice (combining interface entry, business logic, and automated tests).
-   - Internal test-first discipline: identify concrete verification or failing test assertions (Red) before writing production code (Green).
+   - Read [plan-prompt.md](plan-prompt.md) for behavioral slicing and test-first discipline, and [plan-template.md](plan-template.md) for TODO syntax and document shape.
+   - Apply delivery-loop.md's executable success criteria to every task; do not duplicate the shared verification contract.
 2. **Requirement Linkage**:
    - Link each acceptance criterion implemented by the TODO to `spec.md`:
      `[<req-num>.<crit-num>](./spec.md#spec-req-<req-num>-<crit-num>)`.
    - Every acceptance criterion in `spec.md` MUST be covered by at least one task.
 3. **Feature Verification Appendix**:
-   - Append `## Feature Verification` following delivery-loop.md.
-   - Include **Planned Checks** (mapping each requirement to scenarios, expected outcomes, and verifiable test/command entries).
-   - Initialize **Latest Result** as `未执行`.
+   - Populate the template's Feature Verification appendix under delivery-loop.md; use the normal-mode requirement anchors above.
 
 ## Approval Gate
 

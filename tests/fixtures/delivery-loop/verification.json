@@ -7,6 +7,7 @@
   "uncommitted_changes": [],
   "contract_fingerprint": "synthetic-contract-v1",
   "human_acceptance": false,
+  "human_acceptance_required": true,
   "required_outcomes": ["req-1-1", "req-1-2"],
   "checks": [
     {"outcomes": ["req-1-1"], "expected": "空输入不写入数据", "actual": "拒绝空输入，写入次数为零", "status": "passed", "evidence": "synthetic-result/input-validation"},

@@ -1,6 +1,6 @@
 # Approval policy
 
-Single source of truth for approval semantics across all LazySpec gates: Requirements/Design/Tasks review, fast plan approval, multi-Spec orchestration review, and Memory write previews. It also owns the shared asking protocol for requirement collection, design decisions, and approvals. Risk levels and verification depth live in [risk-policy.md](risk-policy.md). Resolve this reference from the installed `using-lazyspec` skill, never the user's project directory.
+Single source of truth for approval semantics across all LazySpec gates: Spec/Plan review, fast plan approval, multi-Spec orchestration review, and Memory write previews. It also owns the shared asking protocol for requirement collection, design decisions, and approvals. Risk levels and verification depth live in [risk-policy.md](risk-policy.md). Resolve this reference from the installed `using-lazyspec` skill, never the user's project directory.
 
 ## Explicit approval semantics
 
@@ -19,19 +19,19 @@ Single source of truth for approval semantics across all LazySpec gates: Require
 ## Approval timing
 
 - For every normal Spec, create and review one phase at a time: Spec → explicit Spec approval → Plan → explicit Plan approval. Never create a downstream phase document before the current phase is explicitly approved. Risk level and decision impact do not change this order or the approval gates.
-- Before creating a new Plan, ensure the current `spec.md` is explicitly approved.
 - Resolve unanswered user decisions within the current phase. Do not advance past an unapproved phase or an unauthorized critical operation. Reuse explicit decisions and authorization already available in the conversation without asking twice for the same phase object.
 - Approval of one Spec phase never approves a later phase.
 - Confirm only concrete critical operations not already explicitly authorized at their current scope. General plan approval is not permission for an unnamed destructive operation. Human acceptance is required only when explicitly requested, mandated by binding project rules, or necessary to establish an outcome unavailable to automated evidence; when required, it covers the current implementation, not an old result.
 - Fast retains one plan and one plan approval followed by continuous execution, at every risk level. A material plan change requires approval of the complete revised plan with its delta.
 - Multi-Spec orchestration retains one approval gate: explicit approval of the complete `orchestration.md` before any participating Spec's execution starts. A material change — participating Spec set, joint objective, dependency/order, parallelism, branch strategy, coordination constraints, or integration verification — requires approval of the complete revised orchestration with its delta. Orchestration approval never approves new Spec content; participating Specs remain governed by their own approvals.
-- A rejected phase remains in that phase: apply feedback and present the revised phase for approval before creating any downstream document.
 
 ## File-backed review
 
 When an approval object is a saved Spec or plan file, finish writing and internally checking that file before requesting approval. Give the user a link to the current file (or its exact path if the environment cannot link files), name the phase, and ask them to review the file and approve it or request changes. Keep the approval question short: do not paste the complete document into the conversation or the question tool. The file remains the complete approval object; a link or file write alone does not count as approval.
 
-For a material revision, update the same file first and give a concise delta of material additions, changes, removals, and risk changes alongside its link. If the user explicitly asks to see the text in the conversation, provide the requested excerpt or document. This rule applies to saved `spec.md`, `plan.md`, fast plans, and orchestration plans; it does not replace Memory's exact write-preview approval. Ephemeral preview artifacts for Memory writes (such as `memory-preview.md` created outside `project-memory/`) exist solely as approval objects; once approved and atomically written (or if rejected/abandoned), they MUST be deleted immediately to prevent cluttering the working tree.
+For a material revision, update the same file first and give a concise delta of material additions, changes, removals, and risk changes alongside its link. If the user explicitly asks to see the text in the conversation, provide the requested excerpt or document. This rule applies to saved `spec.md`, `plan.md`, fast plans, and orchestration plans.
+
+For every Memory write, including maintenance, the approval object is a complete preview outside `project-memory/`: full candidate Capsule content, the exact index delta, and every affected status/link change. Approval authorizes only that exact write set; changes require a revised preview and approval. Preparation and cleanup follow [memory-workflow.md](memory-workflow.md).
 
 ## How to ask
 
@@ -47,6 +47,5 @@ At a necessary approval gate, ask the phase's approval question as one decision.
 
 In v2 binary architecture, `spec.md` and `plan.md` each use the complete saved phase document as their approval object. Users and Agents share one body; do not generate a separate approval summary or divide the document by audience.
 
-- Frontmatter metadata contract: `spec.md` MUST include standardized YAML frontmatter tracking `status` (`proposed`, `delivered`, `archived`, `superseded`, `obsolete`), `created_at`, optional `delivered_at`, optional `supersedes: []`, and optional `superseded_by`.
 - Before requesting approval, verify that the file captures all confirmed material behavior, boundaries, decisions, and risks, contains no conflicting contract items, and has no unresolved material user decision. Do not require a second projection of the same information.
-- Every downstream phase MUST use the approved upstream document's material content as its contract. Planning Skills continue to read complete upstream Specs as their instructions require. During normal task execution, `executing-plan` reads complete `spec.md` overview, key decisions, and risk sections, then technical sections relevant to each TODO; it checks complete feature-contract coverage before claiming verification passed.
+- Every downstream phase MUST use the approved upstream document's material content as its contract. Reading depth is defined by the phase Skill; feature-contract coverage is verified under delivery-loop.md.

@@ -186,19 +186,22 @@ class MemorySkillContractTests(unittest.TestCase):
         self.assertEqual(historical, ["project-memory/features/review-memory.md"])
 
     def test_memory_distillation_skills_require_preview_cleanup(self):
-        for name in ("distill-feature", "distill-learning"):
+        workflow = ROUTER_ROOT / "references" / "memory-workflow.md"
+        for name in ("distill-feature", "distill-learning", "maintain-memory"):
             skill_text = (ROOT / name / "SKILL.md").read_text()
-            self.assertIn("Clean Up Preview Artifact", skill_text)
-            self.assertIn("memory-preview.md", skill_text)
-            self.assertIn("delete", skill_text.lower())
+            links = re.findall(r"\]\(([^)]+memory-workflow\.md)\)", skill_text)
+            self.assertEqual(1, len(links), name)
+            self.assertEqual(workflow, (ROOT / name / links[0]).resolve())
 
         policy_text = (ROUTER_ROOT / "references" / "approval-policy.md").read_text()
-        self.assertIn("memory-preview.md", policy_text)
-        self.assertIn("MUST be deleted immediately", policy_text)
-
-        format_text = (ROUTER_ROOT / "references" / "memory-format.md").read_text()
-        self.assertIn("memory-preview.md", format_text)
-        self.assertIn("delete them immediately upon successful write", format_text)
+        self.assertIn("approval authorizes only that exact write set", policy_text.lower())
+        workflow_text = workflow.read_text()
+        self.assertIn("Clean Up Preview Artifact", workflow_text)
+        self.assertIn("memory-preview.md", workflow_text)
+        self.assertIn("rejected/abandoned", workflow_text)
+        self.assertIn("write remains incomplete", workflow_text)
+        self.assertIn("project-memory/README.md", workflow_text)
+        self.assertIn("[memory-format.md](memory-format.md)", workflow_text)
 
 
 if __name__ == "__main__":

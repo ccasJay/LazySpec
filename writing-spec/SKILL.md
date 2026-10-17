@@ -37,24 +37,7 @@ Instead of mechanical, one-by-one incremental confirmations, `writing-spec` cond
 
 ## Document Contract
 
-The generated `specs/{feature_name}/spec.md` combines requirements and design into a single living truth:
-
-1. **YAML Frontmatter**:
-   ```yaml
-   ---
-   status: proposed
-   created_at: YYYY-MM-DD
-   supersedes: []
-   superseded_by: null
-   ---
-   ```
-2. **Body Structure**:
-   - `# <Feature Name> Spec`
-   - `## 目标与范围 (Goal & Scope)`: Concise user-visible goals, non-goals, and boundary definition.
-   - `## 需求与验收标准 (Requirements & Acceptance Criteria)`: Numbered requirements with user stories and EARS criteria. Each criterion MUST have a unique HTML anchor `spec-req-<num>-<num>`.
-   - `## 架构与核心决策 (Architecture & Key Decisions)`: Structural diagrams, data contracts, API boundaries, and runtime invariants.
-   - `## 曾考虑的备选方案 (Alternatives Considered)`: MANDATORY section detailing alternative designs evaluated and the exact reasons they were rejected (Why not X?).
-   - `## 风险与否定性保证 (Risks & Invariants)`: Known risks, failure containment, and invariants that must never be violated.
+Read [spec-prompt.md](spec-prompt.md) for content rules and [spec-template.md](spec-template.md) for the canonical frontmatter and document shape before drafting. Together they define the combined requirements/design document; do not maintain another schema here. Record the risk assessment required by risk-policy.md in the template's risk section.
 
 ## Approval Gate
 

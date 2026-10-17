@@ -16,14 +16,14 @@ class TaskGranularityContractTests(unittest.TestCase):
         prompt = (PLAN_DIR / "plan-prompt.md").read_text()
 
         self.assertIn("Behavioral Slices", skill)
-        self.assertIn("independently deliverable behavior slice", skill)
-        self.assertIn("automated tests", skill)
+        self.assertIn("[plan-prompt.md](plan-prompt.md)", skill)
+        self.assertIn("independently deliverable behavior slice", prompt)
         self.assertIn("Behavioral Focus", prompt)
         self.assertIn("automated tests", prompt)
 
         self.assertIn("test-first discipline", skill)
         self.assertIn("spec.md", skill)
-        self.assertIn("- [ ] //TODO", prompt)
+        self.assertIn("[plan-template.md](plan-template.md)", prompt)
 
     def test_plan_template_contains_behavioral_todos_and_feature_verification(self):
         template = (PLAN_DIR / "plan-template.md").read_text()

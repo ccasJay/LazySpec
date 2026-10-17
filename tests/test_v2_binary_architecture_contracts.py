@@ -52,15 +52,17 @@ class V2BinaryArchitectureContractTests(unittest.TestCase):
         self.assertIn("### Planned Checks", template)
         self.assertIn("### Latest Result", template)
 
-    def test_delivery_loop_defines_four_lifecycle_states_and_guardrails(self):
+    def test_lifecycle_states_delegate_operations_to_their_owners(self):
         delivery_loop = (POLICIES / "delivery-loop.md").read_text()
         for state in ("proposed", "delivered", "archived", "superseded", "obsolete"):
             with self.subTest(state=state):
                 self.assertIn(f"`{state}`", delivery_loop)
         self.assertIn("negative guardrail", delivery_loop.lower())
-        self.assertIn("specs/retired/", delivery_loop)
-        self.assertIn("specs/archived/", delivery_loop)
-        self.assertIn("Automatic Delivery Finalization", delivery_loop)
+        governance = (ROOT / "maintain-memory/SKILL.md").read_text()
+        self.assertIn("../../maintain-memory/SKILL.md", delivery_loop)
+        self.assertIn("specs/retired/", governance)
+        self.assertIn("specs/archived/", governance)
+        self.assertIn("../../executing-plan/SKILL.md#merge-and-automatic-delivery-finalization", delivery_loop)
 
     def test_router_includes_negative_guardrail_inspection(self):
         router = (ROOT / "using-lazyspec" / "SKILL.md").read_text()

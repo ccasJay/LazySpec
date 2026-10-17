@@ -44,7 +44,7 @@ def lint_report(report):
         raise ValueError("acceptance coverage gap")
     states = {check["status"] for check in report["checks"]}
     expected = next((s for s in ("failed", "blocked", "pending-human") if s in states), "passed")
-    if expected == "passed" and report["risk"] == "high" and not report["human_acceptance"]:
+    if expected == "passed" and report["human_acceptance_required"] and not report["human_acceptance"]:
         expected = "pending-human"
     if report["status"] != expected:
         raise ValueError("unsupported aggregate success")
@@ -96,17 +96,25 @@ class DeliveryContractTests(unittest.TestCase):
         )
 
     def test_scenario_suite_references_real_rules(self):
-        cases = json.loads((FIXTURES / "delivery-loop/scenarios.json").read_text())
-        self.assertEqual(len(cases), len({c["id"] for c in cases}))
-        for case in cases:
-            with self.subTest(case=case["id"]):
-                self.assertTrue(case["facts"] and case["expected"])
-                path, anchor = case["rule"].split("#")
-                headings = re.findall(r"^## (.+)$", (POLICIES / path).read_text(), re.M)
-                self.assertIn(anchor, [re.sub(r"[^a-z0-9 -]", "", h.lower()).replace(" ", "-") for h in headings])
+        for suite in ("delivery-loop", "requirement-collection"):
+            cases = json.loads((FIXTURES / suite / "scenarios.json").read_text())
+            self.assertEqual(len(cases), len({c["id"] for c in cases}))
+            for case in cases:
+                with self.subTest(suite=suite, case=case["id"]):
+                    self.assertTrue(case["facts"] and case["expected"])
+                    path, anchor = case["rule"].split("#")
+                    source = (POLICIES if suite == "delivery-loop" else ROOT) / path
+                    headings = re.findall(r"^## (.+)$", source.read_text(), re.M)
+                    self.assertIn(anchor, [re.sub(r"[^a-z0-9 -]", "", h.lower()).replace(" ", "-") for h in headings])
 
-    def test_high_risk_report_requires_current_human_acceptance(self):
+    def test_required_human_acceptance_is_independent_of_risk_level(self):
         report = json.loads((FIXTURES / "delivery-loop/verification.json").read_text())
+        self.assertFalse(lint_report(report))
+        automatic = copy.deepcopy(report)
+        automatic["human_acceptance_required"] = False
+        automatic["status"] = "passed"
+        self.assertTrue(lint_report(automatic))
+        report["risk"] = "low"
         self.assertFalse(lint_report(report))
         report["human_acceptance"] = True
         report["status"] = "passed"

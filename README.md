@@ -23,10 +23,10 @@ flowchart LR
     A["💡 需求想法"] --> B["1. writing-spec<br/>(决策探针收敛分歧)"]
     B -->|审批 spec.md| C["2. writing-plan<br/>(TDD 行为拆解)"]
     C -->|审批 plan.md| D["3. executing-plan<br/>(连续执行与验收)"]
-    D --> E["4. 自动交付收口<br/>(原位清洗 + 沉淀护栏)"]
+    D -->|用户审核并批准合并| E["4. 自动交付收口<br/>(合并 + 原位清洗 + 状态同步)"]
 ```
 
-- **标准通道 (Standard)**：`spec.md` (定义意图与边界) ➔ `plan.md` (定义 TDD 任务与验证) ➔ 连续执行并自动收口。
+- **标准通道 (Standard)**：`spec.md` (定义意图与边界) ➔ `plan.md` (定义 TDD 任务与验证) ➔ 连续执行与验收 ➔ 用户审核并批准合并 ➔ 自动交付收尾。Memory 沉淀另走预览审批流程。
 - **快速通道 (Fast)**：轻量场景单文件闭环，一步生成 `plan.md`，一次审批即连续执行验收。
 - **多 Spec 编排 (Orchestration)**：通过 `orchestrating-specs` 联合处理多 Spec 依赖拓扑、堆叠分支与集成验证。
 
@@ -108,7 +108,7 @@ spec.md 已批准，请为 specs/user-auth/ 制定执行计划。
 ```text
 plan.md 已批准，请执行 specs/user-auth/plan.md 中的全部任务。
 ```
-> Agent 连续执行 TDD 编码，运行 Feature Verification；验收后自动将 `spec.md` 标记为 `delivered` 并原位清洗假设语态。
+> Agent 连续执行 TDD 编码，运行 Feature Verification；用户审核并批准合并后，合并到 `dev`，将 `spec.md` 标记为 `delivered` 并原位清洗架构说明中的假设语态。
 
 ### 4. 经验沉淀与快速模式
 ```text

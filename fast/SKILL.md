@@ -43,8 +43,8 @@ Write exactly one artifact: `specs/{feature_name}/plan.md` under `ACTIVE_PROJECT
 1. **Objective** — one or two sentences describing the observable outcome.
 2. **Constraints** — only constraints that change implementation decisions.
 3. **Approach** — the selected implementation approach and its key decisions.
-4. **Tasks** — a numbered checkbox list; format every task line as `- [ ] //TODO <number>. <task text>` with at most two hierarchy levels and decimal numbering for sub-tasks. Use at most 3 descriptive sub-bullets: implementation objective, scenario/input with observable success criteria, and discovered command or specific test entry point (new tests explicitly to-be-implemented).
-5. **Feature Verification** — Planned Checks covering Objective, Constraints, task criteria, composed flows and risk, plus an initially unexecuted Latest Result. Follow delivery-loop.md; this is not a TODO.
+4. **Tasks** — a numbered checkbox list; format every task line as `- [ ] //TODO <number>. <task text>` with at most two hierarchy levels and decimal numbering for sub-tasks. Apply delivery-loop.md's executable success criteria.
+5. **Feature Verification** — follow delivery-loop.md's fast-mode artifact contract.
 
 Record risk level, reasons, and critical operations in Constraints/Approach. During execution append Learning Candidates only when useful evidence exists.
 
@@ -52,9 +52,7 @@ Keep the plan minimal and directly executable. Exclude user testing, deployment,
 
 ## Approval
 
-After creating a plan or changing its material contract, obtain approval of any intent or decision not already explicitly approved, following approval-policy.md's asking protocol. Internal refinements and equivalent verification methods do not need reapproval; evidence and candidate updates do not revise the approved plan.
-
-Fast keeps its single approval gate: one plan approval followed by continuous execution at every risk level. For material plan changes, revise `plan.md`, present the delta, and request approval of unresolved decisions under approval-policy.md; never start execution before explicit approval. Silence or an explanation is not approval and does not require speculative edits.
+Use approval-policy.md's fast plan gate, file-backed review, materiality, and asking protocol. After plan approval, continue the authorized execution; apply the same policy to later revisions.
 
 ## Execution
 
@@ -63,12 +61,11 @@ After explicit approval, execute the plan continuously:
 - For the initial approved run, execute every task until all are complete, choosing a dependency-preserving order; do not pause between tasks for confirmation. On a later request explicitly limited to a task subset, honor that subset and the shared verification scope boundary.
 - Verify each task's implementation against its stated behavior and verification before moving on.
 - When a task completes, change only its checkbox token in `plan.md` from `[ ]` to `[x]`. Preserve `//TODO` and every character after it exactly; never remove, replace, or rewrite the task text.
-- Follow delivery-loop.md for failures: autonomously repair implementation errors within scope while progressing; route plan gaps to Objective/Constraints, Approach, or Tasks, autonomously update internal refinements, and ask only for material contract changes. Apply the no-progress reassessment and budget boundary and risk-policy.md critical-operation confirmations.
+- Follow delivery-loop.md for verification scope, failures, repair routing, and the no-progress boundary; apply risk-policy.md to critical operations.
 
 ## Handoff
 
-When all checkboxes are checked, run Feature-level Verification and collect valuable Learning Candidates under delivery-loop.md, then report in Chinese:
+Complete the shared verification, handoff, and Learning Candidates requirements in delivery-loop.md, then report in Chinese:
 
-- TODO completion separately from feature status/freshness, current evidence, required human acceptance, and remaining work. Pending or blocked verification is not feature success.
 - Inspect only the Project Memory index (`project-memory/index.md`) for Capsules whose feature, tags, summary, Source Spec, or authorities overlap the changed paths, and report likely impact candidates. Do not create, edit, or re-status Memory without a separate explicit distillation or maintenance request.
-- Note that the feature used fast mode and has no `spec.md`; suggest the normal chain if the feature later needs a full Spec.
+- Note that the feature used fast mode and has no `spec.md`; suggest the normal chain if the feature later needs a full Spec. This handoff does not create a Spec or apply normal-mode delivery status changes.

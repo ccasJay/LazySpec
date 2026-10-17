@@ -1,50 +1,50 @@
 [
   {
     "id": "sequential-new-requirements",
-    "facts": "用户一次给出两个完整需求：导出当前列表，以及按名称筛选列表。环境提供适用提问工具。",
-    "expected": "分别调用工具确认两条简短需求及目标行为，每次等待实际回复后再继续；收集问题不展示详细验收标准，确认前不写文档。",
-    "rule": "writing-requirement/SKILL.md#requirement-collection"
+    "facts": "用户一次给出两个完整需求：导出当前列表，以及按名称筛选列表；尚未说明空结果的导出行为。环境提供适用提问工具。",
+    "expected": "保留已明确的导出与筛选意图，只针对空结果等实质未知点逐次提问并等待回答，不逐条重新确认完整需求。",
+    "rule": "writing-spec/SKILL.md#structured-probing-grill-me-style"
   },
   {
     "id": "modify-and-reject",
     "facts": "Agent 提议导出全部记录和保存筛选条件；用户将前者改为只导出当前筛选结果，并拒绝后者。",
-    "expected": "按明确修改记录导出行为，不重复询问已明确的替代行为；排除保存筛选条件，不把原提议写入文档。",
-    "rule": "writing-requirement/SKILL.md#requirement-collection"
+    "expected": "按明确修改记录导出行为，排除保存筛选条件；仅在尚有实质未知点时提问，不重复确认已明确的选择。",
+    "rule": "writing-spec/SKILL.md#structured-probing-grill-me-style"
   },
   {
     "id": "ambiguous-answer",
     "facts": "用户对导出范围回复“看情况”，未说明条件。",
-    "expected": "继续询问影响范围的条件并等待明确回答，不把模糊回复当确认或转问下一条需求。",
-    "rule": "writing-requirement/SKILL.md#requirement-collection"
+    "expected": "继续询问影响导出范围的条件并等待明确回答，不把模糊回复当确认。",
+    "rule": "writing-spec/SKILL.md#structured-probing-grill-me-style"
   },
   {
     "id": "completion-and-additions",
     "facts": "两条需求已确认；Agent 询问有无补充，用户又要求导出时保留当前排序。",
-    "expected": "继续逐条收集新增行为，处理完后再次询问是否收集完成；获得明确结束回复后一次生成完整文档，再单独请求文档审批。",
-    "rule": "writing-requirement/SKILL.md#requirement-collection"
+    "expected": "纳入用户明确的排序要求，检查是否引入新的实质分歧；收敛后生成完整 spec.md，并单独请求文件审批。",
+    "rule": "writing-spec/SKILL.md#structured-probing-grill-me-style"
   },
   {
     "id": "elaboration-exposes-choice",
     "facts": "用户只确认导出当前列表；起草验收标准时，Agent 打算加入失败后自动重试三次。",
-    "expected": "不自行加入重试承诺；若该行为确有必要，回到需求提问并重新确认收集完成后再写入。",
-    "rule": "writing-requirement/SKILL.md#requirement-collection"
+    "expected": "不自行加入重试承诺；若该行为确有必要，先询问这一实质选择，收敛后再写入 spec.md。",
+    "rule": "writing-spec/SKILL.md#structured-probing-grill-me-style"
   },
   {
     "id": "incremental-revision",
     "facts": "已有导出、筛选两条需求；用户要求修改导出范围、删除筛选，并新增排序。",
-    "expected": "只逐条询问修改、删除及新增的行为，明确删除影响；保留其他未改需求与锚点。收集完成后更新完整草稿并按实质变更重新审批。",
-    "rule": "writing-requirement/SKILL.md#requirement-collection"
+    "expected": "直接采用用户明确的修改与删除，只询问尚未明确且会改变行为的决策；保留其他未改契约与锚点，更新完整 spec.md 后按实质变更请求审批。",
+    "rule": "writing-spec/SKILL.md#structured-probing-grill-me-style"
   },
   {
     "id": "editorial-only-revision",
     "facts": "用户只要求修正已有需求文档中的错别字，行为、范围及风险均未改变。",
-    "expected": "直接修正文案，保留原有契约和有效批准，不逐条提问，也不要求确认收集结束。",
-    "rule": "writing-requirement/SKILL.md#requirement-collection"
+    "expected": "直接修正文案，保留原有契约和有效批准，不重新发起需求访谈。",
+    "rule": "writing-spec/SKILL.md#structured-probing-grill-me-style"
   },
   {
     "id": "different-tool-interfaces",
     "facts": "分别在两个环境运行同一请求：环境 A 的提问工具接收 prompt 和 choices，环境 B 的工具接收 questions 数组；工具名称不同，均允许使用。",
-    "expected": "读取各环境实际工具定义，调用本环境的工具并只传支持的字段；不照搬另一环境的工具名称或参数结构，每次仍只确认一条需求。",
+    "expected": "读取各环境实际工具定义，只传支持的字段；针对实质未知点一次提问一个决策，不照搬另一环境的工具或参数。",
     "rule": "using-lazyspec/references/approval-policy.md#how-to-ask"
   },
   {
@@ -61,8 +61,8 @@
   },
   {
     "id": "supplied-plan-and-document-approval",
-    "facts": "用户提供已批准的原生计划，要求据此创建需求文档，但环境不允许写文件。",
-    "expected": "把计划作为普通背景，仍逐条询问需求；收集结束也不绕过写入限制、不宣称整份需求文档已批准。允许写入后生成文档并单独请求审批。",
-    "rule": "writing-requirement/SKILL.md#requirement-collection"
+    "facts": "用户提供已批准的原生计划，要求据此创建 spec.md，但环境不允许写文件。",
+    "expected": "保留已明确的意图，仅澄清实质未知点；不绕过写入限制，也不把原生计划批准当作 spec.md 文件审批。允许写入后保存完整文件并请求审批。",
+    "rule": "writing-spec/SKILL.md#structured-probing-grill-me-style"
   }
 ]

@@ -2,31 +2,31 @@
   {
     "id": "low-phases",
     "facts": "普通新功能，仅修改本地展示格式，无公共接口、数据或权限变化；方向已批准。",
-    "expected": "先起草并审批 Requirements，获批后才生成 Design，Design 获批后才生成 Tasks；不开始编码。",
+    "expected": "先起草并审批 spec.md，获批后才生成 plan.md；plan.md 获批且执行已授权后才开始编码。",
     "rule": "approval-policy.md#approval-timing"
   },
   {
     "id": "medium-phases",
-    "facts": "普通功能改变两个组件间的公共接口；Requirements 草稿存在但未批准。",
-    "expected": "请求 Requirements 审批，不把草稿当作已批准；风险等级不改变阶段顺序。",
+    "facts": "普通功能改变两个组件间的公共接口；spec.md 草稿存在但未批准。",
+    "expected": "请求 spec.md 审批，不把草稿当作已批准；风险等级不改变 Spec → Plan 顺序。",
     "rule": "approval-policy.md#approval-timing"
   },
   {
     "id": "escalation",
-    "facts": "原 low 功能在 Design 发现需要改变权限边界，Requirements 尚未批准。",
-    "expected": "升级 high，暂停推进，展示影响并从 Requirements 补齐阶段审批。",
+    "facts": "原 low 功能在设计 spec.md 时发现需要改变权限边界，spec.md 尚未批准。",
+    "expected": "升级 high，在 spec.md 补齐影响和风险并请求审批；不提前生成 plan.md。",
     "rule": "approval-policy.md#approval-timing"
   },
   {
     "id": "fast-high",
     "facts": "fast 高风险 plan 已批准，尚未授权其中的具体破坏性迁移。",
-    "expected": "保留单份 plan；执行迁移前确认具体操作，不创建三份 Spec。",
+    "expected": "保留单份 plan；执行迁移前确认具体操作，不创建 spec.md。",
     "rule": "approval-policy.md#approval-timing"
   },
   {
     "id": "already-authorized",
     "facts": "用户已明确授权当前范围的关键操作，之后风险仍为 high。",
-    "expected": "不重复确认同一操作；最终验收仍需针对当前证据确认。",
+    "expected": "不重复确认同一操作；仅在用户或项目明确要求、或自动证据不足时保留人工验收。",
     "rule": "approval-policy.md#approval-timing"
   },
   {
@@ -61,7 +61,7 @@
   },
   {
     "id": "human-acceptance",
-    "facts": "high 功能自动检查全通过，用户未确认当前验收证据。",
+    "facts": "功能自动检查全通过，但用户明确要求的人工体验验收尚未确认。",
     "expected": "报告 TODO 完成，功能状态 pending-human。",
     "rule": "delivery-loop.md#trigger-and-handoff"
   },
@@ -73,20 +73,20 @@
   },
   {
     "id": "task-gap",
-    "facts": "Requirements 和 Design 正确，但任务遗漏已设计的兼容检查。",
-    "expected": "回 Tasks 补充计划，展示差异并审批后继续。",
+    "facts": "spec.md 正确，但 plan.md 遗漏已要求的兼容检查，补充检查不改变批准的成功标准。",
+    "expected": "补充 plan.md 的非实质验证细节后继续，不重复请求审批。",
     "rule": "delivery-loop.md#failure-routing-and-repair"
   },
   {
     "id": "design-gap",
     "facts": "需求仍成立，但设计选择的数据结构无法保证已要求的并发一致性。",
-    "expected": "回 Design 修订并检查受影响 Tasks；变更后的 Design 获批后再更新下游。",
+    "expected": "回 spec.md 修订架构决策并检查受影响 plan.md；实质变更获批后再推进受影响执行。",
     "rule": "delivery-loop.md#failure-routing-and-repair"
   },
   {
     "id": "requirement-gap",
     "facts": "验收发现需求对同一失败场景规定了两种冲突的可观察行为。",
-    "expected": "回 Requirements 澄清并检查下游影响，不能让实现任意选一种。",
+    "expected": "回 spec.md 澄清验收行为并检查 plan.md 的影响，不能让实现任意选一种。",
     "rule": "delivery-loop.md#failure-routing-and-repair"
   },
   {
@@ -98,7 +98,7 @@
   {
     "id": "no-progress",
     "facts": "同一错误连续两轮修复复测，结果不变且没有新诊断证据。",
-    "expected": "暂停并汇报尝试及证据，不通过重命名问题重置计数。",
+    "expected": "重审假设与方法；只有预算内存在具体新诊断方法时才继续，否则暂停汇报，不通过重命名问题重置计数。",
     "rule": "delivery-loop.md#failure-routing-and-repair"
   },
   {

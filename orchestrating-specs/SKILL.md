@@ -5,7 +5,7 @@ description: Orchestrate joint execution of multiple user-approved Specs through
 
 # Orchestrating Specs
 
-Coordinate the joint execution of several Specs that each completed planning and hold user approval. This Skill writes one temporary artifact, `specs/orchestration.md`, describing only cross-Spec execution strategy. It is not a new Spec or Plan layer, it never defines new user behavior, and it never interferes with how tasks inside any individual Spec are executed.
+Coordinate the joint execution of several approved Specs through one temporary artifact, `specs/orchestration.md`.
 
 ## Rule
 - The output content should all be in chinese, except the key word from the project
@@ -27,26 +27,17 @@ Resolve every `specs/...` path against `ACTIVE_PROJECT_ROOT`, the user's project
 
 ## Orchestration Document Contract
 
-Write exactly one artifact: `specs/orchestration.md` under `ACTIVE_PROJECT_ROOT`, following [orchestration-templete.md](orchestration-templete.md) as the output shape, with all prose in Chinese. It MUST cover:
-
-1. 本次多 Spec 交付的整体目标；
-2. 涉及的 Spec（路径与批准状态）；
-3. Spec 之间的依赖关系；
-4. 执行顺序；
-5. 可并行执行的部分；
-6. 跨 Spec 协调约束；
-7. 每个 Spec 的完成条件（其 Feature Verification passed）；
-8. 最终跨 Spec Integration Verification。
+Write exactly one artifact: `specs/orchestration.md` under `ACTIVE_PROJECT_ROOT`, following [orchestration-templete.md](orchestration-templete.md) as the canonical output shape and lifecycle checklist, with all prose in Chinese.
 
 Boundaries — `orchestration.md` describes Spec-level execution strategy only:
 
-- It MUST NOT define new user behavior, interface requirements, or business scope, and it is not a new Spec or Plan layer.
+- It MUST NOT define new user behavior, interface requirements, or business scope, and it is not a new Spec or Plan layer. It MUST NOT override or modify any Spec's approved content.
 - It MUST NOT specify how tasks inside any individual Spec are executed: task-level ordering, execution details, and verification methods remain governed by that Spec's approved `plan.md` and executing-plan/SKILL.md; shared repair routing remains in delivery-loop.md. The orchestration decides only when a Spec's turn arrives, on which branch, and alongside which other Specs.
 - 堆叠分支策略：按逻辑依赖排序的 Spec 依序堆叠建分支（如 A→B→C：B 基于 A 的分支创建，C 基于 B 的分支创建），最后按相同顺序依次 merge；可并行的 Spec 从共同基础分支独立建分支，跨 Spec 集成验证通过后合并。
 
 ## Approval
 
-The complete `orchestration.md` is the approval object. Request approval following approval-policy.md's asking protocol; do not start any Spec execution before explicit approval. Material changes — participating Spec set, joint objective, dependency/order, parallelism, branch strategy, coordination constraints, or integration verification — invalidate approval: revise, present the delta, and request approval again.
+The complete `orchestration.md` is the approval object. Request approval following approval-policy.md's orchestration gate and asking protocol; do not start any Spec execution before explicit approval. Revision and invalidation rules remain in that policy.
 
 ## Gap Handling
 
@@ -56,9 +47,7 @@ When orchestration planning or execution reveals a requirement, interface, archi
 
 Only after orchestration approval:
 
-- Execute each Spec through its own approved `spec.md` and `plan.md` as the source of truth via executing-plan/SKILL.md. The orchestration only coordinates — it MUST NOT override or modify any Spec's approved content.
-- The orchestration decides Spec-level sequencing, branch stacking, and merge order; each Spec's internal task execution remains fully governed by that Spec's `plan.md` and executing-plan/SKILL.md, with shared verification and repair in delivery-loop.md.
-- Branch and merge strategy follows the approved orchestration.
+- Execute each Spec through its own approved `spec.md` and `plan.md` as the source of truth via executing-plan/SKILL.md, using the approved orchestration's Spec-level sequencing and branch/merge strategy. Each Spec retains executing-plan's user-review and merge gate.
 - Record per-Spec progress in `orchestration.md`'s lifecycle status as each Spec completes; a Spec counts as complete only when its Feature Verification passes.
 
 ## Memory Distillation Gate
@@ -69,8 +58,6 @@ Only after orchestration approval:
 
 ## Lifecycle and Deletion
 
-Lifecycle: 多个 Spec 已批准 → 创建 `orchestration.md` → 用户批准编排 → 按编排执行各 Spec → 所有 Spec Feature Verification passed → 跨 Spec Integration Verification passed → Memory 沉淀门 → 用户确认最终交付 → 删除 `orchestration.md`。
-
-- Completion means every step finished: Spec execution finished or verification passed alone is not completion; MUST NOT skip the distillation gate or the final confirmation.
+Follow the template's lifecycle checklist; verification alone is not group completion.
 - Never delete `orchestration.md` because a single Spec's tasks finished; delete only after the whole group's execution, verification, distillation, and final user confirmation are all complete.
 - Deletion is the normal closing action of the lifecycle: delete only `specs/orchestration.md` itself; MUST NOT delete any Spec's `spec.md`, `plan.md`, or Feature Verification evidence.

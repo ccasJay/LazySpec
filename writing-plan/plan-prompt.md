@@ -2,8 +2,9 @@
 
 Follow these guidelines when generating `plan.md`:
 
-1. **Behavioral Focus**: Do not partition tasks mechanically by files or layers (e.g. "create models", "create controllers"). Group all related changes and automated tests for one observable behavior into a single cohesive TODO.
-2. **Explicit Verification Entry Points**: Every task must clearly specify how to verify it (a specific test command, automated test entry point, or deterministic command probe).
-3. **Full Spec Coverage**: Every acceptance criterion defined in `spec.md` must be referenced by at least one task using relative anchor links.
-4. **Preserve Checkbox Syntax**: Strict format `- [ ] //TODO <num>. <title>`.
+1. **Behavioral Focus**: Each TODO is an independently deliverable behavior slice. Do not partition tasks mechanically by files or layers (e.g. "create models", "create controllers"). Group the interface entry, business logic, and applicable automated tests for one observable behavior together.
+2. **Test-first discipline**: Identify a failing assertion or concrete command probe (Red) before the production change (Green). Existing focused checks can suffice; new tests are not mandatory for every task.
+3. **Concrete scenarios**: Follow delivery-loop.md's executable success criteria. The task's scenario/input and expected observation must be visible before choosing a command; a bare command or green exit code does not explain the required behavior.
+
+Requirement coverage is defined by writing-plan/SKILL.md; syntax and output shape come from [plan-template.md](plan-template.md).
 

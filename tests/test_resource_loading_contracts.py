@@ -17,6 +17,7 @@ ROUTE_TO_SKILL = {
     "orchestration": "orchestrating-specs",
     "memory-recall": "using-lazyspec",
     "memory-distill": "distill-learning",
+    "memory-maintain": "maintain-memory",
 }
 
 
@@ -46,7 +47,7 @@ class ResourceLoadingContractTests(unittest.TestCase):
     def test_routed_skills_declare_their_matrix_resources(self):
         matrix = parse_matrix()
         for route, skill in ROUTE_TO_SKILL.items():
-            if skill in ("using-lazyspec", "distill-learning"):
+            if skill == "using-lazyspec":
                 continue
             text = (ROOT / skill / "SKILL.md").read_text()
             declared = set(re.findall(r"\]\(([^)]+)\)", text))
@@ -64,13 +65,23 @@ class ResourceLoadingContractTests(unittest.TestCase):
     def test_every_relative_link_in_skills_resolves(self):
         manifest = json.loads((ROOT / ".claude-plugin/plugin.json").read_text())
         for directory in manifest["skills"]:
-            skill = ROOT / directory / "SKILL.md"
-            for link in re.findall(r"\]\(([^)#]+\.md)\)", skill.read_text()):
-                with self.subTest(skill=str(skill), link=link):
-                    self.assertTrue(
-                        (skill.parent / link).resolve().exists(),
-                        f"broken reference {link}",
-                    )
+            for source in (ROOT / directory).rglob("*.md"):
+                if source.name.endswith(("template.md", "templete.md")):
+                    continue  # Templates contain output-project links, such as ./spec.md.
+                text = re.sub(r"```.*?```", "", source.read_text(), flags=re.S)
+                text = re.sub(r"`[^`\n]*`", "", text)
+                for link in re.findall(r"\]\(([^)]+\.md(?:#[^)]*)?)\)", text):
+                    path, _, anchor = link.partition("#")
+                    target = (source.parent / path).resolve()
+                    with self.subTest(source=str(source), link=link):
+                        self.assertTrue(target.is_file(), f"broken reference {link}")
+                        if anchor:
+                            headings = re.findall(r"^#+ (.+)$", target.read_text(), re.M)
+                            anchors = {
+                                re.sub(r"[^\w -]", "", h.lower()).replace(" ", "-")
+                                for h in headings
+                            }
+                            self.assertIn(anchor, anchors, f"broken anchor {link}")
 
     def test_prompt_and_template_files_stay_skill_relative(self):
         for directory, resources in (
