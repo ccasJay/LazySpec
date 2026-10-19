@@ -94,7 +94,7 @@ class DeliveryContractTests(unittest.TestCase):
         )
 
     def test_scenario_suite_references_real_rules(self):
-        for suite in ("delivery-loop", "requirement-collection"):
+        for suite in ("delivery-loop", "requirement-collection", "orchestration"):
             cases = json.loads((FIXTURES / suite / "scenarios.json").read_text())
             self.assertEqual(len(cases), len({c["id"] for c in cases}))
             for case in cases:

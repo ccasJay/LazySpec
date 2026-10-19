@@ -6,35 +6,36 @@
 
 ## 涉及的 Spec
 
-| Spec | 路径 | 批准状态 | 完成条件 |
-|---|---|---|---|
-| [feature_name] | specs/[feature_name]/ | 已批准 | Feature Verification passed |
+| Spec | 路径 | 批准状态 | 执行者 / 分支 / worktree | 进度与证据 |
+|---|---|---|---|---|
+| [feature_name] | specs/[feature_name]/ | 已批准 | [实际分配] | [就绪/执行/阻塞；提交、Feature Verification passed/current、审核及合并状态分别记录] |
 
 ## 依赖关系与执行顺序
 
-[Spec 之间的依赖关系与执行顺序，如 A → B → C；无依赖则说明依据]
+[仅记录必要的实现前置依赖、所需产物、就绪条件及串行原因；区分契约依赖与实现等待，无实现等待则写明可并行]
 
 ## 可并行执行的部分
 
-[可并行执行的 Spec 或阶段；无则写“无”]
+[默认优先并行：记录就绪 Spec、具体并发上限及可用且获授权的执行者；容量释放即补位，不等整批完成；无法并行时说明真实依赖、资源冲突或执行环境限制]
 
 ## 分支与合并策略
 
-[记录依赖链的堆叠分支、独立分支的共同基础与合并顺序；遵循编排 Skill 中的分支规则]
+[记录独立分支的共同基础；仅真实实现依赖采用堆叠分支并固定上游提交；指定统一集成与合并负责人、集成 worktree 和依赖优先的串行合并顺序，遵循编排 Skill]
 
 ## 跨 Spec 协调约束
 
-[共享接口、数据、时序等 Spec 之间的协调约束；只描述跨 Spec 协调，不规定单个 Spec 内部任务如何执行]
+[契约归属、共享文件或测试资源的隔离及必要的互斥约束；只描述跨 Spec 协调，不规定单个 Spec 内部任务如何执行]
 
 ## 跨 Spec 集成验证
 
-[最终跨 Spec Integration Verification：场景、预期结果、检查方式]
+[跨 Spec Integration Verification：场景、预期结果、检查方式；在独立集成 worktree 验证实际组合，记录基础提交、各分支提交、实际结果与新鲜度，再按审核批准合并]
 
 ## 生命周期状态
 
 - [ ] 编排已获用户批准
 - [ ] 各 Spec Feature Verification 全部 passed
-- [ ] 跨 Spec Integration Verification passed
+- [ ] 跨 Spec Integration Verification passed/current
+- [ ] 各分支已获审核及合并批准，统一合并与交付收尾完成
 - [ ] Memory 沉淀门完成（需要的写入已获批准并完成，或用户明确确认无需沉淀）
 - [ ] 用户确认最终交付
 - [ ] 已删除 orchestration.md

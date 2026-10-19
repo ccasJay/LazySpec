@@ -116,17 +116,16 @@ class OrchestrationApprovalAndBranchTests(unittest.TestCase):
             "explicit approval of the complete `orchestration.md`", APPROVAL_POLICY
         )
 
-    def test_stacked_branch_strategy(self):
+    def test_parallel_scheduling_and_coordinated_delivery_have_explicit_owners(self):
         for required in (
-            "堆叠分支策略",
-            "B 基于 A 的分支创建",
-            "最后按相同顺序依次 merge",
+            "## Parallel Scheduling",
+            "## Coordinated Integration and Delivery",
         ):
             with self.subTest(required=required):
                 self.assertIn(required, SKILL)
         self.assertIn("堆叠分支", TEMPLATE)
         self.assertIn(
-            "specs/orchestration.md",
+            "../orchestrating-specs/SKILL.md#coordinated-integration-and-delivery",
             (ROOT / "executing-plan" / "SKILL.md").read_text(),
         )
 

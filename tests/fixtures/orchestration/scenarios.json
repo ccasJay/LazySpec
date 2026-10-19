@@ -1,0 +1,80 @@
+[
+  {
+    "id": "ready-first",
+    "facts": "A→C、B→D 为真实实现依赖；有两个获授权执行者，A 与 B 均已就绪。A 验证完成，B 尚在执行。",
+    "expected": "启动 A 与 B；A 的已验证固定提交满足 C 的就绪条件后，立即补位启动 C，不等待 B 或整个批次完成。",
+    "rule": "orchestrating-specs/SKILL.md#parallel-scheduling"
+  },
+  {
+    "id": "contract-only",
+    "facts": "B 调用 A 的已明确接口，B 可以通过契约替身实现局部验证；没有必须等待 A 代码的产物要求。",
+    "expected": "优先从共同基础独立建分支并行实现；实际组合另做集成验证，不因逻辑关联建立 A 完成后才能启动 B 的约束。",
+    "rule": "orchestrating-specs/SKILL.md#parallel-scheduling"
+  },
+  {
+    "id": "isolated-resources",
+    "facts": "两个独立 Spec 的测试默认使用同一端口和数据库；独立配置可以隔离它们。",
+    "expected": "优先为 worktree 配置独立测试资源并行运行；无法隔离的资源明确互斥与串行原因，不让其污染对方验证。",
+    "rule": "orchestrating-specs/SKILL.md#parallel-scheduling"
+  },
+  {
+    "id": "unavailable-executors",
+    "facts": "编排希望同时运行三份 Spec，但当前只有一个获授权执行者，额外委派未获授权或不可用。",
+    "expected": "报告执行容量限制，记录可行调度与并发上限，不擅自委派或声称已经并行。",
+    "rule": "orchestrating-specs/SKILL.md#parallel-scheduling"
+  },
+  {
+    "id": "blocked-isolation",
+    "facts": "A 阻塞导致 C 的前置产物不可用，但独立的 B 与 D 已就绪且存在可用容量。",
+    "expected": "仅暂停 A 及依赖它的 C，继续调度 B 与 D；不为无关分支增加确认等待。",
+    "rule": "orchestrating-specs/SKILL.md#parallel-scheduling"
+  },
+  {
+    "id": "verified-upstream",
+    "facts": "A 的明确产物已在提交 a1 上完成当前验证并满足已批准就绪条件，但尚未合并 dev；C 确需该实现。",
+    "expected": "可固定 a1 为 C 的基础继续开发，无需等待 dev 合并；后续合并先 A 后 C，A 若发生相关变化则重审 C 的验证。",
+    "rule": "orchestrating-specs/SKILL.md#parallel-scheduling"
+  },
+  {
+    "id": "cycle",
+    "facts": "A 必须等 B 的实现产物，B 也必须等 A 的实现产物，契约与职责尚有实质缺口。",
+    "expected": "回到受影响 Spec/Plan 解决循环依赖并按原审批规则处理；不能在编排文件中擅改产品契约。",
+    "rule": "orchestrating-specs/SKILL.md#parallel-scheduling"
+  },
+  {
+    "id": "worker-handoff",
+    "facts": "两个 worker 各自完成 Feature Verification passed/current，其中一个分支已获用户审核批准，跨 Spec 集成尚未完成。",
+    "expected": "worker 提交固定分支提交与证据给编排者，保留工作区；不自行切主仓库、合并、更新交付状态或清理 worktree。",
+    "rule": "orchestrating-specs/SKILL.md#coordinated-integration-and-delivery"
+  },
+  {
+    "id": "integration-before-merge",
+    "facts": "各 Spec 局部验证通过，组合后存在接口不匹配，用户只批准了 orchestration.md。",
+    "expected": "在独立集成 worktree 发现并报告不匹配，按失败规则修复和重验；局部通过与编排批准都不授权合并 dev。",
+    "rule": "orchestrating-specs/SKILL.md#coordinated-integration-and-delivery"
+  },
+  {
+    "id": "group-review",
+    "facts": "各 Spec 与集成验证均 passed/current，用户明确批准列出的 A@a1、B@b1 审核及合并。",
+    "expected": "由编排者按依赖顺序串行合并批准的固定提交并逐项完成交付收尾；无需为已明确批准的同一合并再次询问。",
+    "rule": "orchestrating-specs/SKILL.md#coordinated-integration-and-delivery"
+  },
+  {
+    "id": "changed-reviewed-head",
+    "facts": "集成验证和审核覆盖 A@a1，但 worker 随后新增修复提交 a2，或主分支出现影响组合的新改动。",
+    "expected": "刷新受影响的验证与审核，确保实际合并组合有当前证据；不能沿用 a1 的结果宣称 a2 已获验证或审核。",
+    "rule": "orchestrating-specs/SKILL.md#coordinated-integration-and-delivery"
+  },
+  {
+    "id": "retain-dependent-worktree",
+    "facts": "A 已完成，但仍有下游实现与集成排错依赖它的工作区及证据。",
+    "expected": "由编排者保留必要 worktree，待依赖解除、批准的变更及证据持久化且可安全移除后再清理。",
+    "rule": "orchestrating-specs/SKILL.md#coordinated-integration-and-delivery"
+  },
+  {
+    "id": "capacity-refill-is-not-new-approval",
+    "facts": "编排已批准并发上限为 2，原先就绪关系和资源约束不变，一个执行者空闲。",
+    "expected": "按已批准策略补位属于正常执行，无需重新审批编排；改变依赖、并发上限或隔离策略等实质事项仍按原规则审批。",
+    "rule": "using-lazyspec/references/approval-policy.md#approval-timing"
+  }
+]

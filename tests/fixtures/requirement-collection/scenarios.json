@@ -136,5 +136,29 @@
     "facts": "当前 Git 工作区没有其他未提交 Spec，另一个 worktree 存在草稿；另一运行环境完全没有 Git。",
     "expected": "前者沿用原流程，不搜索其他分支或 worktree，也不额外创建工件或审批门；后者用中文说明检查受限，依据可见项目资料继续设计。",
     "rule": "writing-spec/SKILL.md#uncommitted-spec-boundary-check"
+  },
+  {
+    "id": "parallel-design-contract-dependency",
+    "facts": "订单与支付 Spec 尚未实现；接口和数据归属已明确，订单的局部验证可使用支付契约替身。",
+    "expected": "优先设计两者并行实现和独立验证，记录真实集成场景；不把业务依赖直接变成等待支付 Spec 完成，也不把替身通过当作集成通过。",
+    "rule": "writing-spec/SKILL.md#uncommitted-spec-boundary-check"
+  },
+  {
+    "id": "parallel-design-unknown-contract",
+    "facts": "另一未提交草稿只写将来提供查询能力，尚未约定接口，当前 Spec 想依赖该能力并声称可并行。",
+    "expected": "先澄清契约与归属，不能自行编造对方接口或凭草稿宣称就绪；优先调整当前 Spec，需要实质修改其他 Spec 时先提问。",
+    "rule": "writing-spec/SKILL.md#uncommitted-spec-boundary-check"
+  },
+  {
+    "id": "parallel-design-necessary-wait",
+    "facts": "当前 Spec 必须针对另一 Spec 生成并验证的二进制格式开发迁移器，替身无法建立所需兼容性。",
+    "expected": "保留必要实现依赖，明确所需产物与串行原因；不为了并行削弱兼容性标准，也不强拆功能或增加无必要抽象。",
+    "rule": "writing-spec/SKILL.md#uncommitted-spec-boundary-check"
+  },
+  {
+    "id": "parallel-design-shared-file",
+    "facts": "两份 Spec 修改同一模块的不同行为，契约归属明确，尚无证据表明不能独立实现。",
+    "expected": "评估修改冲突及集成验证，优先支持隔离分支并行；同一文件或相关业务本身不是强制串行依据。",
+    "rule": "writing-spec/SKILL.md#uncommitted-spec-boundary-check"
   }
 ]

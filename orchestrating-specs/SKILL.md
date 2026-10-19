@@ -1,6 +1,6 @@
 ---
 name: orchestrating-specs
-description: Orchestrate joint execution of multiple user-approved Specs through a temporary specs/orchestration.md covering Spec-level ordering, dependencies, parallelism, stacked branches, coordination constraints, and cross-Spec integration verification. Use only on an explicit multi-Spec orchestration request.
+description: Orchestrate joint execution of multiple user-approved Specs through a temporary specs/orchestration.md prioritizing parallel Spec execution, explicit implementation dependencies, isolated worktrees, and coordinated integration and merges. Use only on an explicit multi-Spec orchestration request.
 ---
 
 # Orchestrating Specs
@@ -33,7 +33,24 @@ Boundaries — `orchestration.md` describes Spec-level execution strategy only:
 
 - It MUST NOT define new user behavior, interface requirements, or business scope, and it is not a new Spec or Plan layer. It MUST NOT override or modify any Spec's approved content.
 - It MUST NOT specify how tasks inside any individual Spec are executed: task-level ordering, execution details, and verification methods remain governed by that Spec's approved `plan.md` and executing-plan/SKILL.md; shared repair routing remains in delivery-loop.md. The orchestration decides only when a Spec's turn arrives, on which branch, and alongside which other Specs.
-- 堆叠分支策略：按逻辑依赖排序的 Spec 依序堆叠建分支（如 A→B→C：B 基于 A 的分支创建，C 基于 B 的分支创建），最后按相同顺序依次 merge；可并行的 Spec 从共同基础分支独立建分支，跨 Spec 集成验证通过后合并。
+- Scheduling, branch isolation, and integration follow the policies below; individual Spec task decomposition remains unchanged.
+
+## Parallel Scheduling
+
+Default to parallel Spec implementation. Record this scheduling policy in `orchestration.md`; dispatch work only after orchestration approval:
+
+- Derive implementation prerequisites from approved Specs/Plans. An agreed interface contract or a business relationship is not automatically a finish-to-start dependency. Use the Specs' defined contracts and local verification substitutes where applicable; unresolved contracts return through Gap Handling. Record each necessary wait with its concrete artifact, readiness condition, and reason; reject circular implementation prerequisites for design correction.
+- Identify incompatible edits and shared mutable resources (including test databases, ports, and migrations). Prefer isolated worktrees and test resources; shared files alone do not justify serializing whole Specs. Record remaining exclusive-resource constraints, rather than silently adding an implementation dependency.
+- Assign one executor, feature branch, and isolated worktree per active Spec, and one coordinator. Record a concrete concurrency limit within available authorized executor capacity and any user limits. Use parallel executors only where available and authorized; otherwise report the limitation and record feasible scheduling without claiming concurrent execution. Do not infer delegation permission from orchestration approval alone.
+- Dispatch ready Specs up to that limit, and fill freed capacity as soon as prerequisites and exclusive resources allow; do not wait for an entire batch. A blocked or review-pending Spec must not hold unrelated ready Specs; only unsatisfied prerequisites or exclusive resources block dependents. An upstream artifact can release dependents before a dev merge only when the approved readiness condition is met, its verification is current, and its commit is pinned.
+- Branch independently from the recorded common base by default. Use stacked branches only for concrete implementation prerequisites: pin the required upstream verified commit, create the dependent branch from it, and merge upstream before downstream. Changes to that artifact require reassessing dependent code and verification; do not rewrite published commit history automatically.
+
+## Coordinated Integration and Delivery
+
+- Executors run executing-plan through Feature Verification and hand off their branch commit, evidence, unresolved issues, and review status. The coordinator alone writes `orchestration.md`, integrates branches, and performs dev merges and delivery finalization. Executors do not switch the main checkout, merge to dev, change delivery status, or remove worktrees independently.
+- Combine pinned participating commits in a separate integration worktree and run the approved cross-Spec checks before dev merges. Record the tested base, branch commits, actual results, and freshness in `orchestration.md`. Local verification with substitutes is not integration success. Keep implementation-ready, verified, review-approved, and merged states distinct; integration alone is not approval.
+- After current feature and integration verification and explicit review/merge approval covering each branch, serialize merges and use executing-plan's finalization procedure for each Spec. A grouped approval may cover explicitly identified branches and commits; orchestration approval alone does not approve merges. Merge dependencies first. If a branch, relevant base, or integration resolution changes, refresh affected checks and review under the existing evidence/approval rules before merging; never mark a Spec delivered merely because its worker finished.
+- Retain dependent and integration worktrees until no remaining work needs them. Clean them only after the reviewed changes and evidence are preserved and the worktrees can be safely removed. Continue the Memory and final group-confirmation gates below.
 
 ## Approval
 
@@ -48,7 +65,7 @@ When orchestration planning or execution reveals a requirement, interface, archi
 Only after orchestration approval:
 
 - Execute each Spec through its own approved `spec.md` and `plan.md` as the source of truth via executing-plan/SKILL.md, using the approved orchestration's Spec-level sequencing and branch/merge strategy. Each Spec retains executing-plan's user-review and merge gate.
-- Record per-Spec progress in `orchestration.md`'s lifecycle status as each Spec completes; a Spec counts as complete only when its Feature Verification passes.
+- Record each Spec's executor/worktree, prerequisites, pinned commit, current verification, review, merge, and blocking status in `orchestration.md`. Apply Parallel Scheduling continuously; group delivery requires every Spec to finish coordinated integration and delivery, not just Feature Verification.
 
 ## Memory Distillation Gate
 

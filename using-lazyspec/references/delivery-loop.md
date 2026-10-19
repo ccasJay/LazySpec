@@ -46,7 +46,7 @@ Archive/retirement paths, warnings, and preservation operations belong to [maint
 
 ## Mode-specific execution
 
-Use `executing-plan/SKILL.md` for the normal `plan.md` execution strategy, including approvals, worktree setup, spec baseline first commit, TODO scope, per-TODO atomic commit, verification, checkbox, user review gate, dev merge, worktree cleanup, handoff, and temporary progress rules. Use `fast/SKILL.md` for fast `plan.md` execution. Both modes follow the shared Feature Verification and failure routing rules in this reference. Multi-Spec orchestration controls cross-Spec sequencing and branches only; it does not govern intra-Spec task execution or grant delegation authority.
+Use `executing-plan/SKILL.md` for the normal `plan.md` execution strategy, including approvals, worktree setup, spec baseline first commit, TODO scope, per-TODO atomic commit, verification, checkbox, user review gate, dev merge, worktree cleanup, handoff, and temporary progress rules. Use `fast/SKILL.md` for fast `plan.md` execution. Both modes follow the shared Feature Verification and failure routing rules in this reference. Multi-Spec orchestration owns cross-Spec parallel scheduling, branch isolation, and [coordinated integration and delivery](../../orchestrating-specs/SKILL.md#coordinated-integration-and-delivery), using executing-plan's finalization procedure; it does not govern intra-Spec task execution or grant delegation authority.
 
 ## Failure routing and repair
 

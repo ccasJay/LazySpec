@@ -28,7 +28,7 @@ flowchart LR
 
 - **标准通道 (Standard)**：`spec.md` (定义意图与边界) ➔ `plan.md` (定义 TDD 任务与验证) ➔ 连续执行与验收 ➔ 用户审核并批准合并 ➔ 自动交付收尾。Memory 沉淀另走预览审批流程。
 - **快速通道 (Fast)**：轻量场景单文件闭环，一步生成 `plan.md`，一次审批即连续执行验收。
-- **多 Spec 编排 (Orchestration)**：通过 `orchestrating-specs` 联合处理多 Spec 依赖拓扑、堆叠分支与集成验证。
+- **多 Spec 编排 (Orchestration)**：通过 `orchestrating-specs` 联合处理多 Spec 就绪调度，默认优先并行实施、按真实依赖等待，并统一集成验证和合并。
 
 ---
 
@@ -133,4 +133,4 @@ plan.md 已批准，请执行 specs/user-auth/plan.md 中的全部任务。
 | [`distill-feature`](./distill-feature/SKILL.md) | **特性沉淀**：将已交付特性提炼为能力契约胶囊 |
 | [`maintain-memory`](./maintain-memory/SKILL.md) | **记忆治理**：生命周期演进、成熟归档与索引自愈 |
 | [`fast`](./fast/SKILL.md) | **快速通道**：单文件极简闭环，快速讨论并一次性执行 |
-| [`orchestrating-specs`](./orchestrating-specs/SKILL.md) | **联合编排**：多 Spec 依赖拓扑、堆叠分支与跨 Spec 集成验证 |
+| [`orchestrating-specs`](./orchestrating-specs/SKILL.md) | **联合编排**：默认优先并行、依赖就绪即启动、统一集成与合并 |

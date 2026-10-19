@@ -41,11 +41,15 @@ description: Execute, resume, or verify approved LazySpec plan.md files in an is
 7. **User Review Gate (审核门禁)**:
    - After all TODOs are checked and Feature Verification is evaluated as `passed` with `current` freshness:
    - Present a concise handoff and review summary to the user, reporting completed TODOs, atomic commit history, verification evidence, and any affected memory impact candidates.
-   - Request explicit user approval to review and accept the feature branch before merging. Do NOT merge to `dev` or delete the worktree without explicit user approval.
+   - Request explicit user approval to review and accept the feature branch before merging. In orchestration mode, use Orchestrated Execution Handoff for coordinator-owned review and delivery. Do NOT merge to `dev` or delete the worktree without explicit user approval.
+
+## Orchestrated Execution Handoff
+
+When executing under an approved `specs/orchestration.md`, retain this Skill's authorization, worktree isolation, per-TODO commits, verification, and User Review Gate. After verification, hand off the pinned branch commit and evidence to the coordinator; use [orchestrating-specs](../orchestrating-specs/SKILL.md#coordinated-integration-and-delivery) for integration, review coordination, dev merges, delivery status updates, and cleanup. Only the coordinator runs the finalization procedure below in this mode; a worker's successful verification or received review approval does not authorize it to finalize independently. Workers keep progress in their own worktrees and report it to the coordinator, without editing the shared orchestration record.
 
 ## Merge and Automatic Delivery Finalization
 
-Once Feature Verification is `passed` and `current` and the user approves the reviewed feature branch, complete these steps. Verification alone never authorizes them; if the reviewed implementation changes, refresh the affected evidence and review before merging.
+For standalone execution, once Feature Verification is `passed` and `current` and the user approves the reviewed feature branch, complete these steps. Verification alone never authorizes them; if the reviewed implementation changes, refresh the affected evidence and review before merging.
 
 1. **Merge to dev**:
    - Switch to the main repository and merge the feature branch into `dev`:
