@@ -4,13 +4,13 @@ Read for task planning and for execution in both normal and fast modes, after `r
 
 ## Executable success criteria
 
-Each executable TODO has a concrete implementation objective, a scenario/input with an observable expected result, and a feasible verification method. A discovered command or specific test entry point is useful when available, not a mandatory new test. Label new tests as to-be-implemented until they exist. An exit code alone or “implementation complete / tests pass” is not a behavioral oracle. Keep normal-mode acceptance links and full-plan coverage checks; use at most three descriptive bullets plus links where possible.
+Each executable TODO has a concrete implementation objective, a scenario/input with an observable expected result, and a lightweight basic verification method (such as a syntax/compile check, command probe, or focused basic test). Do not require writing comprehensive unit test suites or running the full test suite on every TODO; reserve full test suite execution and comprehensive regression checks for final Feature Verification. An exit code alone or “implementation complete / tests pass” is not a behavioral oracle. Keep normal-mode acceptance links and full-plan coverage checks; use at most three descriptive bullets plus links where possible.
 
 ## Feature Verification artifact
 
 Append `## Feature Verification` to `plan.md`. This is not a TODO and is excluded from checkbox counts. Do not create a separate verification file. Separate the approved **Planned Checks** from the mutable **Latest Result** so recording evidence does not revise the plan.
 
-Planned Checks maps every acceptance outcome to a scenario, expected result, and check/evidence method. Link normal-mode requirement anchors; fast references Objective, Constraints, and task criteria. Include composed user flows and risk-specific checks. Group outcomes only when their individual coverage remains explicit. Put required manual experience checks here, not in coding TODOs.
+Planned Checks defines the full-suite tests and end-to-end verification checks to run once all TODOs are complete, mapping every acceptance outcome to a scenario, expected result, and check/evidence method. Link normal-mode requirement anchors; fast references Objective, Constraints, and task criteria. Include full test suite execution, composed user flows, and risk-specific checks. Group outcomes only when their individual coverage remains explicit. Put required manual experience checks here, not in coding TODOs.
 
 Latest Result starts as “未执行” with no success claim. After a run, record:
 

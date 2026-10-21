@@ -26,10 +26,13 @@ class ExecutingPlanContractTests(unittest.TestCase):
             "all currently unchecked TODOs",
             "without per-TODO confirmation",
             "feature branch",
-            "Only after the TODO passes",
+            "lightweight basic check",
+            "Do not run the full test suite or force a Red-Green TDD cycle on each individual TODO",
+            "Only after the TODO passes its basic check",
             "change its checkbox token from `[ ]` to `[x]`",
             "Preserve `//TODO` and every character after it",
-            "Feature Verification",
+            "Feature Verification (Full Test Suite)",
+            "After all TODOs are completed, run the full test suite",
         ):
             with self.subTest(rule=rule):
                 self.assertIn(rule, EXECUTOR)

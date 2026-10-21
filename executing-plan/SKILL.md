@@ -27,17 +27,17 @@ description: Execute, resume, or verify approved LazySpec plan.md files in an is
      `git add specs/{feature_name}/spec.md specs/{feature_name}/plan.md`
      `git commit -m "docs(spec): add approved specification and plan for <feature-name>"`
    - This baseline commit anchors the approved requirements and plan as the first commit on this branch.
-5. **Behavioral TDD & Per-TODO Commit Execution**:
+5. **Per-TODO Implementation, Basic Check & Commit Execution**:
    - Execute all currently unchecked TODOs continuously without per-TODO confirmation, honoring the shared scope boundary for an explicitly requested subset.
    - For each TODO:
-     1. Identify the verification entry point (failing test or command probe) before editing code (Red).
-     2. Implement the minimal code to satisfy the scenario and make the verification pass (Green).
-     3. Only after the TODO passes, change its checkbox token from `[ ]` to `[x]`. Preserve `//TODO` and every character after it.
+     1. Implement the code required to satisfy the TODO's scenario.
+     2. Run only the lightweight basic check defined for this TODO (e.g., syntax/compile check, command probe, or focused basic test). Do not run the full test suite or force a Red-Green TDD cycle on each individual TODO.
+     3. Only after the TODO passes its basic check, change its checkbox token from `[ ]` to `[x]`. Preserve `//TODO` and every character after it.
      4. **Per-TODO Atomic Commit**: Create a dedicated Git commit immediately for this completed TODO:
         `git add <changed-files> specs/{feature_name}/plan.md`
         `git commit -m "feat(<feature-name>): implement TODO <n> - <task description>"`
-        Every commit must be a green, test-passing atomic commit; never commit broken builds.
-6. **Feature Verification**: Run the end-to-end Planned Checks defined in `plan.md`. Record actual observations, timestamps, and commit/worktree fingerprints in Latest Result.
+        Every commit must pass its basic check; never commit broken builds.
+6. **Feature Verification (Full Test Suite)**: After all TODOs are completed, run the full test suite and end-to-end Planned Checks defined in `plan.md`. Record actual observations, timestamps, and commit/worktree fingerprints in Latest Result.
 7. **User Review Gate (审核门禁)**:
    - After all TODOs are checked and Feature Verification is evaluated as `passed` with `current` freshness:
    - Present a concise handoff and review summary to the user, reporting completed TODOs, atomic commit history, verification evidence, and any affected memory impact candidates.

@@ -59,7 +59,7 @@ Use approval-policy.md's fast plan gate, file-backed review, materiality, and as
 After explicit approval, execute the plan continuously:
 
 - For the initial approved run, execute every task until all are complete, choosing a dependency-preserving order; do not pause between tasks for confirmation. On a later request explicitly limited to a task subset, honor that subset and the shared verification scope boundary.
-- Verify each task's implementation against its stated behavior and verification before moving on.
+- Run only the lightweight basic check for each task before moving on; reserve full test suite execution for final Feature Verification after all tasks are completed.
 - When a task completes, change only its checkbox token in `plan.md` from `[ ]` to `[x]`. Preserve `//TODO` and every character after it exactly; never remove, replace, or rewrite the task text.
 - Follow delivery-loop.md for verification scope, failures, repair routing, and the no-progress boundary; apply risk-policy.md to critical operations.
 

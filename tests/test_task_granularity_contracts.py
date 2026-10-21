@@ -11,7 +11,7 @@ LINK = re.compile(r"\[(\d+\.\d+)\]\(\./spec\.md#spec-req-(\d+)-(\d+)\)")
 
 
 class TaskGranularityContractTests(unittest.TestCase):
-    def test_plan_groups_behavioral_slices_and_tdd_discipline(self):
+    def test_plan_groups_behavioral_slices_and_two_tier_verification(self):
         skill = (PLAN_DIR / "SKILL.md").read_text()
         prompt = (PLAN_DIR / "plan-prompt.md").read_text()
 
@@ -19,9 +19,9 @@ class TaskGranularityContractTests(unittest.TestCase):
         self.assertIn("[plan-prompt.md](plan-prompt.md)", skill)
         self.assertIn("independently deliverable behavior slice", prompt)
         self.assertIn("Behavioral Focus", prompt)
-        self.assertIn("automated tests", prompt)
+        self.assertIn("Two-tier verification", prompt)
 
-        self.assertIn("test-first discipline", skill)
+        self.assertIn("basic per-TODO", skill)
         self.assertIn("spec.md", skill)
         self.assertIn("[plan-template.md](plan-template.md)", prompt)
 

@@ -19,7 +19,18 @@ class V2BinaryArchitectureContractTests(unittest.TestCase):
             "distill-feature",
             "maintain-memory",
         )
-        import yaml
+        try:
+            import yaml
+
+            parse_yaml = yaml.safe_load
+        except ModuleNotFoundError:
+            def parse_yaml(raw):
+                return {
+                    k.strip(): v.strip().strip('"')
+                    for line in raw.splitlines()
+                    if ":" in line
+                    for k, v in [line.split(":", 1)]
+                }
 
         for name in v2_skills:
             skill_file = ROOT / name / "SKILL.md"
@@ -28,7 +39,7 @@ class V2BinaryArchitectureContractTests(unittest.TestCase):
             self.assertTrue(text.startswith("---\nname: " + name), f"invalid frontmatter in {name}")
             match = re.match(r"^---\n(.*?)\n---", text, re.DOTALL)
             self.assertIsNotNone(match, f"frontmatter delimiters missing in {name}")
-            data = yaml.safe_load(match.group(1))
+            data = parse_yaml(match.group(1))
             self.assertIsInstance(data, dict, f"frontmatter in {name} is not a dict")
             self.assertEqual(data.get("name"), name)
             self.assertTrue(data.get("description"), f"missing description in {name}")

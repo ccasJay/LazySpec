@@ -1,13 +1,13 @@
 ---
 name: writing-plan
-description: Create or revise a LazySpec plan.md with behavioral TODOs, test-first verification gates, and Feature Verification checks after spec.md approval. Request explicit Plan approval before LazySpec enters implementation.
+description: Create or revise a LazySpec plan.md with behavioral TODOs, basic per-TODO checks, and final full-suite Feature Verification checks after spec.md approval. Request explicit Plan approval before LazySpec enters implementation.
 ---
 
 # Writing Plan
 
 ## Shared policies
 
-Read [risk-policy.md](../using-lazyspec/references/risk-policy.md), [approval-policy.md](../using-lazyspec/references/approval-policy.md), [doc-policy.md](../using-lazyspec/references/doc-policy.md), and [delivery-loop.md](../using-lazyspec/references/delivery-loop.md) before this workflow; resolve them relative to the directory containing this `SKILL.md`. risk-policy.md separates risk-based verification from decision-based approval; approval-policy.md is the single source of explicit approval; doc-policy.md maintains the binary spec architecture; delivery-loop.md defines executable success criteria, test-first discipline, and Feature Verification.
+Read [risk-policy.md](../using-lazyspec/references/risk-policy.md), [approval-policy.md](../using-lazyspec/references/approval-policy.md), [doc-policy.md](../using-lazyspec/references/doc-policy.md), and [delivery-loop.md](../using-lazyspec/references/delivery-loop.md) before this workflow; resolve them relative to the directory containing this `SKILL.md`. risk-policy.md separates risk-based verification from decision-based approval; approval-policy.md is the single source of explicit approval; doc-policy.md maintains the binary spec architecture; delivery-loop.md defines executable success criteria, basic per-TODO verification, and final full-suite Feature Verification.
 
 ## Language and paths
 
@@ -19,7 +19,7 @@ Read [risk-policy.md](../using-lazyspec/references/risk-policy.md), [approval-po
 ## Plan Structure and Engineering Discipline
 
 1. **Behavioral Slices (Superpowers Inspired)**:
-   - Read [plan-prompt.md](plan-prompt.md) for behavioral slicing and test-first discipline, and [plan-template.md](plan-template.md) for TODO syntax and document shape.
+   - Read [plan-prompt.md](plan-prompt.md) for behavioral slicing and two-tier verification (basic per-TODO checks, full test suite at completion), and [plan-template.md](plan-template.md) for TODO syntax and document shape.
    - Apply delivery-loop.md's executable success criteria to every task; do not duplicate the shared verification contract.
 2. **Requirement Linkage**:
    - Link each acceptance criterion implemented by the TODO to `spec.md`:
