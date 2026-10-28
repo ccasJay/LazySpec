@@ -28,12 +28,20 @@ class TaskGranularityContractTests(unittest.TestCase):
     def test_plan_template_contains_behavioral_todos_and_feature_verification(self):
         template = (PLAN_DIR / "plan-template.md").read_text()
         self.assertIn("- [ ] //TODO 1. 完成", template)
-        self.assertIn("实施目标：", template)
+        self.assertIn("实施目标与场景：", template)
         self.assertIn("验证手段：", template)
         self.assertIn("## Feature Verification", template)
         self.assertIn("### Planned Checks", template)
         self.assertIn("### Latest Result", template)
         self.assertIn("状态：未执行", template)
+
+    def test_compact_verification_keeps_individual_coverage(self):
+        prompt = (PLAN_DIR / "plan-prompt.md").read_text()
+        delivery = (ROOT / "using-lazyspec/references/delivery-loop.md").read_text()
+        self.assertIn("explicitly linking every covered outcome", prompt)
+        self.assertIn("their individual coverage remains explicit", delivery)
+        self.assertIn("distinct scenarios needed for exceptions or failure paths", delivery)
+        self.assertIn("Never rewrite completed task descriptions", delivery)
 
 
 if __name__ == "__main__":

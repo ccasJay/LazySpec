@@ -10,7 +10,7 @@ Each executable TODO has a concrete implementation objective, a scenario/input w
 
 Append `## Feature Verification` to `plan.md`. This is not a TODO and is excluded from checkbox counts. Do not create a separate verification file. Separate the approved **Planned Checks** from the mutable **Latest Result** so recording evidence does not revise the plan.
 
-Planned Checks defines the full-suite tests and end-to-end verification checks to run once all TODOs are complete, mapping every acceptance outcome to a scenario, expected result, and check/evidence method. Link normal-mode requirement anchors; fast references Objective, Constraints, and task criteria. Include full test suite execution, composed user flows, and risk-specific checks. Group outcomes only when their individual coverage remains explicit. Put required manual experience checks here, not in coding TODOs.
+Planned Checks defines the full-suite tests and end-to-end verification checks to run once all TODOs are complete, mapping every acceptance outcome to a scenario, expected result, and check/evidence method. Link normal-mode requirement anchors rather than copying Spec text; fast references Objective, Constraints, and task criteria. Include full test suite execution, composed user flows, and risk-specific checks. Group outcomes with a shared scenario and method only when their individual coverage remains explicit; retain distinct scenarios needed for exceptions or failure paths. Put required manual experience checks here, not in coding TODOs.
 
 Latest Result starts as “未执行” with no success claim. After a run, record:
 

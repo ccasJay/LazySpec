@@ -48,8 +48,15 @@ class WritingSpecContractTests(unittest.TestCase):
     def test_ears_criteria_anchors(self):
         template = (ROOT / "writing-spec/spec-template.md").read_text()
         self.assertIn('spec-req-', template)
-        self.assertIn('## 曾考虑的备选方案', template)
         self.assertIn('## 风险与否定性保证', template)
+        self.assertIn('仅当取舍对审阅或维护有实质影响时', template)
+
+    def test_concise_spec_preserves_material_contracts(self):
+        self.assertIn('Refer to acceptance IDs instead of repeating', PROMPT)
+        self.assertIn('only when the trade-off matters', PROMPT)
+        self.assertIn('compatibility exceptions, distinct semantics, and cross-Spec ownership', PROMPT)
+        self.assertIn('unless their absence creates material ambiguity', PROMPT)
+        self.assertIn('do not impose a fixed length limit', PROMPT)
 
     def test_documented_discovery_command_observes_current_workspace_changes(self):
         command = shlex.split(re.search(r"```sh\n([^\n]+)\n```", SKILL).group(1))

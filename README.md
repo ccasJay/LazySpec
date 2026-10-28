@@ -103,6 +103,8 @@ spec.md 已批准，请为 specs/user-auth/ 制定执行计划。
 ```
 > Agent 基于 EARS 标准拆解行为任务清单（逐 TODO 基本检查 + 收尾全量验收），生成 `specs/user-auth/plan.md`。
 
+Spec 只记录可验收行为、必要决策和风险；Plan 通过需求链接与归并场景避免重复，同时覆盖所有验收结果。篇幅按实际复杂度决定。
+
 ### 3. 执行与自动收口
 ```text
 plan.md 已批准，请执行 specs/user-auth/plan.md 中的全部任务。

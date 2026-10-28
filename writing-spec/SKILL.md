@@ -1,6 +1,6 @@
 ---
 name: writing-spec
-description: Probe requirements and architectural decisions using /grill-me structured questions, favor parallel implementation when reconciling related uncommitted Specs, then draft a unified spec.md containing EARS criteria, architecture decisions, and alternatives considered. Request explicit Spec approval before LazySpec enters planning.
+description: Probe requirements and architectural decisions using /grill-me structured questions, favor parallel implementation when reconciling related uncommitted Specs, then draft a concise spec.md containing EARS criteria and material architecture decisions. Request explicit Spec approval before LazySpec enters planning.
 ---
 
 # Writing Spec
@@ -12,7 +12,7 @@ Read [risk-policy.md](../using-lazyspec/references/risk-policy.md), [approval-po
 ## Language and paths
 
 - Keep instructional prose in this Skill and its resources in English.
-- Write all user-visible prose in generated `spec.md` content in Chinese, including the title, headings, goal/scope, EARS criteria, architecture decisions, alternatives considered, and risks.
+- Write all user-visible prose in generated `spec.md` content in Chinese, including the title, headings, goal/scope, EARS criteria, architecture decisions, any alternatives considered, and risks.
 - Preserve project-specific names, code identifiers, filenames, and Markdown/HTML anchor IDs.
 - Resolve supporting resources (`spec-prompt.md`, `spec-template.md`) relative to the directory containing this `SKILL.md`.
 - Resolve `specs/{feature_name}/spec.md` against `ACTIVE_PROJECT_ROOT`, defined by `using-lazyspec` as the user's project working directory at session start. Never use this Skill's directory, its repository, or a Plugin cache as the project root. If invoked directly and the session working directory is unavailable or ambiguous, ask for the project root before writing.
@@ -41,7 +41,7 @@ Instead of mechanical, one-by-one incremental confirmations, `writing-spec` cond
    - Scope and boundaries (what is in, what is explicitly out);
    - Core behavior and observable outcomes (EARS scenarios);
    - Architecture and component relationships;
-   - Competing approaches and technical trade-offs (Alternatives Considered);
+   - Competing approaches and technical trade-offs when material (Alternatives Considered);
    - Invariants, risks, and negative guarantees.
 3. **Ask One Focused Decision Question at a Time**:
    - Use the available user-question tool (following approval-policy.md's `How to ask`).
@@ -58,6 +58,6 @@ Read [spec-prompt.md](spec-prompt.md) for content rules and [spec-template.md](s
 
 1. Write the complete `specs/{feature_name}/spec.md` under `ACTIVE_PROJECT_ROOT`.
 2. Complete the pre-approval recheck in Uncommitted Spec Boundary Check, then present the saved file link to the user and request explicit approval under approval-policy.md:
-   `"请审阅规范文件 specs/<feature>/spec.md；是否批准其中的目标、范围、验收标准、架构决策与备选方案？"`
+   `"请审阅规范文件 specs/<feature>/spec.md；是否批准其中的目标、范围、验收标准、架构决策与风险？"`
 3. Await explicit approval before transitioning to `writing-plan`.
 

@@ -44,7 +44,7 @@ class V2BinaryArchitectureContractTests(unittest.TestCase):
             self.assertEqual(data.get("name"), name)
             self.assertTrue(data.get("description"), f"missing description in {name}")
 
-    def test_spec_template_contains_frontmatter_and_alternatives(self):
+    def test_spec_template_contains_frontmatter_and_material_decisions(self):
         template = (ROOT / "writing-spec" / "spec-template.md").read_text()
         self.assertIn("status: proposed", template)
         self.assertIn("supersedes: []", template)
@@ -52,7 +52,7 @@ class V2BinaryArchitectureContractTests(unittest.TestCase):
         self.assertIn("## 目标与范围", template)
         self.assertIn("## 需求与验收标准", template)
         self.assertIn("## 架构与核心决策", template)
-        self.assertIn("## 曾考虑的备选方案", template)
+        self.assertIn("被放弃的备选方案及原因", template)
         self.assertIn("## 风险与否定性保证", template)
 
     def test_plan_template_contains_behavioral_todos_and_feature_verification(self):

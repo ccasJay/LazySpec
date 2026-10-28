@@ -71,7 +71,7 @@ class SharedDocumentContractTests(unittest.TestCase):
         self.assertIn("## 目标与范围", SPEC_TEMPLATE)
         self.assertIn("## 需求与验收标准", SPEC_TEMPLATE)
         self.assertIn("## 架构与核心决策", SPEC_TEMPLATE)
-        self.assertIn("## 曾考虑的备选方案", SPEC_TEMPLATE)
+        self.assertIn("仅当取舍对审阅或维护有实质影响时", SPEC_TEMPLATE)
         self.assertIn("## 风险与否定性保证", SPEC_TEMPLATE)
 
         self.assertIn("Structured Probing (/grill-me Style)", SPEC_SKILL)
@@ -104,7 +104,7 @@ class SharedDocumentContractTests(unittest.TestCase):
 
     def test_approval_questions_target_the_current_file(self):
         self.assertIn(
-            "请审阅规范文件 specs/<feature>/spec.md；是否批准其中的目标、范围、验收标准、架构决策与备选方案？",
+            "请审阅规范文件 specs/<feature>/spec.md；是否批准其中的目标、范围、验收标准、架构决策与风险？",
             SPEC_SKILL,
         )
         self.assertIn(
