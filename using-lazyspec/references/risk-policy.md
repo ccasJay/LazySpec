@@ -18,9 +18,9 @@ Use the highest applicable level, not a numerical score:
 | medium | Cross-component behavior, public interfaces, or compatible data changes with bounded impact | Inspect external effects and applicable authorization | Also integration, compatibility, and failure paths |
 | high | Permissions, sensitive data, destructive migrations, irreversible effects, or broad impact | Identify concrete critical operations; apply approval-policy.md before any unauthorized operation | Also relevant security, recovery, and impact-boundary checks |
 
-Assess the initial level while writing `spec.md`; re-evaluate it when planning or implementation reveals new consequences. Default to medium unless low is justified; clarify uncertain high-impact consequences before approving the document. Do not add irrelevant tests merely to satisfy a level. Risk changes verification depth, not the Spec → Plan approval order defined in approval-policy.md.
+Assess the initial level while writing `spec.md`; re-evaluate it when planning or implementation reveals new consequences. Default to medium unless low is justified; clarify uncertain high-impact consequences before approving the document. Do not add irrelevant tests merely to satisfy a level. Risk changes verification depth, not the `spec.md` approval gate defined in approval-policy.md.
 
-Record the level, reasons, and named critical operations in `spec.md`'s `风险与否定性保证`. `plan.md` links to that assessment; update the Spec if the assessment materially changes. Fast records it in Constraints and Approach. Before execution, reconcile discrepancies using the highest applicable level.
+Record the level, reasons, and named critical operations in `spec.md`'s `风险与否定性保证` table; update it if the assessment materially changes. Before execution, reconcile discrepancies using the highest applicable level.
 
 ## Existing artifacts
 

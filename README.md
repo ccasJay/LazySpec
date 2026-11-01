@@ -1,6 +1,6 @@
 # LazySpec
 
-> 面向 AI Coding Agent 的极简二元规范驱动开发（Spec-Driven Development）。  
+> 面向 AI Coding Agent 的极简单文件规范驱动开发（Spec-Driven Development）。  
 > 告别脱缰乱写、只写不测与文档过时；以最小完备契约构建高密度交付闭环与长期工程记忆。
 
 ---
@@ -10,7 +10,7 @@
 | 痛点 | 传统 Agent 编码 | LazySpec 的解法 |
 |---|---|---|
 | **指令模糊脱缰** | 给一句话需求就乱写，脑补过多 | **结构化决策探针**：主动抛出关键分歧与备选方案，先收敛再动工 |
-| **文档写完即过时** | 繁琐的 PRD 维护成本极高，代码改完文档脱节 | **二元最小契约**：仅需 `spec.md` + `plan.md`，验收后**自动原位清洗为事实** |
+| **文档写完即过时** | 繁琐的 PRD 维护成本极高，代码改完文档脱节 | **单文件最小契约**：仅需一份 `spec.md`，验收后删除任务清单并压缩执行记录为事实 |
 | **只写代码不验证** | 声称“已完成”，一跑全是 Bug | **两级验证门禁**：逐 TODO 轻量基本检查，收尾全量 `Feature Verification` 验收 |
 | **多会话反复踩坑** | 新会话 Agent 毫无记忆，重蹈覆辙 | **特性记忆与负向护栏**：沉淀已交付能力与决策，立项前检查废弃方案 |
 
@@ -20,14 +20,12 @@
 
 ```mermaid
 flowchart LR
-    A["💡 需求想法"] --> B["1. writing-spec<br/>(决策探针收敛分歧)"]
-    B -->|审批 spec.md| C["2. writing-plan<br/>(行为切片与分层验证拆解)"]
-    C -->|审批 plan.md| D["3. executing-plan<br/>(逐 TODO 基本检查 + 收尾全量测试)"]
-    D -->|用户审核并批准合并| E["4. 自动交付收口<br/>(合并 + 原位清洗 + 状态同步)"]
+    A["💡 需求想法"] --> B["1. writing-spec<br/>(决策探针 + 验收与任务拆解)"]
+    B -->|审批 spec.md| C["2. executing-plan<br/>(逐 TODO 基本检查 + 收尾全量测试)"]
+    C -->|用户审核并批准合并| D["3. 自动交付收口<br/>(合并 + 删除任务 + 状态同步)"]
 ```
 
-- **标准通道 (Standard)**：`spec.md` (定义意图与边界) ➔ `plan.md` (定义行为任务与两级验证) ➔ 连续执行与验收 ➔ 用户审核并批准合并 ➔ 自动交付收尾。Memory 沉淀另走预览审批流程。
-- **快速通道 (Fast)**：轻量场景单文件闭环，一步生成 `plan.md`，一次审批即连续执行验收。
+- **标准通道 (Standard)**：`spec.md` (定义意图、边界、用户故事、验收与任务) ➔ 一次审批 ➔ 连续执行与验收 ➔ 用户审核并批准合并 ➔ 自动交付收尾。Memory 沉淀另走预览审批流程。
 - **多 Spec 编排 (Orchestration)**：通过 `orchestrating-specs` 联合处理多 Spec 就绪调度，默认优先并行实施、按真实依赖等待，并统一集成验证和合并。
 
 ---
@@ -40,8 +38,7 @@ LazySpec 在项目根目录下规范化管理两类资产：
 your-project/
 ├── specs/                          # 规范与执行工件
 │   ├── user-auth/                  # 功能目录
-│   │   ├── spec.md                 # 规范契约（生命周期状态、EARS 验收标准、架构决策）
-│   │   └── plan.md                 # 执行计划（行为任务清单、端到端全量验证）
+│   │   └── spec.md                 # 单一契约（状态、用户故事、验收与验证、决策、风险、任务、执行记录）
 │   ├── archived/                   # 成熟稳定的基石规范
 │   └── retired/                    # 废弃/证伪方案（负向警示护栏，立项时自动拦截）
 └── project-memory/                 # 跨会话长期工程记忆
@@ -95,27 +92,18 @@ claude --plugin-dir /absolute/path/to/LazySpec
 ```text
 使用 using-lazyspec 为“用户邮箱验证”立项。
 ```
-> Agent 发起结构化探针确认核心架构决策与边界，生成 `specs/user-auth/spec.md`。
+> Agent 发起结构化探针确认核心架构决策与边界，生成 `specs/user-auth/spec.md`：包含用户故事、验收标准及内联验证方式、决策、风险与任务清单。
 
-### 2. 计划制定
+### 2. 执行与自动收口
 ```text
-spec.md 已批准，请为 specs/user-auth/ 制定执行计划。
+spec.md 已批准，请执行 specs/user-auth/spec.md 中的全部任务。
 ```
-> Agent 基于 EARS 标准拆解行为任务清单（逐 TODO 基本检查 + 收尾全量验收），生成 `specs/user-auth/plan.md`。
+> Agent 连续执行编码与逐 TODO 基本检查，全部完成后运行全量 `Feature Verification`；用户审核并批准合并后，合并到 `dev`，将 `spec.md` 标记为 `delivered`，删除任务清单并压缩执行记录。
 
-Spec 只记录可验收行为、必要决策和风险；Plan 通过需求链接与归并场景避免重复，同时覆盖所有验收结果。篇幅按实际复杂度决定。
+Spec 只记录可验收行为、必要决策、风险与任务；验证方式内联在验收表中，篇幅按实际复杂度决定。
 
-### 3. 执行与自动收口
+### 3. 特性沉淀
 ```text
-plan.md 已批准，请执行 specs/user-auth/plan.md 中的全部任务。
-```
-> Agent 连续执行编码与逐 TODO 基本检查，全部完成后统一运行全量 `Feature Verification`；用户审核并批准合并后，合并到 `dev`，将 `spec.md` 标记为 `delivered` 并原位清洗架构说明中的假设语态。
-
-### 4. 特性沉淀与快速模式
-```text
-# 轻量改动直接走 fast 模式（跳过 spec.md，一次审批即可执行）
-使用 using-lazyspec 以 fast 模式为“导出 CSV”创建 plan 并执行。
-
 # 将已交付特性沉淀为能力契约胶囊
 使用 distill-feature 沉淀已交付的“用户邮箱验证”特性。
 ```
@@ -129,10 +117,8 @@ plan.md 已批准，请执行 specs/user-auth/plan.md 中的全部任务。
 | 技能名称 | 职责说明 |
 |---|---|
 | [`using-lazyspec`](./using-lazyspec/SKILL.md) | **统一调度入口**：路由分发、负向警示护栏探测、记忆检索 |
-| [`writing-spec`](./writing-spec/SKILL.md) | **规范制定**：结构化决策探针收敛分歧，生成合并版 `spec.md` |
-| [`writing-plan`](./writing-plan/SKILL.md) | **计划制定**：拆解行为单元任务、逐 TODO 基本检查与收尾全量验收入口 |
-| [`executing-plan`](./executing-plan/SKILL.md) | **执行收口**：连续执行编码与基本检查、收尾全量功能验收、自动原位转正与废黜回写 |
+| [`writing-spec`](./writing-spec/SKILL.md) | **规范制定**：决策探针收敛分歧，生成含任务与验收方式的单一 `spec.md` |
+| [`executing-plan`](./executing-plan/SKILL.md) | **执行收口**：连续执行编码与基本检查、收尾全量功能验收、自动交付收敛与废黜回写 |
 | [`distill-feature`](./distill-feature/SKILL.md) | **特性沉淀**：将已交付特性提炼为能力契约胶囊 |
 | [`maintain-memory`](./maintain-memory/SKILL.md) | **记忆治理**：生命周期演进、成熟归档与索引自愈 |
-| [`fast`](./fast/SKILL.md) | **快速通道**：单文件极简闭环，快速讨论并一次性执行 |
 | [`orchestrating-specs`](./orchestrating-specs/SKILL.md) | **联合编排**：默认优先并行、依赖就绪即启动、统一集成与合并 |

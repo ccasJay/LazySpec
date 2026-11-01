@@ -1,21 +1,22 @@
 ---
 name: writing-spec
-description: Probe requirements and architectural decisions using /grill-me structured questions, favor parallel implementation when reconciling related uncommitted Specs, then draft a concise spec.md containing EARS criteria and material architecture decisions. Request explicit Spec approval before LazySpec enters planning.
+description: Probe requirements and architectural decisions with structured questions, then write one approved spec.md containing user stories, EARS acceptance criteria with inline verification, architecture decisions, risks, and tasks. Request explicit Spec approval before execution.
 ---
 
 # Writing Spec
 
 ## Shared policies
 
-Read [risk-policy.md](../using-lazyspec/references/risk-policy.md), [approval-policy.md](../using-lazyspec/references/approval-policy.md), and [doc-policy.md](../using-lazyspec/references/doc-policy.md) before this workflow; resolve them relative to the directory containing this `SKILL.md`. risk-policy.md separates risk-based verification from decision-based approval; approval-policy.md governs explicit approvals, materiality, and the single-body contract; doc-policy.md keeps the binary spec minimum-sufficient.
+Read [risk-policy.md](../using-lazyspec/references/risk-policy.md), [approval-policy.md](../using-lazyspec/references/approval-policy.md), [doc-policy.md](../using-lazyspec/references/doc-policy.md), and [delivery-loop.md](../using-lazyspec/references/delivery-loop.md) before this workflow; resolve them relative to the directory containing this `SKILL.md`. risk-policy.md separates risk-based verification from decision-based approval; approval-policy.md governs explicit approvals, materiality, and the single-body contract; doc-policy.md keeps the single artifact minimum-sufficient; delivery-loop.md defines executable success criteria, per-task basic checks, and final Feature Verification.
 
 ## Language and paths
 
 - Keep instructional prose in this Skill and its resources in English.
-- Write all user-visible prose in generated `spec.md` content in Chinese, including the title, headings, goal/scope, EARS criteria, architecture decisions, any alternatives considered, and risks.
-- Preserve project-specific names, code identifiers, filenames, and Markdown/HTML anchor IDs.
+- Write all user-visible prose in generated `spec.md` content in Chinese, including the title, headings, goals, user stories, EARS criteria, decisions, risks, and tasks.
+- Preserve project-specific names, code identifiers, filenames, and stable `S`/`R` IDs.
 - Resolve supporting resources (`spec-prompt.md`, `spec-template.md`) relative to the directory containing this `SKILL.md`.
 - Resolve `specs/{feature_name}/spec.md` against `ACTIVE_PROJECT_ROOT`, defined by `using-lazyspec` as the user's project working directory at session start. Never use this Skill's directory, its repository, or a Plugin cache as the project root. If invoked directly and the session working directory is unavailable or ambiguous, ask for the project root before writing.
+- Require explicit approval of `spec.md` before routing to execution. Never infer approval from file existence.
 
 ## Uncommitted Spec Boundary Check
 
@@ -30,7 +31,7 @@ git status --porcelain=v1 -z --untracked-files=all -M -- specs/
 - For related Specs, check overlapping responsibilities, conflicting interface or data ownership, circular dependencies, reliance on another Spec's internals, and contradictory constraints. Prefer explicit ownership and dependencies through defined contracts. Preserve necessary dependencies; do not introduce abstractions or split features merely to claim decoupling.
 - Prefer designs that allow related Specs to be implemented and verified in parallel. Distinguish a dependency on an agreed interface/data contract from a genuine need for another Spec's implementation artifact. With sufficiently defined contracts, prefer independent implementation and contract substitutes for local verification; substitutes never prove cross-Spec integration. Shared files or business relationships alone do not justify serialization. Resolve unclear ownership or contracts before claiming parallel readiness; do not invent another draft's API. For any unavoidable implementation dependency, name the required artifact and why parallel implementation is infeasible, while preserving approved behavior and failure guarantees.
 - Resolve conflicts in the current Spec first, defining its responsibilities, exclusions, dependency contracts, and relevant absence/failure behavior. Reference the owning Spec instead of duplicating its contract. If resolution requires materially changing another Spec, explain the conflict and proposed coordinated change and ask under approval-policy.md before that dependent work; do not modify other Specs by default or silently choose a conflicting design. Continue independent design work where possible.
-- Keep inspected paths and content versions in session context. After saving the current Spec and before requesting approval, rerun discovery and compare current candidate contents; reassess new, changed, renamed, or removed peers and any resulting boundary decisions. Resolve material conflicts before presenting the file for approval. Record relevant boundaries, contracts enabling parallel implementation/verification, and justified implementation dependencies concisely within the current Spec's architecture section; with no related Specs, continue normally without an extra section or table. Do not create another artifact, status field, approval phase, or orchestration workflow for this check.
+- Keep inspected paths and content versions in session context. After saving the current Spec and before requesting approval, rerun discovery and compare current candidate contents; reassess new, changed, renamed, or removed peers and any resulting boundary decisions. Resolve material conflicts before presenting the file for approval. Record relevant boundaries, contracts enabling parallel implementation/verification, and justified implementation dependencies concisely within the current Spec's `决策` section; with no related Specs, continue normally without an extra section or table. Do not create another artifact, status field, approval gate, or orchestration workflow for this check.
 
 ## Structured Probing (/grill-me Style)
 
@@ -39,25 +40,39 @@ Instead of mechanical, one-by-one incremental confirmations, `writing-spec` cond
 1. **Inspect and Research**: Complete the Uncommitted Spec Boundary Check, then inspect the user's request, project architecture, and relevant existing codebase facts before asking.
 2. **Identify Branches of Decision Tree**:
    - Scope and boundaries (what is in, what is explicitly out);
-   - Core behavior and observable outcomes (EARS scenarios);
+   - User stories and observable outcomes (EARS scenarios);
    - Architecture and component relationships;
    - Competing approaches and technical trade-offs when material (Alternatives Considered);
-   - Invariants, risks, and negative guarantees.
+   - Invariants, risks, and negative guarantees;
+   - Verification depth and the critical operations execution must not perform without authorization.
 3. **Ask One Focused Decision Question at a Time**:
    - Use the available user-question tool (following approval-policy.md's `How to ask`).
    - Format questions as structured single-choice or multi-choice options with a justified `(Recommended)` prefix on the best option.
    - Explain the trade-offs and consequences concisely.
    - Wait for the actual answer before proceeding down that branch of the design tree.
-4. **Conclude Probing**: Once material requirements and design decisions reach a shared understanding, ask whether the user has additional constraints or is ready to generate `spec.md`.
+4. **Conclude Probing**: Once material requirements, design decisions, and verification depth reach a shared understanding, ask whether the user has additional constraints or is ready to generate `spec.md`.
 
 ## Document Contract
 
-Read [spec-prompt.md](spec-prompt.md) for content rules and [spec-template.md](spec-template.md) for the canonical frontmatter and document shape before drafting. Together they define the combined requirements/design document; do not maintain another schema here. Record the risk assessment required by risk-policy.md in the template's risk section.
+Read [spec-prompt.md](spec-prompt.md) for content rules and [spec-template.md](spec-template.md) for the canonical frontmatter and document shape before drafting. Together they define the single planning artifact; do not maintain another schema here.
+
+- Create exactly one artifact: `specs/{feature_name}/spec.md`. Do not create `plan.md` or a separate verification file.
+- **Contract zone** — `目标与范围`, `用户故事`, `验收标准`, `决策`, `风险与否定性保证`, `任务`. It becomes the approved contract; during execution only the task checkbox may change.
+- **Execution zone** — `执行记录`. It is the only section execution may freely update.
+- The `验证` column of `验收标准` is the approved verification plan. It must cover every acceptance outcome before approval and may not be weakened afterwards.
+- Apply the section shape and size budget from `spec-prompt.md`; compress by merging duplicates and removing narration, never by dropping distinct acceptance behavior.
+- Record the risk assessment required by risk-policy.md in the `风险与否定性保证` table.
+
+## Task Design
+
+- Decompose tasks as independently deliverable behavior slices, not by file or layer (e.g. "create models", "create controllers").
+- Each task references the `R` IDs it satisfies and states its lightweight basic check (syntax/compile check, command probe, or focused basic test).
+- Reserve full test suite and end-to-end execution for the final Feature Verification after all tasks are complete.
+- Keep one task per line; do not restate the acceptance scenario or verification text.
 
 ## Approval Gate
 
 1. Write the complete `specs/{feature_name}/spec.md` under `ACTIVE_PROJECT_ROOT`.
 2. Complete the pre-approval recheck in Uncommitted Spec Boundary Check, then present the saved file link to the user and request explicit approval under approval-policy.md:
-   `"请审阅规范文件 specs/<feature>/spec.md；是否批准其中的目标、范围、验收标准、架构决策与风险？"`
-3. Await explicit approval before transitioning to `writing-plan`.
-
+   `"请审阅规范文件 specs/<feature>/spec.md；是否批准其中的目标、用户故事、验收标准、架构决策、风险、任务拆解与验收方式？"`
+3. Await explicit approval before handoff to `executing-plan`.

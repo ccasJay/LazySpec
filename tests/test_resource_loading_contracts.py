@@ -11,9 +11,7 @@ POLICIES = ROOT / "using-lazyspec" / "references"
 
 ROUTE_TO_SKILL = {
     "spec": "writing-spec",
-    "plan": "writing-plan",
     "execute": "executing-plan",
-    "fast": "fast",
     "orchestration": "orchestrating-specs",
     "memory-recall": "using-lazyspec",
     "memory-distill": "distill-feature",
@@ -86,7 +84,6 @@ class ResourceLoadingContractTests(unittest.TestCase):
     def test_prompt_and_template_files_stay_skill_relative(self):
         for directory, resources in (
             ("writing-spec", ("spec-prompt.md", "spec-template.md")),
-            ("writing-plan", ("plan-prompt.md", "plan-template.md")),
         ):
             skill = (ROOT / directory / "SKILL.md").read_text()
             self.assertIn("relative to the directory containing this `SKILL.md`", skill)

@@ -9,11 +9,9 @@
   "skills": [
     "./using-lazyspec",
     "./writing-spec",
-    "./writing-plan",
     "./executing-plan",
     "./distill-feature",
     "./maintain-memory",
-    "./fast",
     "./orchestrating-specs"
   ]
 }

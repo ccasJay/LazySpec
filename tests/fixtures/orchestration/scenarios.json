@@ -38,7 +38,7 @@
   {
     "id": "cycle",
     "facts": "A 必须等 B 的实现产物，B 也必须等 A 的实现产物，契约与职责尚有实质缺口。",
-    "expected": "回到受影响 Spec/Plan 解决循环依赖并按原审批规则处理；不能在编排文件中擅改产品契约。",
+    "expected": "回到受影响 Spec 解决循环依赖并按原审批规则处理；不能在编排文件中擅改产品契约。",
     "rule": "orchestrating-specs/SKILL.md#parallel-scheduling"
   },
   {

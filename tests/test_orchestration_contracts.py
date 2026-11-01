@@ -33,14 +33,15 @@ class OrchestrationTriggerTests(unittest.TestCase):
             ROUTER,
         )
 
-    def test_participating_specs_need_approved_spec_and_plan(self):
+    def test_participating_specs_need_approved_spec(self):
         for required in (
-            "user-approved `specs/{feature_name}/spec.md` and `plan.md`",
+            "user-approved `specs/{feature_name}/spec.md`",
             "never infer it from file existence",
             "do not create `orchestration.md`",
         ):
             with self.subTest(required=required):
                 self.assertIn(required, SKILL)
+        self.assertNotIn("plan.md", SKILL)
 
     def test_orchestration_is_registered_and_routed(self):
         self.assertIn("./orchestrating-specs", PLUGIN_MANIFEST)
@@ -56,7 +57,7 @@ class OrchestrationTriggerTests(unittest.TestCase):
 class OrchestrationBoundaryTests(unittest.TestCase):
     def test_orchestration_is_not_a_new_planning_layer(self):
         for required in (
-            "not a new Spec or Plan layer",
+            "not a new Spec or planning layer",
             "MUST NOT define new user behavior, interface requirements, or business scope",
         ):
             with self.subTest(required=required):
@@ -65,7 +66,7 @@ class OrchestrationBoundaryTests(unittest.TestCase):
     def test_orchestration_does_not_govern_intra_spec_task_execution(self):
         for required in (
             "MUST NOT specify how tasks inside any individual Spec are executed",
-            "remain governed by that Spec's approved `plan.md` and executing-plan/SKILL.md",
+            "remain governed by that Spec's approved `spec.md` and executing-plan/SKILL.md",
             "The orchestration decides only when a Spec's turn arrives, on which branch, and alongside which other Specs",
         ):
             with self.subTest(required=required):
@@ -80,7 +81,7 @@ class OrchestrationBoundaryTests(unittest.TestCase):
 
     def test_gaps_route_back_to_spec_revisions(self):
         for required in (
-            "route it back to the affected Spec's `spec.md` or `plan.md` revision under delivery-loop.md's failure routing",
+            "route it back to the affected Spec's `spec.md` revision under delivery-loop.md's failure routing",
             "MUST NOT fill the gap inside `orchestration.md` and execute it",
         ):
             with self.subTest(required=required):
@@ -88,7 +89,7 @@ class OrchestrationBoundaryTests(unittest.TestCase):
 
     def test_specs_remain_their_own_source_of_truth(self):
         self.assertIn(
-            "Execute each Spec through its own approved `spec.md` and `plan.md` as the source of truth via executing-plan/SKILL.md",
+            "Execute each Spec through its own approved `spec.md` as the source of truth via executing-plan/SKILL.md",
             SKILL,
         )
         self.assertIn(
@@ -166,7 +167,7 @@ class OrchestrationLifecycleTests(unittest.TestCase):
             "Never delete `orchestration.md` because a single Spec's tasks finished",
             "delete only after the whole group's execution, verification, distillation, and final user confirmation are all complete",
             "delete only `specs/orchestration.md` itself",
-            "MUST NOT delete any Spec's `spec.md`, `plan.md`, or Feature Verification evidence",
+            "MUST NOT delete any Spec's `spec.md` or its verification evidence",
         ):
             with self.subTest(required=required):
                 self.assertIn(required, SKILL)

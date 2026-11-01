@@ -21,8 +21,8 @@ Resolve every `specs/...` path against `ACTIVE_PROJECT_ROOT`, the user's project
 ## Trigger and Preconditions
 
 - Activate only when the user explicitly asks to jointly execute, orchestrate, or implement multiple approved Specs. Never activate merely because the project contains multiple Specs; single-Spec requests keep their existing workflow unchanged.
-- Every participating Spec must have its own user-approved `specs/{feature_name}/spec.md` and `plan.md`. Approval comes from explicit confirmation in the conversation; never infer it from file existence.
-- If any target Spec lacks an approved Spec and Plan, report in Chinese which Spec is incomplete and stop; do not create `orchestration.md`.
+- Every participating Spec must have its own user-approved `specs/{feature_name}/spec.md`. Approval comes from explicit confirmation in the conversation; never infer it from file existence.
+- If any target Spec lacks an approved Spec, report in Chinese which Spec is incomplete and stop; do not create `orchestration.md`.
 - If `specs/orchestration.md` already exists, treat the request as a revision of that orchestration; a material change invalidates its approval under approval-policy.md.
 
 ## Orchestration Document Contract
@@ -31,15 +31,15 @@ Write exactly one artifact: `specs/orchestration.md` under `ACTIVE_PROJECT_ROOT`
 
 Boundaries — `orchestration.md` describes Spec-level execution strategy only:
 
-- It MUST NOT define new user behavior, interface requirements, or business scope, and it is not a new Spec or Plan layer. It MUST NOT override or modify any Spec's approved content.
-- It MUST NOT specify how tasks inside any individual Spec are executed: task-level ordering, execution details, and verification methods remain governed by that Spec's approved `plan.md` and executing-plan/SKILL.md; shared repair routing remains in delivery-loop.md. The orchestration decides only when a Spec's turn arrives, on which branch, and alongside which other Specs.
+- It MUST NOT define new user behavior, interface requirements, or business scope, and it is not a new Spec or planning layer. It MUST NOT override or modify any Spec's approved content.
+- It MUST NOT specify how tasks inside any individual Spec are executed: task-level ordering, execution details, and verification methods remain governed by that Spec's approved `spec.md` and executing-plan/SKILL.md; shared repair routing remains in delivery-loop.md. The orchestration decides only when a Spec's turn arrives, on which branch, and alongside which other Specs.
 - Scheduling, branch isolation, and integration follow the policies below; individual Spec task decomposition remains unchanged.
 
 ## Parallel Scheduling
 
 Default to parallel Spec implementation. Record this scheduling policy in `orchestration.md`; dispatch work only after orchestration approval:
 
-- Derive implementation prerequisites from approved Specs/Plans. An agreed interface contract or a business relationship is not automatically a finish-to-start dependency. Use the Specs' defined contracts and local verification substitutes where applicable; unresolved contracts return through Gap Handling. Record each necessary wait with its concrete artifact, readiness condition, and reason; reject circular implementation prerequisites for design correction.
+- Derive implementation prerequisites from approved Specs. An agreed interface contract or a business relationship is not automatically a finish-to-start dependency. Use the Specs' defined contracts and local verification substitutes where applicable; unresolved contracts return through Gap Handling. Record each necessary wait with its concrete artifact, readiness condition, and reason; reject circular implementation prerequisites for design correction.
 - Identify incompatible edits and shared mutable resources (including test databases, ports, and migrations). Prefer isolated worktrees and test resources; shared files alone do not justify serializing whole Specs. Record remaining exclusive-resource constraints, rather than silently adding an implementation dependency.
 - Assign one executor, feature branch, and isolated worktree per active Spec, and one coordinator. Record a concrete concurrency limit within available authorized executor capacity and any user limits. Use parallel executors only where available and authorized; otherwise report the limitation and record feasible scheduling without claiming concurrent execution. Do not infer delegation permission from orchestration approval alone.
 - Dispatch ready Specs up to that limit, and fill freed capacity as soon as prerequisites and exclusive resources allow; do not wait for an entire batch. A blocked or review-pending Spec must not hold unrelated ready Specs; only unsatisfied prerequisites or exclusive resources block dependents. An upstream artifact can release dependents before a dev merge only when the approved readiness condition is met, its verification is current, and its commit is pinned.
@@ -58,13 +58,13 @@ The complete `orchestration.md` is the approval object. Request approval followi
 
 ## Gap Handling
 
-When orchestration planning or execution reveals a requirement, interface, architecture, or behavior gap between existing Specs, route it back to the affected Spec's `spec.md` or `plan.md` revision under delivery-loop.md's failure routing, and follow that Spec's own approval gates. MUST NOT fill the gap inside `orchestration.md` and execute it. When a participating Spec undergoes material revision, update the affected orchestration parts and reapprove per approval-policy.md's materiality rules.
+When orchestration planning or execution reveals a requirement, interface, architecture, or behavior gap between existing Specs, route it back to the affected Spec's `spec.md` revision under delivery-loop.md's failure routing, and follow that Spec's own approval gates. MUST NOT fill the gap inside `orchestration.md` and execute it. When a participating Spec undergoes material revision, update the affected orchestration parts and reapprove per approval-policy.md's materiality rules.
 
 ## Execution
 
 Only after orchestration approval:
 
-- Execute each Spec through its own approved `spec.md` and `plan.md` as the source of truth via executing-plan/SKILL.md, using the approved orchestration's Spec-level sequencing and branch/merge strategy. Each Spec retains executing-plan's user-review and merge gate.
+- Execute each Spec through its own approved `spec.md` as the source of truth via executing-plan/SKILL.md, using the approved orchestration's Spec-level sequencing and branch/merge strategy. Each Spec retains executing-plan's user-review and merge gate.
 - Record each Spec's executor/worktree, prerequisites, pinned commit, current verification, review, merge, and blocking status in `orchestration.md`. Apply Parallel Scheduling continuously; group delivery requires every Spec to finish coordinated integration and delivery, not just Feature Verification.
 
 ## Memory Distillation Gate
@@ -77,4 +77,4 @@ Only after orchestration approval:
 
 Follow the template's lifecycle checklist; verification alone is not group completion.
 - Never delete `orchestration.md` because a single Spec's tasks finished; delete only after the whole group's execution, verification, distillation, and final user confirmation are all complete.
-- Deletion is the normal closing action of the lifecycle: delete only `specs/orchestration.md` itself; MUST NOT delete any Spec's `spec.md`, `plan.md`, or Feature Verification evidence.
+- Deletion is the normal closing action of the lifecycle: delete only `specs/orchestration.md` itself; MUST NOT delete any Spec's `spec.md` or its verification evidence.

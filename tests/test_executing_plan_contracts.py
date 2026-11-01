@@ -13,13 +13,14 @@ SHARED = (ROOT / "using-lazyspec" / "references" / "delivery-loop.md").read_text
 
 
 class ExecutingPlanContractTests(unittest.TestCase):
-    def test_registered_and_routed_without_changing_fast_owner(self):
+    def test_registered_and_routed_as_sole_executor(self):
         manifest = json.loads((ROOT / ".claude-plugin" / "plugin.json").read_text())
         self.assertIn("./executing-plan", manifest["skills"])
-        self.assertIn("./fast", manifest["skills"])
+        self.assertNotIn("./fast", manifest["skills"])
+        self.assertNotIn("./writing-plan", manifest["skills"])
         self.assertIn("../executing-plan/SKILL.md", ROUTER)
         self.assertIn("route to `executing-plan`", ROUTER)
-        self.assertIn("fast `plan.md` execution is owned by `fast/SKILL.md`", SHARED)
+        self.assertIn("execution and delivery finalization by `executing-plan/SKILL.md`", SHARED)
 
     def test_execution_strategy_and_verification_boundary(self):
         for rule in (
@@ -42,12 +43,13 @@ class ExecutingPlanContractTests(unittest.TestCase):
             "Automatic Delivery Finalization",
             "status: delivered",
             "delivered_at:",
-            "Cleanses proposal/hypothetical phrasing",
-            "Decision",
+            "Collapse the Execution Scaffolding",
+            "Delete the entire `## 任务` section",
             "Bidirectional Supersession Sync",
             "status: superseded",
             "superseded_by:",
             "[!WARNING]",
+            "no `//TODO`",
         ):
             with self.subTest(rule=rule):
                 self.assertIn(rule, EXECUTOR)
@@ -58,7 +60,7 @@ class ExecutingPlanContractTests(unittest.TestCase):
             "Worktree & Branch Setup",
             "git worktree add -b",
             "First Commit (Spec Baseline)",
-            "docs(spec): add approved specification and plan",
+            "docs(spec): add approved specification for",
             "Per-TODO Atomic Commit",
             "User Review Gate",
             "Merge to dev",

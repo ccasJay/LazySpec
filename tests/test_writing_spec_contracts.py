@@ -20,9 +20,8 @@ class WritingSpecContractTests(unittest.TestCase):
     def test_manifest_registers_current_skills(self):
         manifest = json.loads((ROOT / ".claude-plugin/plugin.json").read_text())
         expected = {
-            "using-lazyspec", "writing-spec", "writing-plan", "executing-plan",
-            "distill-feature", "maintain-memory",
-            "fast", "orchestrating-specs",
+            "using-lazyspec", "writing-spec", "executing-plan",
+            "distill-feature", "maintain-memory", "orchestrating-specs",
         }
         self.assertEqual(expected, {Path(p).name for p in manifest["skills"]})
         self.assertEqual(len(expected), len(manifest["skills"]))
@@ -30,12 +29,14 @@ class WritingSpecContractTests(unittest.TestCase):
         self.assertFalse((ROOT / "writing-requirement/SKILL.md").exists())
         self.assertFalse((ROOT / "writing-design/SKILL.md").exists())
         self.assertFalse((ROOT / "writing-task/SKILL.md").exists())
+        self.assertFalse((ROOT / "writing-plan/SKILL.md").exists())
         self.assertFalse((ROOT / "executing-task/SKILL.md").exists())
         self.assertFalse((ROOT / "distill-spec-memory/SKILL.md").exists())
 
     def test_creation_and_revision_route_directly_to_spec(self):
         self.assertIn("route directly to `writing-spec`", ROUTER)
         self.assertIn("Phase 1: Spec Creation / Revision", ROUTER)
+        self.assertIn("single planning artifact", ROUTER)
 
     def test_decision_probing_grill_me_principles(self):
         self.assertIn("Structured Probing (/grill-me Style)", SKILL)
@@ -45,18 +46,21 @@ class WritingSpecContractTests(unittest.TestCase):
         self.assertIn("EARS", SKILL)
         self.assertIn("negative guarantees", SKILL)
 
-    def test_ears_criteria_anchors(self):
+    def test_acceptance_table_and_stable_ids(self):
         template = (ROOT / "writing-spec/spec-template.md").read_text()
-        self.assertIn('spec-req-', template)
-        self.assertIn('## 风险与否定性保证', template)
-        self.assertIn('仅当取舍对审阅或维护有实质影响时', template)
+        self.assertIn("| ID | 故事 | 类型 | 当 | 系统应 | 验证 |", template)
+        self.assertIn("R1.1", template)
+        self.assertIn("S1", template)
+        self.assertIn("## 风险与否定性保证", template)
+        self.assertNotIn('spec-req-', template)
 
     def test_concise_spec_preserves_material_contracts(self):
-        self.assertIn('Refer to acceptance IDs instead of repeating', PROMPT)
-        self.assertIn('only when the trade-off matters', PROMPT)
-        self.assertIn('compatibility exceptions, distinct semantics, and cross-Spec ownership', PROMPT)
-        self.assertIn('unless their absence creates material ambiguity', PROMPT)
-        self.assertIn('do not impose a fixed length limit', PROMPT)
+        self.assertIn("references its ID instead of repeating the text", PROMPT)
+        self.assertIn("only when a rejected alternative matters", PROMPT)
+        self.assertIn("compatibility", PROMPT)
+        self.assertIn("file inventories", PROMPT)
+        self.assertIn("Never drop a distinct acceptance behavior", PROMPT)
+        self.assertIn("Shape and budget", PROMPT)
 
     def test_documented_discovery_command_observes_current_workspace_changes(self):
         command = shlex.split(re.search(r"```sh\n([^\n]+)\n```", SKILL).group(1))

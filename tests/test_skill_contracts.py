@@ -6,11 +6,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 V2_SKILLS = (
     "writing-spec",
-    "writing-plan",
     "executing-plan",
     "distill-feature",
     "maintain-memory",
-    "fast",
     "orchestrating-specs",
 )
 
@@ -24,7 +22,7 @@ class SkillContractTests(unittest.TestCase):
         self.assertIn("relative to this `using-lazyspec/SKILL.md`", text)
 
     def test_writing_resources_are_skill_relative(self):
-        for name in ("writing-spec", "writing-plan"):
+        for name in ("writing-spec",):
             path = ROOT / name / "SKILL.md"
             with self.subTest(path=path):
                 text = path.read_text()
@@ -51,7 +49,7 @@ class SkillContractTests(unittest.TestCase):
         self.assertNotIn("AskUserQuestion", policy)
         self.assertNotIn("```json", policy)
 
-        for name in ("writing-spec", "writing-plan"):
+        for name in ("writing-spec",):
             path = ROOT / name / "SKILL.md"
             with self.subTest(path=path):
                 text = path.read_text()
@@ -65,43 +63,30 @@ class SkillContractTests(unittest.TestCase):
             ROOT / "using-lazyspec" / "references" / "delivery-loop.md"
         ).read_text()
         execution = (ROOT / "executing-plan" / "SKILL.md").read_text()
-        planning = (ROOT / "writing-plan" / "SKILL.md").read_text()
+        planning = (ROOT / "writing-spec" / "SKILL.md").read_text()
         self.assertIn("all currently unchecked TODOs", execution)
         self.assertIn("Feature Verification", delivery)
         self.assertIn("Automatic Delivery Finalization", execution)
         self.assertIn("status: delivered", execution)
         self.assertIn("checkbox token from `[ ]` to `[x]`", execution)
         self.assertIn("//TODO", execution)
-        self.assertIn("[plan-template.md](plan-template.md)", planning)
-        self.assertIn("//TODO", (ROOT / "writing-plan/plan-template.md").read_text())
+        self.assertIn("[spec-template.md](spec-template.md)", planning)
+        self.assertIn("//TODO", (ROOT / "writing-spec/spec-template.md").read_text())
 
-    def test_downstream_approval_and_binary_boundaries(self):
+    def test_downstream_approval_and_single_artifact_boundaries(self):
         routing = (ROOT / "using-lazyspec" / "SKILL.md").read_text()
         policy = (
             ROOT / "using-lazyspec" / "references" / "approval-policy.md"
         ).read_text()
         spec = (ROOT / "writing-spec" / "SKILL.md").read_text()
-        plan = (ROOT / "writing-plan" / "SKILL.md").read_text()
 
-        self.assertIn("Only after explicit approval of `spec.md`, route to `writing-plan`", routing)
-        self.assertIn("Spec → explicit Spec approval → Plan → explicit Plan approval", policy)
-        self.assertIn("Await explicit approval before transitioning to `writing-plan`", spec)
+        self.assertIn("The approved `spec.md` is the only planning artifact", routing)
+        self.assertIn("`spec.md` → explicit Spec approval → execution", policy)
+        self.assertIn("Await explicit approval before handoff to `executing-plan`", spec)
         self.assertIn("Only an explicit approval in the current conversation", policy)
         self.assertIn("A material change invalidates the prior approval", policy)
-        self.assertIn("`spec.md` and `plan.md` each use the complete saved phase document as their approval object", policy)
-        self.assertIn("Require explicit approval of `spec.md` before creating `plan.md`", plan)
-
-    def test_fast_discussion_explicitly_recommends_an_approach(self):
-        text = (ROOT / "fast" / "SKILL.md").read_text()
-        self.assertIn("mark it as recommended", text)
-        self.assertIn("explain the recommendation concisely", text)
-        self.assertIn(
-            "explicitly present the recommended implementation approach", text
-        )
-        self.assertIn("explain why it best fits", text)
-        self.assertIn("Do not make the user infer the recommendation", text)
-        self.assertIn("present the viable alternatives", text)
-        self.assertIn("without forcing a three-approach comparison", text)
+        self.assertIn("`spec.md` uses the complete saved document as its approval object", policy)
+        self.assertIn("Require explicit approval of `spec.md` before routing to execution", spec)
 
 
 if __name__ == "__main__":

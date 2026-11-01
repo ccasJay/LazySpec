@@ -5,7 +5,6 @@
   "verified_at": "2026-09-05T10:00:00+08:00",
   "tested_commit": "synthetic-fixture-not-a-real-commit",
   "uncommitted_changes": [],
-  "contract_fingerprint": "synthetic-contract-v1",
   "human_acceptance": false,
   "human_acceptance_required": true,
   "required_outcomes": ["req-1-1", "req-1-2"],

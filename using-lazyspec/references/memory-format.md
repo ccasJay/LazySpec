@@ -50,7 +50,7 @@ authorities: [<current-architecture-or-source-path>]
 ## Sources
 
 - S1: `specs/<feature-name>/spec.md`
-- S2: `specs/<feature-name>/plan.md`
+- S2: <project-root-relative-decision-record-or-interface-doc>
 - S3: `<project-root-relative-implementation-path>`
 - S4: `<project-root-relative-test-path>`
 ```
@@ -71,7 +71,7 @@ Conditional metadata is omitted when unused:
 - Use unique stable `D<N>` IDs within each Capsule.
 - End every factual bullet in Purpose, Durable Decisions, and Guardrails with defined source IDs.
 - Keep Revisit When operational and observable. Do not use age or word count alone as a trigger.
-- Include approved intent (normal Spec or fast plan) plus implementation or test evidence. Omit current control-flow narration, generic lessons, progress history, and facts cheaper to recover from code.
+- Include approved intent (Spec) plus implementation or test evidence. Omit current control-flow narration, generic lessons, progress history, and facts cheaper to recover from code.
 - Active and needs-review bodies may change only through a complete evidence review and approved preview. Git and Specs preserve earlier versions.
 
 ## Status invariants

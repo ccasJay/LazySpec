@@ -18,7 +18,7 @@ FIXTURES = ROOT / "tests/fixtures"
 
 def lint_report(report):
     """Check the evidence invariants in a synthetic representation of a report."""
-    for field in ("verified_at", "tested_commit", "contract_fingerprint"):
+    for field in ("verified_at", "tested_commit"):
         if not report.get(field):
             raise ValueError(f"missing attribution: {field}")
     if report["freshness"] not in {"current", "stale"}:
@@ -29,7 +29,7 @@ def lint_report(report):
     if report["status"] not in statuses:
         raise ValueError("invalid status")
     for change in report["uncommitted_changes"]:
-        if not change.get("path") or not change.get("fingerprint"):
+        if not change.get("path"):
             raise ValueError("unattributable worktree")
     covered = set()
     for check in report["checks"]:
@@ -52,7 +52,7 @@ def lint_report(report):
 class DeliveryContractTests(unittest.TestCase):
     def test_shared_references_resolve_from_every_installed_skill(self):
         manifest = json.loads((ROOT / ".claude-plugin/plugin.json").read_text())
-        self.assertEqual(8, len(manifest["skills"]))
+        self.assertEqual(6, len(manifest["skills"]))
         risk_readers = [
             d for d in manifest["skills"]
             if not any(d.endswith(suffix) for suffix in (
@@ -73,7 +73,7 @@ class DeliveryContractTests(unittest.TestCase):
             approval_links = re.findall(r"\]\(([^)]+approval-policy\.md)\)", distill)
             if approval_links:
                 self.assertEqual((POLICIES / "approval-policy.md").resolve(), (ROOT / distill_name / approval_links[0]).resolve())
-        for directory in ("using-lazyspec", "fast", "writing-plan", "executing-plan", "orchestrating-specs"):
+        for directory in ("using-lazyspec", "writing-spec", "executing-plan", "orchestrating-specs"):
             skill = ROOT / directory / "SKILL.md"
             links = re.findall(r"\]\(([^)]+delivery-loop\.md)\)", skill.read_text())
             self.assertGreaterEqual(len(links), 1, skill)
@@ -89,7 +89,7 @@ class DeliveryContractTests(unittest.TestCase):
         delivery = (POLICIES / "delivery-loop.md").read_text()
         rows = [line.split("|")[1:-1] for line in delivery.splitlines() if line.startswith("| ")][1:]
         self.assertEqual(
-            ["Current execution task", "Plan (`plan.md`)", "Spec (`spec.md`)", "Current stage"],
+            ["Current execution task", "`spec.md` execution details", "`spec.md` contract", "Current stage"],
             [row[1].strip() for row in rows],
         )
 
@@ -129,7 +129,7 @@ class DeliveryContractTests(unittest.TestCase):
             lambda r: r["checks"][0].update(actual=""),
             lambda r: r["checks"][0].update(status="skipped"),
             lambda r: r.update(tested_commit=""),
-            lambda r: r.update(uncommitted_changes=[{"path": "src/example"}]),
+            lambda r: r.update(uncommitted_changes=[{}]),
         ]
         for mutation in mutations:
             report = copy.deepcopy(original)

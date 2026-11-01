@@ -1,6 +1,5 @@
-"""Contract tests for LazySpec v2.0 binary architecture and lifecycle governance."""
+"""Contract tests for LazySpec single-artifact architecture and lifecycle governance."""
 
-import json
 import re
 import unittest
 from pathlib import Path
@@ -10,11 +9,10 @@ ROOT = Path(__file__).resolve().parents[1]
 POLICIES = ROOT / "using-lazyspec" / "references"
 
 
-class V2BinaryArchitectureContractTests(unittest.TestCase):
+class SingleArtifactArchitectureContractTests(unittest.TestCase):
     def test_v2_skills_exist_and_have_required_metadata(self):
         v2_skills = (
             "writing-spec",
-            "writing-plan",
             "executing-plan",
             "distill-feature",
             "maintain-memory",
@@ -44,23 +42,27 @@ class V2BinaryArchitectureContractTests(unittest.TestCase):
             self.assertEqual(data.get("name"), name)
             self.assertTrue(data.get("description"), f"missing description in {name}")
 
-    def test_spec_template_contains_frontmatter_and_material_decisions(self):
+    def test_spec_template_is_the_only_planning_artifact(self):
         template = (ROOT / "writing-spec" / "spec-template.md").read_text()
-        self.assertIn("status: proposed", template)
-        self.assertIn("supersedes: []", template)
-        self.assertIn("superseded_by: null", template)
-        self.assertIn("## 目标与范围", template)
-        self.assertIn("## 需求与验收标准", template)
-        self.assertIn("## 架构与核心决策", template)
-        self.assertIn("被放弃的备选方案及原因", template)
-        self.assertIn("## 风险与否定性保证", template)
-
-    def test_plan_template_contains_behavioral_todos_and_feature_verification(self):
-        template = (ROOT / "writing-plan" / "plan-template.md").read_text()
-        self.assertIn("- [ ] //TODO", template)
-        self.assertIn("## Feature Verification", template)
-        self.assertIn("### Planned Checks", template)
-        self.assertIn("### Latest Result", template)
+        for required in (
+            "status: proposed",
+            "delivered_at:",
+            "supersedes: []",
+            "superseded_by: null",
+            "## 目标与范围",
+            "## 用户故事",
+            "## 验收标准",
+            "| ID | 故事 | 类型 | 当 | 系统应 | 验证 |",
+            "## 决策",
+            "## 风险与否定性保证",
+            "## 任务",
+            "- [ ] //TODO 1.",
+            "## 执行记录",
+            "状态：未执行",
+        ):
+            with self.subTest(required=required):
+                self.assertIn(required, template)
+        self.assertNotIn("plan.md", template)
 
     def test_lifecycle_states_delegate_operations_to_their_owners(self):
         delivery_loop = (POLICIES / "delivery-loop.md").read_text()
@@ -83,4 +85,3 @@ class V2BinaryArchitectureContractTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

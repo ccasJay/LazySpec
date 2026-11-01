@@ -2,7 +2,7 @@
   {
     "id": "low-phases",
     "facts": "普通新功能，仅修改本地展示格式，无公共接口、数据或权限变化；方向已批准。",
-    "expected": "先起草并审批 spec.md，获批后才生成 plan.md；plan.md 获批且执行已授权后才开始编码。",
+    "expected": "先起草并审批 spec.md（含验收、任务与验证方式）；获批且执行已授权后才开始编码。",
     "rule": "approval-policy.md#approval-timing"
   },
   {
@@ -14,13 +14,7 @@
   {
     "id": "escalation",
     "facts": "原 low 功能在设计 spec.md 时发现需要改变权限边界，spec.md 尚未批准。",
-    "expected": "升级 high，在 spec.md 补齐影响和风险并请求审批；不提前生成 plan.md。",
-    "rule": "approval-policy.md#approval-timing"
-  },
-  {
-    "id": "fast-high",
-    "facts": "fast 高风险 plan 已批准，尚未授权其中的具体破坏性迁移。",
-    "expected": "保留单份 plan；执行迁移前确认具体操作，不创建 spec.md。",
+    "expected": "升级 high，在 spec.md 补齐影响和风险并请求审批；不提前开始编码。",
     "rule": "approval-policy.md#approval-timing"
   },
   {
@@ -73,20 +67,20 @@
   },
   {
     "id": "task-gap",
-    "facts": "spec.md 正确，但 plan.md 遗漏已要求的兼容检查，补充检查不改变批准的成功标准。",
-    "expected": "补充 plan.md 的非实质验证细节后继续，不重复请求审批。",
+    "facts": "契约仍然正确，但 spec.md 的任务清单遗漏已要求的兼容检查，补充检查不改变批准的成功标准。",
+    "expected": "补充 spec.md 的非实质执行细节后继续，不重复请求审批。",
     "rule": "delivery-loop.md#failure-routing-and-repair"
   },
   {
     "id": "design-gap",
     "facts": "需求仍成立，但设计选择的数据结构无法保证已要求的并发一致性。",
-    "expected": "回 spec.md 修订架构决策并检查受影响 plan.md；实质变更获批后再推进受影响执行。",
+    "expected": "回 spec.md 修订架构决策并检查受影响的任务与验证方式；实质变更获批后再推进受影响执行。",
     "rule": "delivery-loop.md#failure-routing-and-repair"
   },
   {
     "id": "requirement-gap",
     "facts": "验收发现需求对同一失败场景规定了两种冲突的可观察行为。",
-    "expected": "回 spec.md 澄清验收行为并检查 plan.md 的影响，不能让实现任意选一种。",
+    "expected": "回 spec.md 澄清验收行为并检查任务与验证方式的影响，不能让实现任意选一种。",
     "rule": "delivery-loop.md#failure-routing-and-repair"
   },
   {
@@ -99,12 +93,6 @@
     "id": "no-progress",
     "facts": "同一错误连续两轮修复复测，结果不变且没有新诊断证据。",
     "expected": "重审假设与方法；只有预算内存在具体新诊断方法时才继续，否则暂停汇报，不通过重命名问题重置计数。",
-    "rule": "delivery-loop.md#failure-routing-and-repair"
-  },
-  {
-    "id": "fast-feedback",
-    "facts": "fast 执行发现必须改变目标行为才能继续。",
-    "expected": "修订 plan 的目标及受影响内容，展示差异，重新审批完整 plan。",
     "rule": "delivery-loop.md#failure-routing-and-repair"
   },
   {
