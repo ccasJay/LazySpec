@@ -85,7 +85,7 @@ Allow `active → active` maintenance, `active → needs-review`, `needs-review 
 
 ## Deterministic index
 
-Generate one `project-memory/index.md` from Capsule metadata:
+Generate one `project-memory/index.md` from Capsule metadata with `memory_tool.py index --write`; never hand-write rows. Verify with `memory_tool.py index --check`.
 
 ```markdown
 # Project Memory Index
@@ -99,11 +99,6 @@ Generate one `project-memory/index.md` from Capsule metadata:
 
 Sort by feature, then project-root-relative path. Keep the six-column header. Keep exactly one row per Capsule. The index status, paths, tags, summary, Source Spec, and reviewed date must equal frontmatter.
 
-## Validation checklist
+## Validation
 
-- Validate required and conditional metadata, path containment, dates, and authority existence.
-- Validate section order, unique decision IDs, source definitions, citations, and resolvable source paths.
-- Validate index/Capsule bijection and deterministic generated content.
-- Validate reciprocal supersession and reject cycles.
-- Report completed-checkbox Specs without Capsules as candidates only; never create Memory automatically. Feature promotion requires current passed verification and exact write approval.
-- Treat the approved Capsule set and generated index as one logical write set.
+Validate the whole write set with `memory_tool.py memory-check`; add `--strict-paths` when source paths must exist. Report completed-checkbox Specs without Capsules as candidates only; never create Memory automatically. Feature promotion requires current passed verification and exact write approval. Treat the approved Capsule set and generated index as one logical write set.

@@ -30,8 +30,8 @@ class ExecutingPlanContractTests(unittest.TestCase):
             "lightweight basic check",
             "Do not run the full test suite or force a Red-Green TDD cycle on each individual TODO",
             "Only after the TODO passes its basic check",
-            "change its checkbox token from `[ ]` to `[x]`",
-            "Preserve `//TODO` and every character after it",
+            "checkbox token from `[ ]` to `[x]`",
+            "preserve `//TODO` and every character after it",
             "Feature Verification (Full Test Suite)",
             "After all TODOs are completed, run the full test suite",
         ):
@@ -58,15 +58,16 @@ class ExecutingPlanContractTests(unittest.TestCase):
     def test_worktree_and_commit_discipline_contract(self):
         for rule in (
             "Worktree & Branch Setup",
-            "git worktree add -b",
+            "spec_state.py worktree add",
+            "--base dev",
             "First Commit (Spec Baseline)",
             "docs(spec): add approved specification for",
-            "Per-TODO Atomic Commit",
+            "Task Implementation, Basic Check & Commit",
             "User Review Gate",
             "Merge to dev",
             "git merge --no-ff",
             "Worktree Cleanup",
-            "git worktree remove",
+            "spec_state.py worktree remove",
         ):
             with self.subTest(rule=rule):
                 self.assertIn(rule, EXECUTOR)

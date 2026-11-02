@@ -4,7 +4,7 @@ Read for planning and execution, after `risk-policy.md`. This is a shared workfl
 
 ## Executable success criteria
 
-Each executable task in `spec.md` has a concrete implementation objective, a referenced acceptance ID, and a lightweight basic verification method (a syntax/compile check, command probe, or focused basic test). Do not require comprehensive test suites or full-suite execution on every task; reserve those for final Feature Verification. An exit code alone or “implementation complete / tests pass” is not a behavioral oracle. Keep acceptance IDs and full-coverage checks; use at most three descriptive bullets plus references where possible.
+Each executable task in `spec.md` states a concrete objective, its referenced acceptance ID, and a lightweight basic verification method (a syntax/compile check, command probe, or focused basic test). Do not require comprehensive suites or full-suite execution on every task; reserve those for final Feature Verification. An exit code alone or “implementation complete / tests pass” is not a behavioral oracle. Keep acceptance IDs and full-coverage checks; use at most three descriptive bullets plus references where possible.
 
 ## Feature Verification artifact
 
@@ -12,16 +12,9 @@ Each executable task in `spec.md` has a concrete implementation objective, a ref
 
 A shared command may cover several criteria. Group outcomes only when their individual coverage remains explicit; retain distinct scenarios needed for exceptions or failure paths. Include full test suite execution, composed user flows, and risk-specific checks. Put required manual experience checks here, not in tasks.
 
-`执行记录` is the mutable result section. It starts as `状态：未执行`. After a run, record exactly four lines:
+`执行记录` is the mutable result section. Write it with the exec `evidence` command: exactly four lines — `状态` (`passed / failed / blocked / pending-human`), `验证` (tested Git commit or explicitly no commit, plus verification time), `结果` (covered `R` IDs and observed results, with expected and actual per failure), `未决` (unresolved issues or `无`). Do not record fingerprints, per-check logs, secrets, or raw sensitive output. Failed required checks take precedence, then blocked, then pending human; only all satisfied required checks allow `passed`. Freshness is `current` or `stale`; a skipped check or missing environment is not success.
 
-- `状态`：`passed / failed / blocked / pending-human`
-- `验证`：tested Git commit (or explicitly no commit) · verification time
-- `结果`：covered `R` IDs and observed results; list each failure with expected and actual
-- `未决`：unresolved issues, or `无`
-
-Do not record fingerprints, per-check logs, secrets, or raw sensitive output. Failed required checks take precedence, then blocked, then pending human; only all satisfied required checks allow `passed`. Freshness is `current` or `stale`; a skipped check or missing environment is not success.
-
-Choose verification methods that establish the required outcomes; existing tests, focused checks, inspection, or other attributable evidence may suffice. Planned methods are defaults unless explicitly mandated by the user or a binding project requirement. Record equivalent substitutions and their coverage without reapproval; never lower the success standard. Once current evidence covers all required outcomes and no relevant concern remains, stop verification. Broaden or repeat checks only for new changes, failures, or unresolved concerns; do not add tests that merely mirror low-impact reversible edits.
+Choose methods that establish the required outcomes; existing tests, focused checks, inspection, or other attributable evidence may suffice. Planned methods are defaults unless the user or a binding project requirement mandates them. Record equivalent substitutions and their coverage without reapproval; never lower the success standard. Stop once current evidence covers all required outcomes; broaden or repeat checks only for new changes, failures, or unresolved concerns, never for tests that merely mirror low-impact reversible edits.
 
 Related implementation or acceptance-contract changes make previous evidence stale. Reuse task evidence only when the tested state and covered outcome still match; rerun checks affected by integration changes. Updating `执行记录` itself does not invalidate code evidence. If results cannot be attributed to the current state, treat them as stale.
 

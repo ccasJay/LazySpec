@@ -24,7 +24,7 @@ Read [approval-policy.md](../using-lazyspec/references/approval-policy.md), [mem
    - Verify that the document includes a prominent `[!CAUTION]` block explaining why the design failed/was deprecated, acting as an active negative guardrail.
 4. **Index Self-Healing**:
    - Scan `project-memory/features/` using the active Memory format; `archived` is a Spec state, not a Capsule state.
-   - Regenerate and align `project-memory/index.md` according to the active contract.
+   - Regenerate `project-memory/index.md` with `scripts/memory_tool.py index --write` and verify with `memory-check`; run it with Python 3 and never hand-edit rows. If the scripts are unavailable, follow the format manually.
 
 Prepare lifecycle changes, Capsule updates, index regeneration, and affected source-link repairs as one preview under the shared workflow. Normal delivery's Spec-to-Spec supersession update belongs to `executing-plan`; this Skill propagates approved effects to Memory and handles archival/retirement. Do not infer a Memory write authorization from delivery completion.
 

@@ -59,8 +59,8 @@ class SharedDocumentContractTests(unittest.TestCase):
             "Do not create `plan.md`",
             "spec.md",
             "Users and Agents share one document body",
-            "at most 12 acceptance rows",
-            "Never omit distinct approved behavior",
+            "per-section budgets are machine-checked",
+            "never omitting distinct approved behavior",
         ):
             with self.subTest(required=required):
                 self.assertIn(required, DOC_POLICY)

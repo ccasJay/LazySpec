@@ -2,8 +2,8 @@
 
 import json
 import re
-import shlex
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -14,6 +14,7 @@ ROUTER = (ROOT / "using-lazyspec/SKILL.md").read_text()
 SKILL = (ROOT / "writing-spec/SKILL.md").read_text()
 PROMPT = (ROOT / "writing-spec/spec-prompt.md").read_text()
 POLICY = (ROOT / "using-lazyspec/references/approval-policy.md").read_text()
+SCANNER = ROOT / "writing-spec" / "scripts" / "spec_scan.py"
 
 
 class WritingSpecContractTests(unittest.TestCase):
@@ -62,8 +63,12 @@ class WritingSpecContractTests(unittest.TestCase):
         self.assertIn("Never drop a distinct acceptance behavior", PROMPT)
         self.assertIn("Shape and budget", PROMPT)
 
-    def test_documented_discovery_command_observes_current_workspace_changes(self):
-        command = shlex.split(re.search(r"```sh\n([^\n]+)\n```", SKILL).group(1))
+    def test_skill_routes_discovery_and_plan_check_through_scripts(self):
+        self.assertIn("scripts/spec_scan.py scan-specs --changed", SKILL)
+        self.assertIn("lazyspec.py check --feature <f> --stage plan", SKILL)
+        self.assertIn("If Python 3 or the scripts are unavailable", SKILL)
+
+    def test_documented_discovery_script_observes_current_workspace_changes(self):
         with tempfile.TemporaryDirectory() as directory:
             workspace = Path(directory)
 
@@ -96,29 +101,48 @@ class WritingSpecContractTests(unittest.TestCase):
             git("mv", "specs/old", "specs/重命名 设计")
             git("rm", "specs/deleted/spec.md")
 
-            def discover():
-                return subprocess.run(command, cwd=workspace, check=True, capture_output=True).stdout
+            def discover(*extra):
+                completed = subprocess.run(
+                    [sys.executable, str(SCANNER), "scan-specs", "--changed", "--json",
+                     "--root", str(workspace), *extra],
+                    cwd=workspace, check=False, capture_output=True, text=True,
+                )
+                self.assertEqual(0, completed.returncode, completed.stdout + completed.stderr)
+                return json.loads(completed.stdout)
 
-            initial = discover()
-            for record in (
-                b"M  specs/staged/spec.md\0", b" M specs/unstaged/spec.md\0",
-                b"MM specs/both/spec.md\0", b"A  specs/added/spec.md\0",
-                "?? specs/新 草稿/spec.md\0".encode(),
-                "R  specs/重命名 设计/spec.md\0specs/old/spec.md\0".encode(),
-                b"D  specs/deleted/spec.md\0",
-            ):
-                with self.subTest(record=record):
-                    self.assertIn(record, initial)
-            self.assertNotIn(b"outside.txt", initial)
-            self.assertNotIn(b"specs/clean/spec.md", initial)
+            initial = discover()["specs"]
+            found = {entry["path"]: entry for entry in initial}
+            self.assertEqual(
+                {
+                    "specs/staged/spec.md",
+                    "specs/unstaged/spec.md",
+                    "specs/both/spec.md",
+                    "specs/added/spec.md",
+                    "specs/新 草稿/spec.md",
+                    "specs/重命名 设计/spec.md",
+                },
+                set(found),
+            )
+            self.assertEqual("specs/old/spec.md", found["specs/重命名 设计/spec.md"]["origin"])
+            self.assertNotIn("specs/clean/spec.md", found)
+            self.assertNotIn("specs/deleted/spec.md", found)
+            self.assertNotIn("outside.txt", found)
+            self.assertTrue(all(entry["sha256"] for entry in initial))
 
-            # A status-only snapshot misses content changes with unchanged XY codes.
+            # A status-only snapshot misses content changes with unchanged XY codes;
+            # the content hash must change instead.
+            previous = found["specs/unstaged/spec.md"]["sha256"]
             write("specs/unstaged/spec.md", "Revised again during probing.\n")
-            self.assertEqual(initial, discover())
-            self.assertEqual("Revised again during probing.\n", (workspace / "specs/unstaged/spec.md").read_text())
+            current = {entry["path"]: entry for entry in discover()["specs"]}
+            self.assertNotEqual(previous, current["specs/unstaged/spec.md"]["sha256"])
+
+            revision = git("rev-parse", "HEAD").decode().strip()
+            with_change = {entry["path"]: entry for entry in discover("--since", revision)["specs"]}
+            self.assertEqual("changed", with_change["specs/unstaged/spec.md"]["content_change"])
+            self.assertEqual("new", with_change["specs/新 草稿/spec.md"]["content_change"])
+
             write("specs/later/spec.md", "Peer created before approval.\n")
-            self.assertIn(b"?? specs/later/spec.md\0", discover())
-            self.assertNotIn(b"specs/later/spec.md", initial)
+            self.assertIn("specs/later/spec.md", {entry["path"] for entry in discover()["specs"]})
 
 
 if __name__ == "__main__":

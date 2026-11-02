@@ -23,5 +23,5 @@ Build an evidence matrix reconciling claims against the approved intent (`spec.m
 | Claim | Spec Anchors | Code Evidence | Test Evidence | Existing Owner | Result |
 |---|---|---|---|---|---|
 
-Use the active format's Feature Capsule schema, then complete the shared Memory write workflow.
+Use the active format's Feature Capsule schema, then complete the shared Memory write workflow; generate the index with `../maintain-memory/scripts/memory_tool.py index --write` and validate with `memory-check`.
 

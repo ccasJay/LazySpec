@@ -9,29 +9,34 @@ description: Probe requirements and architectural decisions with structured ques
 
 Read [risk-policy.md](../using-lazyspec/references/risk-policy.md), [approval-policy.md](../using-lazyspec/references/approval-policy.md), [doc-policy.md](../using-lazyspec/references/doc-policy.md), and [delivery-loop.md](../using-lazyspec/references/delivery-loop.md) before this workflow; resolve them relative to the directory containing this `SKILL.md`. risk-policy.md separates risk-based verification from decision-based approval; approval-policy.md governs explicit approvals, materiality, and the single-body contract; doc-policy.md keeps the single artifact minimum-sufficient; delivery-loop.md defines executable success criteria, per-task basic checks, and final Feature Verification.
 
+## Deterministic helpers
+
+Run these with Python 3; a non-zero exit blocks and means fix the reported code, never the checker.
+
+- `scripts/spec_scan.py scan-specs --changed [--since <rev>] [--feature <f>]` — changed peer Specs with content hashes.
+- `../using-lazyspec/scripts/lazyspec.py check --feature <f> --stage plan` — contract gate.
+
+If Python 3 or the scripts are unavailable, perform the same steps manually and report the degradation.
+
 ## Language and paths
 
 - Keep instructional prose in this Skill and its resources in English.
 - Write all user-visible prose in generated `spec.md` content in Chinese, including the title, headings, goals, user stories, EARS criteria, decisions, risks, and tasks.
 - Preserve project-specific names, code identifiers, filenames, and stable `S`/`R` IDs.
-- Resolve supporting resources (`spec-prompt.md`, `spec-template.md`) relative to the directory containing this `SKILL.md`.
+- Resolve supporting resources (`spec-prompt.md`, `spec-template.md`) and `scripts/spec_scan.py` relative to the directory containing this `SKILL.md`.
 - Resolve `specs/{feature_name}/spec.md` against `ACTIVE_PROJECT_ROOT`, defined by `using-lazyspec` as the user's project working directory at session start. Never use this Skill's directory, its repository, or a Plugin cache as the project root. If invoked directly and the session working directory is unavailable or ambiguous, ask for the project root before writing.
 - Require explicit approval of `spec.md` before routing to execution. Never infer approval from file existence.
 
 ## Uncommitted Spec Boundary Check
 
-Before design probing for a new or revised Spec, inspect staged, unstaged, and untracked changes from `ACTIVE_PROJECT_ROOT`:
+Before design probing for a new or revised Spec, inspect changed peer Specs:
 
-```sh
-git status --porcelain=v1 -z --untracked-files=all -M -- specs/
-```
-
-- Treat the output as NUL-delimited records, including both index and working-tree status. For renames, use the destination path and consume the following source-path field. Select other added, modified, or renamed `specs/<feature>/spec.md` files that currently exist; exclude the current Spec, deleted files, and `specs/archived/` and `specs/retired/`. Limit this check to the current working tree; do not search other branches or worktrees. If Git is unavailable or the project is not a Git repository, report the limitation in Chinese and continue with visible project evidence.
-- Read each candidate's complete current working-tree content, rather than only its diff or staged version. Use goals, responsibilities, interfaces, data, and constraints to identify related Specs; skip unrelated ones. Include incomplete drafts and completed designs. File existence or `status: proposed` establishes neither approval nor implementation; other drafts are designs to coordinate, not automatically binding constraints or available capabilities. Apply approval-policy.md to any approval established in the conversation.
-- For related Specs, check overlapping responsibilities, conflicting interface or data ownership, circular dependencies, reliance on another Spec's internals, and contradictory constraints. Prefer explicit ownership and dependencies through defined contracts. Preserve necessary dependencies; do not introduce abstractions or split features merely to claim decoupling.
-- Prefer designs that allow related Specs to be implemented and verified in parallel. Distinguish a dependency on an agreed interface/data contract from a genuine need for another Spec's implementation artifact. With sufficiently defined contracts, prefer independent implementation and contract substitutes for local verification; substitutes never prove cross-Spec integration. Shared files or business relationships alone do not justify serialization. Resolve unclear ownership or contracts before claiming parallel readiness; do not invent another draft's API. For any unavoidable implementation dependency, name the required artifact and why parallel implementation is infeasible, while preserving approved behavior and failure guarantees.
-- Resolve conflicts in the current Spec first, defining its responsibilities, exclusions, dependency contracts, and relevant absence/failure behavior. Reference the owning Spec instead of duplicating its contract. If resolution requires materially changing another Spec, explain the conflict and proposed coordinated change and ask under approval-policy.md before that dependent work; do not modify other Specs by default or silently choose a conflicting design. Continue independent design work where possible.
-- Keep inspected paths and content versions in session context. After saving the current Spec and before requesting approval, rerun discovery and compare current candidate contents; reassess new, changed, renamed, or removed peers and any resulting boundary decisions. Resolve material conflicts before presenting the file for approval. Record relevant boundaries, contracts enabling parallel implementation/verification, and justified implementation dependencies concisely within the current Spec's `决策` section; with no related Specs, continue normally without an extra section or table. Do not create another artifact, status field, approval gate, or orchestration workflow for this check.
+1. **Discover**: run `spec_scan.py scan-specs --changed --feature <current-feature>`. It excludes the current Spec, deleted files, `specs/archived/`, and `specs/retired/`, and reports each candidate with a content hash. If Git is unavailable or the project is not a Git repository, report the limitation in Chinese and continue with visible project evidence.
+2. **Read**: open each candidate's complete working-tree content, not only its diff. Use goals, responsibilities, interfaces, data, and constraints to identify related Specs; skip unrelated ones. Include incomplete drafts and completed designs. File existence or `status: proposed` establishes neither approval nor implementation.
+3. **Reconcile**: for related Specs, check overlapping responsibilities, conflicting interface or data ownership, circular dependencies, reliance on another Spec's internals, and contradictory constraints. Prefer explicit ownership and dependencies through defined contracts. Preserve necessary dependencies; do not introduce abstractions or split features merely to claim decoupling.
+4. **Parallel readiness**: prefer designs that allow related Specs to be implemented and verified in parallel. Distinguish a dependency on an agreed interface/data contract from a need for another Spec's implementation artifact; with defined contracts, prefer independent implementation and contract substitutes for local verification, which never proves cross-Spec integration. Shared files or business relationships alone do not justify serialization. Resolve unclear ownership before claiming readiness; never invent another draft's API. For an unavoidable implementation dependency, name the required artifact and why parallel implementation is infeasible.
+5. **Conflict routing**: resolve conflicts in the current Spec first, defining its responsibilities, exclusions, dependency contracts, and relevant absence/failure behavior. Reference the owning Spec instead of duplicating its contract. If resolution requires materially changing another Spec, explain the conflict and proposed coordinated change and ask under approval-policy.md before that dependent work; do not modify other Specs by default or silently choose a conflicting design.
+6. **Recheck before approval**: after saving the current Spec, rerun discovery with `--since` against the recorded hash and reassess new, changed, renamed, or removed peers and any resulting boundary decisions. Resolve material conflicts before presenting the file for approval. Record relevant boundaries, contracts enabling parallel verification, and justified implementation dependencies concisely in the current Spec's `决策` section; with no related Specs, continue normally without an extra section or table. Do not create another artifact, status field, approval gate, or orchestration workflow for this check.
 
 ## Structured Probing (/grill-me Style)
 
@@ -73,6 +78,7 @@ Read [spec-prompt.md](spec-prompt.md) for content rules and [spec-template.md](s
 ## Approval Gate
 
 1. Write the complete `specs/{feature_name}/spec.md` under `ACTIVE_PROJECT_ROOT`.
-2. Complete the pre-approval recheck in Uncommitted Spec Boundary Check, then present the saved file link to the user and request explicit approval under approval-policy.md:
+2. Run the plan-stage check and resolve every reported code. A passing check is not approval.
+3. Complete the pre-approval recheck in Uncommitted Spec Boundary Check, then present the saved file link to the user and request explicit approval under approval-policy.md:
    `"请审阅规范文件 specs/<feature>/spec.md；是否批准其中的目标、用户故事、验收标准、架构决策、风险、任务拆解与验收方式？"`
-3. Await explicit approval before handoff to `executing-plan`.
+4. Await explicit approval before handoff to `executing-plan`.

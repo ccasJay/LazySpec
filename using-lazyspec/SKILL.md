@@ -30,6 +30,16 @@ Rules:
 
 [approval-policy.md](references/approval-policy.md) owns approval semantics and user questions; [risk-policy.md](references/risk-policy.md) owns risk classification and verification depth; [delivery-loop.md](references/delivery-loop.md) owns shared verification, repair, lifecycle state definitions. `writing-spec` owns the single planning artifact and its approval; `executing-plan` owns execution and delivery finalization. [doc-policy.md](references/doc-policy.md) owns documentation scope; [memory-workflow.md](references/memory-workflow.md) owns Memory write preparation and cleanup; [memory-recall.md](references/memory-recall.md) owns recall. Load each only for its route.
 
+## Deterministic helpers
+
+`scripts/lazyspec_core/` holds the shared implementation; every skill calls it through its own entry script. Run with Python 3; a non-zero exit blocks and means fix the code, never the checker.
+
+- `scripts/lazyspec.py check --feature <f> --stage plan|review|delivered` — contract gate.
+- `scripts/lazyspec.py recall --query <text>` — bounded Memory recall.
+- `scripts/lazyspec.py scan-retired` — obsolete Specs and reasons.
+
+If Python 3 or the scripts are unavailable, follow the policy manually.
+
 ## Routing Protocol
 Use this Skill as the single entry point. Route by logical Skill name and read only that Skill's required resources; do not copy a routed Skill's detailed body here.
 
@@ -52,7 +62,7 @@ Resolve every routed Skill with this platform-neutral protocol:
 ### Negative Guardrails Inspection
 
 Before routing to `writing-spec` or initiating new feature planning:
-- Inspect `specs/retired/` (or obsolete entries in `project-memory/`).
+- Run `scripts/lazyspec.py scan-retired` to list `specs/retired/` and obsolete entries in `project-memory/`; if the command is unavailable, inspect those paths directly.
 - If the requested capability or approach matches a retired/obsolete specification or negative guardrail, issue an immediate warning in Chinese citing the retirement reason and require user confirmation before proceeding, preventing the agent from repeating past mistakes.
 
 ### Memory Distillation & Governance Routing
