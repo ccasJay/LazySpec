@@ -42,12 +42,14 @@ Before design probing for a new or revised Spec, inspect changed peer Specs:
 
 Instead of mechanical, one-by-one incremental confirmations, `writing-spec` conducts a structured decision interview:
 
-1. **Inspect and Research**: Complete the Uncommitted Spec Boundary Check, then inspect the user's request, project architecture, and relevant existing codebase facts before asking.
+1. **Inspect and Research**: Complete the Uncommitted Spec Boundary Check, then inspect the user's request, project architecture, and relevant existing codebase facts before asking. For each material implementation approach, assess in order: existing project capabilities and dependencies; platform, standard-library or framework capabilities; external tools, libraries or packages; and custom implementation. This is an investigation order, not a mandatory preference or a requirement to add a dependency. Consider only meaningful alternatives for the problem.
+   - For a prospective external dependency, assess fitness, compatibility, maintenance, license, major security risks and integration cost proportionately. For an external service, also identify data sharing, cost and credential requirements. Distinguish verified facts from assumptions and mark unavailable information as unverified; never invent evidence or imply research was completed when it was not.
+   - Discuss material implementation choices with the user before generating the Spec, including important new dependencies, external services, custom implementations with significant maintenance cost, or meaningful trade-offs. Present a justified recommendation and alternatives as part of the relevant design question. Routine use of established dependencies, suitable standard libraries or trivial custom logic needs no separate question unless material or reserved by the user.
 2. **Identify Branches of Decision Tree**:
    - Scope and boundaries (what is in, what is explicitly out);
    - User stories and observable outcomes (EARS scenarios);
    - Architecture and component relationships;
-   - Competing approaches and technical trade-offs when material (Alternatives Considered);
+   - Competing approaches, implementation sources and technical trade-offs when material (Alternatives Considered);
    - Invariants, risks, and negative guarantees;
    - Verification depth and the critical operations execution must not perform without authorization.
 3. **Ask One Focused Decision Question at a Time**:

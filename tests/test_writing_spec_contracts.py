@@ -47,6 +47,22 @@ class WritingSpecContractTests(unittest.TestCase):
         self.assertIn("EARS", SKILL)
         self.assertIn("negative guarantees", SKILL)
 
+    def test_material_implementation_choices_are_researched_and_discussed(self):
+        self.assertIn("For each material implementation approach", SKILL)
+        self.assertIn("existing project capabilities and dependencies", SKILL)
+        self.assertIn("standard-library or framework capabilities", SKILL)
+        self.assertIn("external tools, libraries or packages", SKILL)
+        self.assertIn("custom implementation", SKILL)
+        self.assertIn("investigation order, not a mandatory preference", SKILL)
+        self.assertIn("fitness, compatibility, maintenance, license, major security risks and integration cost", SKILL)
+        self.assertIn("data sharing, cost and credential requirements", SKILL)
+        self.assertIn("mark unavailable information as unverified", SKILL)
+        self.assertIn("Discuss material implementation choices with the user before generating the Spec", SKILL)
+        self.assertIn("needs no separate question unless material or reserved by the user", SKILL)
+        self.assertIn("important tool, library, package, service or custom-implementation choices", PROMPT)
+        self.assertIn("exact version only when it is material", PROMPT)
+        self.assertIn("Do not add an inventory or separate selection report", PROMPT)
+
     def test_acceptance_table_and_stable_ids(self):
         template = (ROOT / "writing-spec/spec-template.md").read_text()
         self.assertIn("| ID | 故事 | 类型 | 当 | 系统应 | 验证 |", template)
