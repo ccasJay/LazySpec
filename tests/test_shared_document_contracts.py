@@ -61,6 +61,7 @@ class SharedDocumentContractTests(unittest.TestCase):
             "Users and Agents share one document body",
             "per-section budgets are machine-checked",
             "never omitting distinct approved behavior",
+            "one required Mermaid `结构图`",
         ):
             with self.subTest(required=required):
                 self.assertIn(required, DOC_POLICY)
@@ -70,6 +71,7 @@ class SharedDocumentContractTests(unittest.TestCase):
         for required in (
             "status: proposed",
             "## 目标与范围",
+            "## 结构图",
             "## 用户故事",
             "## 验收标准",
             "## 决策",
@@ -94,6 +96,7 @@ class SharedDocumentContractTests(unittest.TestCase):
             "Inline verification",
             "Shape and budget",
             "Single source",
+            "Structure diagram",
             "Execution record",
         ):
             with self.subTest(required=required):
@@ -113,7 +116,7 @@ class SharedDocumentContractTests(unittest.TestCase):
 
     def test_approval_questions_target_the_current_file(self):
         self.assertIn(
-            "请审阅规范文件 specs/<feature>/spec.md；是否批准其中的目标、用户故事、验收标准、架构决策、风险、任务拆解与验收方式？",
+            "请审阅规范文件 specs/<feature>/spec.md；是否批准其中的目标、结构图、用户故事、验收标准、架构决策、风险、任务拆解与验收方式？",
             SPEC_SKILL,
         )
         self.assertNotIn("请审阅执行计划 specs/<feature>/plan.md", ROUTER + SPEC_SKILL)

@@ -86,7 +86,7 @@ Inspect the requested feature's `specs/{feature_name}/spec.md` under `ACTIVE_PRO
 ### Phase Chain (Single-Artifact Architecture)
 
 1. **Phase 1: Spec Creation / Revision**:
-   - For a new feature or revision of `spec.md`, route directly to `writing-spec`. The approved `spec.md` is the only planning artifact and carries user stories, acceptance criteria with inline verification, decisions, risks, and tasks.
+   - For a new feature or revision of `spec.md`, route directly to `writing-spec`. The approved `spec.md` is the only planning artifact and carries a required structure diagram, user stories, acceptance criteria with inline verification, decisions, risks, and tasks.
 2. **Phase 2: Execution, Review, and Delivery Finalization**:
    - For `spec.md` execution, resume, or verification requests, route to `executing-plan` after checking Spec approval and execution authorization under approval-policy.md. It owns the worktree, commit, user-review, merge, and finalization procedure.
 

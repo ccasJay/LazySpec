@@ -38,7 +38,7 @@ LazySpec 在项目根目录下规范化管理两类资产：
 your-project/
 ├── specs/                          # 规范与执行工件
 │   ├── user-auth/                  # 功能目录
-│   │   └── spec.md                 # 单一契约（状态、用户故事、验收与验证、决策、风险、任务、执行记录）
+│   │   └── spec.md                 # 单一契约（状态、结构图、用户故事、验收与验证、决策、风险、任务、执行记录）
 │   ├── archived/                   # 成熟稳定的基石规范
 │   └── retired/                    # 废弃/证伪方案（负向警示护栏，立项时自动拦截）
 └── project-memory/                 # 跨会话长期工程记忆
@@ -92,7 +92,7 @@ claude --plugin-dir /absolute/path/to/LazySpec
 ```text
 使用 using-lazyspec 为“用户邮箱验证”立项。
 ```
-> Agent 发起结构化探针确认核心架构决策与边界，生成 `specs/user-auth/spec.md`：包含用户故事、验收标准及内联验证方式、决策、风险与任务清单。
+> Agent 发起结构化探针确认核心架构决策与边界，生成 `specs/user-auth/spec.md`：包含结构图、用户故事、验收标准及内联验证方式、决策、风险与任务清单。
 
 ### 2. 执行与自动收口
 ```text
@@ -100,7 +100,7 @@ spec.md 已批准，请执行 specs/user-auth/spec.md 中的全部任务。
 ```
 > Agent 连续执行编码与逐 TODO 基本检查，全部完成后运行全量 `Feature Verification`；用户审核并批准合并后，合并到 `dev`，将 `spec.md` 标记为 `delivered`，删除任务清单并压缩执行记录。
 
-Spec 只记录可验收行为、必要决策、风险与任务；验证方式内联在验收表中，篇幅按实际复杂度决定。
+Spec 只记录结构图、可验收行为、必要决策、风险与任务；验证方式内联在验收表中，篇幅按实际复杂度决定。
 
 ### 3. 特性沉淀
 ```text

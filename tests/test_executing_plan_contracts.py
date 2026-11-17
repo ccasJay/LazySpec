@@ -26,6 +26,8 @@ class ExecutingPlanContractTests(unittest.TestCase):
         for rule in (
             "all currently unchecked TODOs",
             "without per-TODO confirmation",
+            "`结构图`",
+            "do not modify it during execution",
             "feature branch",
             "lightweight basic check",
             "Do not run the full test suite or force a Red-Green TDD cycle on each individual TODO",

@@ -19,7 +19,7 @@ Run `scripts/spec_state.py <command>` with Python 3; add `--json` for machine ou
 ## Execution Workflow
 
 1. **Verify Authorization**: Confirm `spec.md` is explicitly approved and execution is authorized under approval-policy.md.
-2. **Context Discovery**: Read the complete `spec.md`: `目标与范围`, `用户故事`, `验收标准` including every `验证` entry, `决策`, `风险与否定性保证`, the `任务` checklist, and the current `执行记录`.
+2. **Context Discovery**: Read the complete `spec.md`: `目标与范围`, `结构图`, `用户故事`, `验收标准` including every `验证` entry, `决策`, `风险与否定性保证`, the `任务` checklist, and the current `执行记录`. Treat `结构图` as approved contract: use it to understand boundaries and flows, and do not modify it during execution.
 3. **Worktree & Branch Setup**:
    - Create the isolated worktree and feature branch:
      `python3 <skill-dir>/scripts/spec_state.py worktree add --feature <feature-name> --base dev`

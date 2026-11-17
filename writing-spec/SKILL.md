@@ -64,7 +64,8 @@ Instead of mechanical, one-by-one incremental confirmations, `writing-spec` cond
 Read [spec-prompt.md](spec-prompt.md) for content rules and [spec-template.md](spec-template.md) for the canonical frontmatter and document shape before drafting. Together they define the single planning artifact; do not maintain another schema here.
 
 - Create exactly one artifact: `specs/{feature_name}/spec.md`. Do not create `plan.md` or a separate verification file.
-- **Contract zone** — `目标与范围`, `用户故事`, `验收标准`, `决策`, `风险与否定性保证`, `任务`. It becomes the approved contract; during execution only the task checkbox may change.
+- **Contract zone** — `目标与范围`, `结构图`, `用户故事`, `验收标准`, `决策`, `风险与否定性保证`, `任务`. It becomes the approved contract; during execution only the task checkbox may change.
+- **Structure diagram** — `结构图` is mandatory and contains exactly one non-empty Mermaid block. It shows the feature boundary, affected components, material dependencies, primary flow, and material failure/recovery paths. It may not introduce behavior absent from the user stories, acceptance criteria, or decisions, and it never replaces a distinct acceptance, decision, risk, or verification item. Draft it after material decisions converge and keep structural relationships out of the surrounding prose.
 - **Execution zone** — `执行记录`. It is the only section execution may freely update.
 - The `验证` column of `验收标准` is the approved verification plan. It must cover every acceptance outcome before approval and may not be weakened afterwards.
 - Apply the section shape and size budget from `spec-prompt.md`; compress by merging duplicates and removing narration, never by dropping distinct acceptance behavior.
@@ -82,5 +83,5 @@ Read [spec-prompt.md](spec-prompt.md) for content rules and [spec-template.md](s
 1. Write the complete `specs/{feature_name}/spec.md` under `ACTIVE_PROJECT_ROOT`.
 2. Run the plan-stage check and resolve every reported code. A passing check is not approval.
 3. Complete the pre-approval recheck in Uncommitted Spec Boundary Check, then present the saved file link to the user and request explicit approval under approval-policy.md:
-   `"请审阅规范文件 specs/<feature>/spec.md；是否批准其中的目标、用户故事、验收标准、架构决策、风险、任务拆解与验收方式？"`
+   `"请审阅规范文件 specs/<feature>/spec.md；是否批准其中的目标、结构图、用户故事、验收标准、架构决策、风险、任务拆解与验收方式？"`
 4. Await explicit approval before handoff to `executing-plan`.

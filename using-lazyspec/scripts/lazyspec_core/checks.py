@@ -23,10 +23,21 @@ REQUIRED_FIELDS = (
 STATUSES = {"proposed", "delivered", "archived", "superseded", "obsolete"}
 RISKS = {"low", "medium", "high"}
 EVIDENCE_STATES = {"passed", "failed", "blocked", "pending-human"}
-CONTRACT_SECTIONS = ("目标与范围", "用户故事", "验收标准", "决策", "风险与否定性保证")
+CONTRACT_SECTIONS = ("目标与范围", "结构图", "用户故事", "验收标准", "决策", "风险与否定性保证")
 CANONICAL_ORDER = CONTRACT_SECTIONS + ("任务", "执行记录")
+MERMAID_DIAGRAM_TYPES = {
+    "flowchart",
+    "graph",
+    "sequenceDiagram",
+    "stateDiagram-v2",
+    "stateDiagram",
+    "classDiagram",
+    "erDiagram",
+}
+MERMAID_TYPE_RE = re.compile(r"^([A-Za-z][A-Za-z0-9-]*)")
 BUDGETS = {
     "目标与范围": (2, "SPEC-501"),
+    "结构图": (24, "SPEC-507"),
     "验收标准": (12, "SPEC-502"),
     "决策": (5, "SPEC-503"),
     "风险与否定性保证": (3, "SPEC-504"),
@@ -44,6 +55,7 @@ CODE_CATALOG: Sequence[tuple] = (
     ("SPEC-105", "缺少必需章节"),
     ("SPEC-106", "章节顺序不符合契约"),
     ("SPEC-107", "frontmatter 的 feature 与目录名不一致"),
+    ("SPEC-108", "结构图必须包含一个有效的 Mermaid 代码块"),
     ("SPEC-201", "验收表表头不等于规范形状"),
     ("SPEC-202", "S 或 R 编号重复"),
     ("SPEC-203", "任务引用了不存在的 R 编号"),
@@ -67,6 +79,7 @@ CODE_CATALOG: Sequence[tuple] = (
     ("SPEC-504", "风险超过 3 行"),
     ("SPEC-505", "任务超过 12 行"),
     ("SPEC-506", "执行记录超过 5 行"),
+    ("SPEC-507", "结构图超过 24 行"),
     ("SPEC-601", "已交付规范仍含任务章节"),
     ("SPEC-602", "已交付规范仍含 //TODO"),
     ("SPEC-603", "已交付规范仍含未勾选任务"),
@@ -133,6 +146,7 @@ def check_spec(
         )
 
     _check_sections(spec, stage, report, require_tasks=stage != "delivered")
+    _check_diagram(spec, report)
     _check_acceptance(spec, report)
     _check_tasks(spec, report)
     _check_budgets(spec, report)
@@ -171,6 +185,55 @@ def _check_sections(spec: Spec, stage: str, report: CheckReport, require_tasks: 
         for name in ("任务",):
             if name in spans:
                 _add(report, "SPEC-601", f"已交付规范仍含章节：## {name}", spec, spans[name][0] + 1)
+
+
+def _check_diagram(spec: Spec, report: CheckReport) -> None:
+    if "结构图" not in spec.section_spans():
+        return
+    blocks, unclosed = _fenced_blocks(spec.section_lines("结构图"))
+    if unclosed:
+        _add(report, "SPEC-108", "结构图的 Mermaid 代码块未闭合", spec)
+        return
+    if len(blocks) != 1:
+        _add(report, "SPEC-108", "结构图必须包含恰好一个 Mermaid 代码块", spec)
+        return
+    block = blocks[0]
+    info = block["info"].split()[0].lower() if block["info"] else ""
+    if info != "mermaid":
+        _add(report, "SPEC-108", "结构图必须使用 ```mermaid 代码块", spec)
+        return
+    content = [
+        line.strip()
+        for line in block["lines"]
+        if line.strip() and not line.strip().startswith("%%")
+    ]
+    if not content:
+        _add(report, "SPEC-108", "结构图为空", spec)
+        return
+    match = MERMAID_TYPE_RE.match(content[0])
+    diagram_type = match.group(1) if match else ""
+    if diagram_type not in MERMAID_DIAGRAM_TYPES:
+        _add(report, "SPEC-108", f"结构图缺少受支持的 Mermaid 图类型：{content[0]}", spec)
+
+
+def _fenced_blocks(lines: Sequence[str]) -> tuple:
+    blocks = []
+    current = None
+    unclosed = False
+    for raw in lines:
+        stripped = raw.strip()
+        if current is None:
+            if stripped.startswith("```"):
+                current = {"info": stripped[3:].strip(), "lines": []}
+            continue
+        if stripped == "```":
+            blocks.append(current)
+            current = None
+            continue
+        current["lines"].append(raw)
+    if current is not None:
+        unclosed = True
+    return blocks, unclosed
 
 
 def _check_acceptance(spec: Spec, report: CheckReport) -> None:
@@ -244,6 +307,8 @@ def _check_budgets(spec: Spec, report: CheckReport) -> None:
         body = spec.section_body(section)
         if section == "目标与范围":
             count = len([line for line in body if not line.startswith("|")])
+        elif section == "结构图":
+            count = len(body)
         elif section == "执行记录":
             count = len([line for line in body if line.startswith("-")])
         else:

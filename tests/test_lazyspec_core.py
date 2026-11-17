@@ -152,6 +152,7 @@ class CheckStageTests(unittest.TestCase):
             "SPEC-104": base.replace("risk: medium", "risk: extreme", 1),
             "SPEC-105": base.replace("## 决策", "## 取舍", 1),
             "SPEC-106": base.replace("## 决策", "## 临时", 1).replace("## 风险与否定性保证", "## 决策", 1).replace("## 临时", "## 风险与否定性保证", 1),
+            "SPEC-108": base.replace("```mermaid", "```text", 1),
             "SPEC-201": base.replace("| ID | 故事 | 类型 | 当 | 系统应 | 验证 |", "| ID | 故事 | 类型 | 当 | 系统应 | 检查 |", 1),
             "SPEC-202": base.replace("| R1.2 |", "| R1.1 |", 1),
             "SPEC-203": base.replace("→ R1.2；", "→ R9.9；", 1),
@@ -175,6 +176,46 @@ class CheckStageTests(unittest.TestCase):
         for expected, text in cases.items():
             with self.subTest(code=expected):
                 self.assertIn(expected, self.codes_for(text))
+
+    def test_structure_diagram_shape_and_budget(self):
+        base = (FIXTURES / "valid-plan" / "spec.md").read_text(encoding="utf-8")
+        block = (
+            "```mermaid\n"
+            "flowchart LR\n"
+            '    U["用户"] --> A["演示组件"]\n'
+            '    A -->|"R1.1"| S["成功响应"]\n'
+            '    A -.->|"R1.2"| E["错误响应"]\n'
+            "```"
+        )
+        self.assertIn(block, base)
+        self.assertEqual(set(), self.codes_for(base))
+
+        missing = base.replace("## 结构图", "## 图示", 1)
+        self.assertIn("SPEC-105", self.codes_for(missing))
+
+        empty = base.replace(block, "```mermaid\n%% 只有注释\n```", 1)
+        self.assertIn("SPEC-108", self.codes_for(empty))
+
+        wrong_type = base.replace("flowchart LR", "pie", 1)
+        self.assertIn("SPEC-108", self.codes_for(wrong_type))
+
+        multiple = base.replace(block, block + "\n\n" + block, 1)
+        self.assertIn("SPEC-108", self.codes_for(multiple))
+
+        long_block = (
+            "```mermaid\nflowchart LR\n"
+            + "".join(f'    N{index}["节点{index}"] --> N{index + 1}["节点{index + 1}"]\n' for index in range(24))
+            + "```"
+        )
+        oversized = base.replace(block, long_block, 1)
+        self.assertIn("SPEC-507", self.codes_for(oversized))
+
+        sequence = base.replace(
+            block,
+            "```mermaid\nsequenceDiagram\n    participant U as 用户\n    participant A as 演示组件\n    U->>A: 触发\n    A-->>U: 成功\n```",
+            1,
+        )
+        self.assertNotIn("SPEC-108", self.codes_for(sequence))
 
     def test_task_numbering_and_coverage_are_enforced(self):
         base = (FIXTURES / "valid-plan" / "spec.md").read_text(encoding="utf-8")

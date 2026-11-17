@@ -69,6 +69,8 @@ class WritingSpecContractTests(unittest.TestCase):
         self.assertIn("R1.1", template)
         self.assertIn("S1", template)
         self.assertIn("## 风险与否定性保证", template)
+        self.assertIn("## 结构图", template)
+        self.assertIn("```mermaid", template)
         self.assertNotIn('spec-req-', template)
 
     def test_concise_spec_preserves_material_contracts(self):
@@ -78,6 +80,9 @@ class WritingSpecContractTests(unittest.TestCase):
         self.assertIn("file inventories", PROMPT)
         self.assertIn("Never drop a distinct acceptance behavior", PROMPT)
         self.assertIn("Shape and budget", PROMPT)
+        self.assertIn("Structure diagram", PROMPT)
+        self.assertIn("exactly one non-empty Mermaid block", PROMPT)
+        self.assertIn("only in the structure diagram", PROMPT)
 
     def test_skill_routes_discovery_and_plan_check_through_scripts(self):
         self.assertIn("scripts/spec_scan.py scan-specs --changed", SKILL)

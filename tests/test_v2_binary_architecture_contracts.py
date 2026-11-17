@@ -50,6 +50,7 @@ class SingleArtifactArchitectureContractTests(unittest.TestCase):
             "supersedes: []",
             "superseded_by: null",
             "## 目标与范围",
+            "## 结构图",
             "## 用户故事",
             "## 验收标准",
             "| ID | 故事 | 类型 | 当 | 系统应 | 验证 |",
